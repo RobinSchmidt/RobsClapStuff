@@ -17,7 +17,7 @@
 // This is how it's included the original file that comes with the clap SDK. It needs the 
 // compiler header search path to be set up in a way to contain the clap folder.
 
-#include "../../../clap-main/include/clap/clap.h"
+#include "../../../clap/include/clap/clap.h"
 // This is how I prefer to do it - using a relative path from "here" for better portability. It will
 // regardless how the compiler include search paths are set up.
 
