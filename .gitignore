@@ -40,11 +40,11 @@
 #---------------------------------------------------------------------------------------------------
 # Ignored folders:
 
-
+/Examples/WithMyWrapper/Build/VisualStudio2019/x64
+/Examples/WithMyWrapper/Build/VisualStudio2019/.vs
 
 #---------------------------------------------------------------------------------------------------
 # Ignored files:
 
 
-/Examples/WithMyWrapper/Build/VisualStudio2019/x64
-/Examples/WithMyWrapper/Build/VisualStudio2019/.vs
+
