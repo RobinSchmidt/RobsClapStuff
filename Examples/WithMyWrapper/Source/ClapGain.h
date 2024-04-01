@@ -1,6 +1,8 @@
 #pragma once
 
-#include "ClapPluginClasses.h"
+//#include "ClapPluginClasses.h"
+#include "../../../RobsClapHelpers/ClapPluginClasses.h"
+
 
 class ClapGain : public ClapPluginStereo32Bit
 {

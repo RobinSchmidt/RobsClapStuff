@@ -5,14 +5,11 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="RobsClapHelpers">
+      <UniqueIdentifier>{769f48b8-40b3-4411-a067-e14f1bd33fe9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Source\ClapPlugin.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\ClapPluginClasses.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Source\ClapPluginTests.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -22,19 +19,25 @@
     <ClCompile Include="..\..\Source\ClapGain.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\RobsClapHelpers\ClapPlugin.cpp">
+      <Filter>RobsClapHelpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\RobsClapHelpers\ClapPluginClasses.cpp">
+      <Filter>RobsClapHelpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Source\ClapPlugin.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\ClapPluginClasses.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\ClapPluginTests.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\ClapGain.h">
       <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\RobsClapHelpers\ClapPlugin.h">
+      <Filter>RobsClapHelpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\RobsClapHelpers\ClapPluginClasses.h">
+      <Filter>RobsClapHelpers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

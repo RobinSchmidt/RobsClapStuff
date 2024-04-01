@@ -4,30 +4,33 @@
     <Filter Include="Source">
       <UniqueIdentifier>{029bf926-a989-4fdd-8f6d-21ed5b16b6c4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="RobsClapHelpers">
+      <UniqueIdentifier>{8dfe7b92-7af8-4eea-aafc-84fbf67c10fd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\ClapGain.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\ClapPlugin.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\ClapPluginClasses.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Source\ClapGainEntryPoint.cpp">
       <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\RobsClapHelpers\ClapPlugin.cpp">
+      <Filter>RobsClapHelpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\RobsClapHelpers\ClapPluginClasses.cpp">
+      <Filter>RobsClapHelpers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\ClapGain.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\ClapPlugin.h">
-      <Filter>Source</Filter>
+    <ClInclude Include="..\..\..\..\RobsClapHelpers\ClapPlugin.h">
+      <Filter>RobsClapHelpers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\ClapPluginClasses.h">
-      <Filter>Source</Filter>
+    <ClInclude Include="..\..\..\..\RobsClapHelpers\ClapPluginClasses.h">
+      <Filter>RobsClapHelpers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

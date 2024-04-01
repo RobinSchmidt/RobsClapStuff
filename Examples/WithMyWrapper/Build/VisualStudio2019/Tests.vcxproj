@@ -19,16 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\RobsClapHelpers\ClapPlugin.cpp" />
+    <ClCompile Include="..\..\..\..\RobsClapHelpers\ClapPluginClasses.cpp" />
     <ClCompile Include="..\..\Source\ClapGain.cpp" />
-    <ClCompile Include="..\..\Source\ClapPlugin.cpp" />
-    <ClCompile Include="..\..\Source\ClapPluginClasses.cpp" />
     <ClCompile Include="..\..\Source\ClapPluginTests.cpp" />
     <ClCompile Include="..\..\Source\Tests.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\RobsClapHelpers\ClapPlugin.h" />
+    <ClInclude Include="..\..\..\..\RobsClapHelpers\ClapPluginClasses.h" />
     <ClInclude Include="..\..\Source\ClapGain.h" />
-    <ClInclude Include="..\..\Source\ClapPlugin.h" />
-    <ClInclude Include="..\..\Source\ClapPluginClasses.h" />
     <ClInclude Include="..\..\Source\ClapPluginTests.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
