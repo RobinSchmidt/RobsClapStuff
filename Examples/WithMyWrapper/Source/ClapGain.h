@@ -30,6 +30,10 @@ public:
   void setParameter(clap_id id, double newValue) override;
 
 
+  static const char* const features[3];
+
+
+
 
 protected:
 

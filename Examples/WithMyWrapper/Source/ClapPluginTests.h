@@ -11,3 +11,6 @@ bool runAllClapTests(bool printResults);
 bool runStateRecallTest();
 // Maybe rename to testParameterStateRecall. We may later have states that contain more than just
 // numerical parameters (like strings for audiofile locations, maybe other data)
+
+
+bool runDescriptorReadTest();

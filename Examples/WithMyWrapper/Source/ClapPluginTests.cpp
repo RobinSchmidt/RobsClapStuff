@@ -9,6 +9,7 @@ bool runAllClapTests(bool printResults)
   bool ok = true;
 
   ok &= runStateRecallTest();
+  ok &= runDescriptorReadTest();
 
   return ok;
 }
@@ -117,6 +118,30 @@ bool runStateRecallTest()
   // -Test this with plugins with more parameters such that the ids get longer strings
   // -Test it with parameters that have an empty string as name
 }
+
+bool runDescriptorReadTest()
+{
+  bool ok = true;
+
+
+  // Create a ClapGain object:
+  clap_plugin_descriptor_t desc = ClapGain::pluginDescriptor;
+  ClapGain gain(&desc, nullptr);
+
+
+  std::vector<std::string> features = gain.getFeatures();
+  //ok &= features == { "utility", "mixing" };  // Nope! This is a syntax error :-(
+  ok &= features.size() == 2;                   // ...so we need to do it the verbose way
+  if(ok)
+  {
+    ok &= features[0] == "utility";
+    ok &= features[1] == "mixing";
+  }
+
+
+  return ok;
+}
+
 
 
 /*

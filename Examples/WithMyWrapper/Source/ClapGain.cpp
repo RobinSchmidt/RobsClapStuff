@@ -2,9 +2,17 @@
 #include "ClapGain.h"
 
 
-const char* const ClapGainFeatures[3] = { CLAP_PLUGIN_FEATURE_UTILITY, 
-CLAP_PLUGIN_FEATURE_MIXING, NULL };
+//const char* const ClapGainFeatures[3] = { CLAP_PLUGIN_FEATURE_UTILITY, 
+//CLAP_PLUGIN_FEATURE_MIXING, NULL };
 // ToDo: try to get rid of this or at least, move it as member into ClapGain
+
+
+const char* const ClapGain::features[3] = 
+{ 
+  CLAP_PLUGIN_FEATURE_UTILITY, 
+  CLAP_PLUGIN_FEATURE_MIXING, 
+  NULL 
+};
 
 const clap_plugin_descriptor_t ClapGain::pluginDescriptor = 
 {
@@ -17,8 +25,10 @@ const clap_plugin_descriptor_t ClapGain::pluginDescriptor =
   .support_url = "https://rs-met.com",
   .version = "2024.04.01",                // I use the YYYY.MM.DD format for versioning
   .description = "A simple gain to demonstrate writing a clap plugin.",
-  .features = ClapGainFeatures,
-  //.features = ClapGain::features,
+  //.features = ClapGainFeatures,
+  .features = ClapGain::features,
+  //.features = (const char *[]) { CLAP_PLUGIN_FEATURE_UTILITY, CLAP_PLUGIN_FEATURE_MIXING, NULL },
+  //.features = (const char *[]) { CLAP_PLUGIN_FEATURE_UTILITY, CLAP_PLUGIN_FEATURE_MIXING, NULL },
 };
 // ToDo: try to use a syntax like:
 //

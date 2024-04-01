@@ -259,6 +259,20 @@ bool ClapPluginWithParams::setStateFromString(const std::string& stateStr)
 }
 
 
+std::vector<std::string> ClapPluginWithParams::getFeatures()
+{
+  const clap_plugin_descriptor* desc = getPluginDescriptor();
+  std::vector<std::string> features;
+  int i = 0;
+  while(desc->features[i] != nullptr)
+  {
+    features.push_back(std::string(desc->features[i]));
+    i++;
+  }
+  return features;
+}
+
+
 //=================================================================================================
 // class ClapPluginStereo32Bit
 
