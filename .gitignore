@@ -8,6 +8,7 @@
 *.exe
 *.lib
 *.so
+*.clap
 
 # Build intermediates (C++):
 *.o
@@ -17,7 +18,9 @@
 *.exp
 *.idb
 *.ilk
+*.iobj
 *.ipch
+*.ipdb
 *.lastbuildstate
 *.layout
 *.log
