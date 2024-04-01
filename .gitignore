@@ -20,6 +20,7 @@
 *.ipch
 *.lastbuildstate
 *.layout
+*.log
 *.opendb
 *.opensdf
 *.pdb
