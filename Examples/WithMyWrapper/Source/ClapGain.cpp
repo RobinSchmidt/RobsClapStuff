@@ -2,17 +2,14 @@
 #include "ClapGain.h"
 
 
-//const char* const ClapGainFeatures[3] = { CLAP_PLUGIN_FEATURE_UTILITY, 
-//CLAP_PLUGIN_FEATURE_MIXING, NULL };
-// ToDo: try to get rid of this or at least, move it as member into ClapGain
-
-
 const char* const ClapGain::features[3] = 
 { 
   CLAP_PLUGIN_FEATURE_UTILITY, 
   CLAP_PLUGIN_FEATURE_MIXING, 
   NULL 
 };
+// Note that one of the unit tests checks the feature list. So if you change it, you need to update
+// the unit test, too. It's in runDescriptorReadTest in ClapPluginTests.cpp.
 
 const clap_plugin_descriptor_t ClapGain::pluginDescriptor = 
 {
@@ -25,9 +22,7 @@ const clap_plugin_descriptor_t ClapGain::pluginDescriptor =
   .support_url = "https://rs-met.com",
   .version = "2024.04.01",                // I use the YYYY.MM.DD format for versioning
   .description = "A simple gain to demonstrate writing a clap plugin.",
-  //.features = ClapGainFeatures,
   .features = ClapGain::features,
-  //.features = (const char *[]) { CLAP_PLUGIN_FEATURE_UTILITY, CLAP_PLUGIN_FEATURE_MIXING, NULL },
   //.features = (const char *[]) { CLAP_PLUGIN_FEATURE_UTILITY, CLAP_PLUGIN_FEATURE_MIXING, NULL },
 };
 // ToDo: try to use a syntax like:
@@ -36,7 +31,7 @@ const clap_plugin_descriptor_t ClapGain::pluginDescriptor =
 //
 // like it was originally in the nakst example (on which this code is based). But with this syntax,
 // it doesn't compile in Visual Studio 2019. Figure out why. It would be cleaner to have everything
-// in one place and not litter the global namespace with the features array. It's also less error 
+// in one place and not litter the class declaration with the features array. It's also less error 
 // prone because in the code above, we must manually make sure that the "3" in features[3] matches 
 // the number of initializers in the list.
 

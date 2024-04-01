@@ -128,7 +128,7 @@ bool runDescriptorReadTest()
   clap_plugin_descriptor_t desc = ClapGain::pluginDescriptor;
   ClapGain gain(&desc, nullptr);
 
-
+  // Read the feature list. We expect it to have "utility" and "mixing" set.
   std::vector<std::string> features = gain.getFeatures();
   //ok &= features == { "utility", "mixing" };  // Nope! This is a syntax error :-(
   ok &= features.size() == 2;                   // ...so we need to do it the verbose way
