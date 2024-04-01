@@ -8,7 +8,7 @@
 #include <vector>
 
 //#include <clap/all.h>
-#include "../../../clap-main/include/clap/all.h"
+#include "../../../clap/include/clap/all.h"
 
 #include "version-check.hh"
 

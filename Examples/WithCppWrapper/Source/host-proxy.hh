@@ -3,7 +3,7 @@
 #include <string>
 
 //#include <clap/all.h>
-#include "../../../clap-main/include/clap/all.h"
+#include "../../../clap/include/clap/all.h"
 
 #include "checking-level.hh"
 #include "misbehaviour-handler.hh"

@@ -11,7 +11,7 @@
  */
 
 //#include "clap/version.h"
-#include "../../../clap-main/include/clap/version.h"
+#include "../../../clap/include/clap/version.h"
 
 #if CLAP_VERSION_LT(1,2,0)
 static_assert(false, "Clap version must be at least 1.2.0")
