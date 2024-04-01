@@ -1,0 +1,1 @@
+Rename the folders  clap-main, clap-helpers-main  to  clap, clap-helpers
