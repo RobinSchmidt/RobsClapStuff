@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <math.h>
-#include "../../../clap-main/include/clap/clap.h"
+#include "../../../clap/include/clap/clap.h"
 
 
 template <class T>
