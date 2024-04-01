@@ -1,0 +1,340 @@
+I want to wrap the C-API for clap into a convenience class similar to the AudioEffect class wraps
+the C-API in VST 1. To figure out how this works, it makes sense to look at the code in Open303,
+although there it is complicated by the fact that the Open303 is actually a VST 2 plugin and derives
+from AudioEffectX which is a subclass of AudioEffect. But I want to look at the simplest possible 
+case, so let's use VST 1. There, it apparently works as follows: In vstpluginmain.cpp from the 
+VST-SDK, the following code creates the plugin instance (reformatted here and some comments were 
+modified or added):
+
+
+  VST_EXPORT AEffect* VSTPluginMain (audioMasterCallback audioMaster)
+  {
+    if (!audioMaster (0, audioMasterVersion, 0, 0, 0, 0))      // Get VST Version
+      return 0;                                                // Host not compatible with VST 2 (?)
+
+    AudioEffect* effect = createEffectInstance (audioMaster);  // Create the AudioEffect
+    if (!effect)
+      return 0;
+
+    return effect->getAeffect();
+    // Return pointer the AEffect member of the AudioEffect class.
+  }
+
+
+The function createEffectInstance() is responsible for creating the actual plugin object and is 
+defined in Open303VST.cpp as:
+
+
+  AudioEffect* createEffectInstance(audioMasterCallback audioMaster)
+  {
+    return new Open303VST(audioMaster);
+  }
+
+
+The class Open303VST is a subclass of AudioEffectX from the VST-SDK. The C-interface for a VST 1 
+plugin is defined by the struct AEffect in aeffect.h which I reproduce only partially(!) here, 
+leaving out any fields that are not relevant for this analysis:
+
+
+  struct AEffect
+  {
+	AEffectDispatcherProc dispatcher;  
+    // Host to Plug-in dispatcher @see AudioEffect::dispatcher
+	
+	AEffectSetParameterProc setParameter;
+	// Set new value of automatable parameter @see AudioEffect::setParameter
+
+	AEffectGetParameterProc getParameter;
+	// Returns current value of automatable parameter @see AudioEffect::getParameter
+
+	VstInt32 numParams;		           // Number of parameters
+	VstInt32 numInputs;		           // Number of audio inputs
+	VstInt32 numOutputs;	           // Number of audio outputs
+
+	void* object;			           // AudioEffect class pointer
+	void* user;				           // User-defined pointer
+
+	AEffectProcessProc processReplacing;
+	// Process audio samples in replacing mode @see AudioEffect::processReplacing 
+  };
+
+
+This struct is the core of the VST-API. When a plugin is instantiated, the host calls VSTPluginMain
+and expects it to return a pointer to such a struct. The struct contais some variable fields that
+contain some information about the plugin like the number of inputs and outputs and, importantly, a
+couple of function pointers that the host will call later to do the actual audio processing and 
+parameter setup. It is worth to mention that there is no such thing as an AEffectX struct for VST 2
+plugins. VST 2 still uses the same AEffect struct at its core - just that it has been expanded a bit
+by additional members like processDoubleReplacing. The file aeffectx.h just contains more datatypes 
+and enums that are used with in the dispatcher callback function that already exists in the original
+VST 1 spec. The dispatcher function is the general way for the host to issue requests to a plugin. 
+It has the following signature:
+
+  VstIntPtr myVstDispatcher(AEffect* effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, 
+                            void* ptr, float opt);
+
+This is one of the functions, a plugin must implement and assign the function pointer in the 
+returned AEffect to that implementation. It receives as parameters a pointer to the AEffect struct 
+and and opcode that encodes the type of request. Thes opcodes can optionally have an index and a 
+value. If the result of the request needs more data than can fit into the return value, it is 
+returned in the *ptr output variable. For example, when a string needs to be returned, it will be
+sprintf'ed or strcpy'ed into the ptr. I don't know what the float opt is used for. 
+
+
+OK - so far about the C-interface. Now about wrapping that into a C++ convenience class. As is 
+apparent from the line:
+
+  return effect->getAeffect();
+
+in the VSTPluginMain function, the class AudioEffect implements a member function getAeffect that is
+supposed to return a pointer to an AEffect struct. Let's look parts of the implementation of 
+AudioEffect:
+
+
+  class AudioEffect
+  {
+
+  public:
+
+	AudioEffect(audioMasterCallback audioMaster, VstInt32 numPrograms, VstInt32 numParams); 
+
+	virtual ~AudioEffect();
+
+	virtual VstIntPtr dispatcher(VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, 
+                                 float opt);	
+
+	virtual void processReplacing(float** inputs, float** outputs, VstInt32 sampleFrames) = 0; 
+    // Process 32 bit floats - must be overriden by your effect subclass.
+
+	virtual void setParameter(VstInt32 index, float value);   // Called when a parameter changed
+
+	virtual float getParameter(VstInt32 index);	              // Returns the value of a parameter
+
+    virtual AEffect* getAeffect() { return &cEffect; }	      // Returns the AEffect structure
+
+
+  protected:
+
+	audioMasterCallback audioMaster;	// Host callback
+	AEffect  cEffect;					// AEffect object
+
+	static VstIntPtr dispatchEffectClass(AEffect* e, VstInt32 opcode, VstInt32 index, 
+                                         VstIntPtr value, void* ptr, float opt);
+
+	static float getParameterClass(AEffect* e, VstInt32 index);
+
+	static void  setParameterClass(AEffect* e, VstInt32 index, float value);
+
+	static void processClassReplacing(AEffect* e, float** inputs, float** outputs, 
+                                      VstInt32 sampleFrames);
+
+  };
+
+
+As we can see, for each of the 4 callbacks defined in AEffect, namely:
+
+  AEffectDispatcherProc dispatcher;  
+  AEffectSetParameterProc setParameter;
+  AEffectGetParameterProc getParameter;
+  AEffectProcessProc processReplacing;
+
+we see two corresponding functions in the C++ wrapper. Firstly, there are the virtual member 
+functions:
+
+  virtual VstIntPtr dispatcher(...);	
+  virtual void processReplacing(...); 
+  virtual void setParameter(...);
+  virtual float getParameter(...);
+
+that are supposed to ve overriden by our subclass and secondly, there are the static member 
+functions:
+
+  static VstIntPtr dispatchEffectClass(...);
+  static float getParameterClass(...);
+  static void  setParameterClass(...);
+  static void processClassReplacing(...);
+
+To see how all of this glues together let's look at the implementaion of the processClassReplacing 
+function:.
+
+
+  void AudioEffect::processClassReplacing(AEffect* e, float** ins, float** outs, VstInt32 numFrames)
+  {
+	AudioEffect* ae = (AudioEffect*)(e->object);
+	ae->processReplacing(ins, outs, numFrames);
+  }
+
+
+This is the glue code. To see how it works, we need to look at the constructor of AudioEffect:
+
+
+  AudioEffect::AudioEffect(..., VstInt32 numParams)
+  {
+    // Glue for the callback functions:
+	cEffect.dispatcher       = dispatchEffectClass;
+	cEffect.setParameter     = setParameterClass;
+	cEffect.getParameter     = getParameterClass;
+	cEffect.processReplacing = processClassReplacing;
+
+	cEffect.numParams  = numParams;
+	cEffect.numInputs  = 1;		      // mono input
+	cEffect.numOutputs = 2;		      // stereo output
+
+    // The embedded AEffect struct member stores a pointer to "this" AudioEffect object.
+	cEffect.object = this;
+  }
+
+
+We note the following things here: (1) The AudioEffect C++ wrapper class has a member of type 
+AEffect which is the underlying C-struct that is being wrapped. (2) The callback function pointers 
+in the wrapped C-struct are assigned to static member functions of the C++ wrapper class. (3) The 
+C-struct stores a pointer to the wrapper object in some "object" pointer variable. In general, in a 
+C-context, this "object" is supposed to store all the data that the plugin needs for its processing, 
+i.e. all the parameters, coefficients, buffers, etc. In a C++ context, it is convenient to store a 
+pointer to a C++ class that contains all this data. This object pointer is declared as a general 
+void pointer in the C-struct. This void-pointer is retrieved in AudioEffect::processClassReplacing 
+and casted to a pointer to AudioEffect and then the virtual member function processReplacing is 
+called on that pointer.
+
+----------------------------------------------------------------------------------------------------
+
+OK - so far for the analysis of how the C++ wrapper works in VST. Now let's apply the same idea to
+CLAP. The general pattern seems to be: The wrapper has a member of the wrapped C-struct type. In the 
+constructor of the wrapper (base)class we assign the callback function pointers in the C-struct to 
+static member functions in the C++ wrapper. We also assign a void pointer in the C-struct to the 
+wrapper object itself, i.e. to the "this" pointer. Inside the static member function of the wrapper, 
+we retrieve the void pointer, cast it to the wrapper class and then on the casted pointer, we call 
+the virtual member function that is supposed to correspond to the C function pointer. When a plugin 
+is instantiated in the entry point (i.e. VSTPluginMain), we create an object of the desired subclass
+of the wrapper class and return a pointer to its wrapped C-struct member.
+
+For clap, there is the following wrapper class available:
+
+  https://github.com/free-audio/clap-helpers/blob/main/include/clap/helpers/plugin.hh
+  https://github.com/free-audio/clap-helpers/blob/main/include/clap/helpers/plugin.hxx
+
+It defines a class Plugin which is the wrapper and serves as the baseclass for one's own effect or 
+synth. Let's look at the important parts of this class:
+
+
+  class Plugin 
+  {
+
+  public:
+
+    const clap_plugin *clapPlugin() noexcept { return &_plugin; }
+    // Corresponds to AudioEffect::getAeffect()
+
+    virtual clap_process_status process(const clap_process *process);
+    // Corresponds to AudioEffect::processReplacing(), I think.
+
+    virtual bool paramsValue(clap_id paramId, double *value);
+    // Corresponds to AudioEffect::getParameter(), I think.
+
+    virtual void paramsFlush(const clap_input_events *in, const clap_output_events *out);
+    // Corresponds to AudioEffect::setParameter(), I think.
+
+
+  protected:
+
+    Plugin(const clap_plugin_descriptor *desc, const clap_host *host);
+    // Constructor. Corresponds to AudioEffect::AudioEffect
+
+    HostProxy<h, l> _host;
+    // What is this? A pointer to the host so we can call functions on the host from the plugin? But
+    // why "Proxy"?
+
+  private:
+
+    clap_plugin _plugin;
+    // Corresponds to cEffect
+
+    static clap_process_status clapProcess(const clap_plugin *plugin, const clap_process *process);
+    // Corresponds to AudioEffect::processClassReplacing, I think.
+
+    static bool clapParamsValue(const clap_plugin *plugin, clap_id param_id, double *value);
+
+    static void clapParamsFlush(const clap_plugin *plugin, const clap_input_events *in,
+                                const clap_output_events *out);
+  }
+
+
+We note that there is no dispatcher anymore because clap handles future extensions via its 
+extensions system so there is no need for a dispatcher. Furthermore, setParameter seems to be 
+replaced by paramsFlush, i.e. we are not supposed to handle one parameter at a time but rather a
+queue of set-parameter events? Let's look at the constructor of the wrapper class starting at line 
+149:
+
+
+  template <MisbehaviourHandler h, CheckingLevel l>
+  Plugin<h, l>::Plugin(const clap_plugin_descriptor *desc, const clap_host *host) : _host(host) 
+  {
+    _plugin.plugin_data = this;                      
+    // Corresponds to: cEffect.object = this;
+
+    _plugin.process = Plugin<h, l>::clapProcess;     
+    // Corresponds to: cEffect.processReplacing = processClassReplacing;
+
+    // Some more things need to be set up:
+    _plugin.desc = desc;
+    _plugin.init = Plugin<h, l>::clapInit;
+    _plugin.destroy = Plugin<h, l>::clapDestroy;
+    _plugin.get_extension = Plugin<h, l>::clapExtension;
+    _plugin.activate = Plugin<h, l>::clapActivate;
+    _plugin.deactivate = Plugin<h, l>::clapDeactivate;
+    _plugin.start_processing = Plugin<h, l>::clapStartProcessing;
+    _plugin.stop_processing = Plugin<h, l>::clapStopProcessing;
+    _plugin.reset = Plugin<h, l>::clapReset;
+    _plugin.on_main_thread = Plugin<h, l>::clapOnMainThread;
+  }
+
+
+In this case, I have reproduced the full code because it's important to assign all members of the 
+embedded _plugin C-struct
+
+
+....TBC....
+
+----------------------------------------------------------------------------------------------------
+About using the wrapper class:
+
+Here is the header file with the class declaration:
+https://github.com/free-audio/clap-helpers/blob/main/include/clap/helpers/plugin.hh
+
+
+
+Here is the implementation file
+https://github.com/free-audio/clap-helpers/blob/main/include/clap/helpers/plugin.hxx
+
+Line 149 ff seems to be most important:
+
+   template <MisbehaviourHandler h, CheckingLevel l>
+   Plugin<h, l>::Plugin(const clap_plugin_descriptor *desc, const clap_host *host) : _host(host) {
+      _plugin.plugin_data = this;
+      _plugin.desc = desc;
+      _plugin.init = Plugin<h, l>::clapInit;
+      _plugin.destroy = Plugin<h, l>::clapDestroy;
+      _plugin.get_extension = Plugin<h, l>::clapExtension;
+      _plugin.process = Plugin<h, l>::clapProcess;
+      _plugin.activate = Plugin<h, l>::clapActivate;
+      _plugin.deactivate = Plugin<h, l>::clapDeactivate;
+      _plugin.start_processing = Plugin<h, l>::clapStartProcessing;
+      _plugin.stop_processing = Plugin<h, l>::clapStopProcessing;
+      _plugin.reset = Plugin<h, l>::clapReset;
+      _plugin.on_main_thread = Plugin<h, l>::clapOnMainThread;
+   }
+
+This seems to be the way, how a C++ class is wrapped into the C-API. Or is it? Nah - this is just
+the constructor of the plugin class. Where is the glue to the C-API?
+
+
+
+Misc:
+
+Wrapping C++ code into C-code:
+https://caiorss.github.io/C-Cpp-Notes/CwrapperToQtLibrary.html
+
+
+
+
+

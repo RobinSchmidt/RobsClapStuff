@@ -1,0 +1,24 @@
+
+
+On Windows, the produced .dll file needs to be renamed to .clap and pasted into the folder:
+
+  C:/Program Files/Common Files/CLAP
+
+or into a subfolder thereof (I use RS-MET). Bitwig uses this path by default for scanning for clap 
+plugins, so this seems to be the official preferred location. I guess, we can safely assume that 
+Bitwig is the best choice for a reference host for testing because the company was one of the two 
+main drivers of the development of the clap format (the other one being the plugin manufacturer 
+U-He). Bitwig can be made to also scan other locations though. The plugin scanning paths are set up 
+via:
+
+  File (top-left) -> Settings -> Locations
+
+
+
+
+To debug it from Visual Studio, we need to attach to to the process
+BitwigPluginHost-X64-SSE
+
+Here is some info for how to automatically copy the build result into a specific folder:
+https://www.codeproject.com/Tips/5278903/Automatic-Copying-of-Release-Executables-to-a-Spec
+which can greatly improve the workflow for debugging
