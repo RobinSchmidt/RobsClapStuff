@@ -1,0 +1,44 @@
+#---------------------------------------------------------------------------------------------------
+# Ignored file formats:
+
+# Build products:
+*.app
+*.component
+*.dll
+*.exe
+*.lib
+*.so
+
+# Build intermediates (C++):
+*.o
+*.obj
+
+# IDE generated:
+*.exp
+*.idb
+*.ilk
+*.ipch
+*.lastbuildstate
+*.layout
+*.opendb
+*.opensdf
+*.pdb
+*.res
+*.sdf
+*.suo
+*.tlog
+*.user
+
+# Preview acceleration:
+*.db
+*.pk
+
+#---------------------------------------------------------------------------------------------------
+# Ignored folders:
+
+
+
+#---------------------------------------------------------------------------------------------------
+# Ignored files:
+
+
