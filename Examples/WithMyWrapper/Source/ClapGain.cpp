@@ -93,7 +93,7 @@ ToDo
 
 -Bitwig gives an error about failure to save the state - this is expected because we don't 
  implement state saving yet. Ah - it was because implementsState returned true but stateSave
- returned false.
+ returned false. ..might be fixed now (-> test it!)
 
 
 */

@@ -1,6 +1,5 @@
 #pragma once
 
-//#include "../../../clap/include/clap/clap.h"   // Only the stable API, no drafts
 #include "../clap/include/clap/clap.h"   // Only the stable API, no drafts
 
 class ClapPlugin

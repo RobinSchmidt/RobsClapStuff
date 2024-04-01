@@ -1,9 +1,8 @@
 
 // Defines the entry point for the .dll
 
-
-
 #include "ClapGain.h"
+
 
 // The factory. It is responsible to inform the host about the number of plugins present in this
 // .clap, to deliver (pointers to) the plugin-descriptors for all the plugins and to create the 
