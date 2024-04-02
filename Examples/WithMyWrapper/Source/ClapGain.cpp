@@ -57,6 +57,14 @@ const clap_plugin_descriptor_t ClapGain::pluginDescriptor =
 ClapGain::ClapGain(const clap_plugin_descriptor *desc, const clap_host *host) 
   : ClapPluginStereo32Bit(desc, host) 
 {
+  // ToDo: Maybe one of these checks could make sense:
+  // assert(*desc ==  pluginDescriptor);
+  // assert( desc == &pluginDescriptor);
+  // The former would just assert that the content of the descriptor matches while the second 
+  // actually asserts that a pointer to our own static member is passed, i.e. the second check 
+  // would be stronger. 
+
+
   // Add the parameters:
   clap_param_info_flags flags = CLAP_PARAM_IS_AUTOMATABLE;
   //flags |= CLAP_PARAM_REQUIRES_PROCESS;  // Note sure, if we need this -> figure out!

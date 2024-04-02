@@ -1,9 +1,6 @@
 
 #include <algorithm>                // for min
 
-//#include <format>                 // Not yet available.  Maybe switch to C++20
-
-
 #include "ClapPluginTests.h"
 
 
@@ -18,7 +15,6 @@ bool runAllClapTests(bool printResults)
 }
 
 
-
 // Some helpers to mock the clap stream objects that will be provided by the host during state
 // load/save. This stuff needs verification. I don't know if my mock-stream behaves the way it is 
 // intended by the CLAP API. I'm just guessing.
@@ -26,7 +22,7 @@ bool runAllClapTests(bool printResults)
 struct ClapStreamData
 {
   std::vector<uint8_t> data;
-  size_t pos = 0;
+  size_t pos = 0;              // Current read or write position
 };
 
 int64_t clapStreamWrite(
@@ -47,24 +43,26 @@ int64_t clapStreamWrite(
     csd->data[csd->pos+i] = buf[i];
   csd->pos += numToWrite;
 
-  // Return the number of bytes written:
+  // Return the number of bytes written into the stream:
   return numToWrite;
 }
 
 int64_t clapStreamRead(const struct clap_istream* stream, void* buffer, uint64_t size)
 {
+  // Determine the number of bytes to read:
   uint64_t readLimit = 25;
   uint64_t numToRead = std::min(readLimit, size);
-
   ClapStreamData* (csd) = (ClapStreamData*) (stream->ctx);
   uint64_t remaining = csd->data.size() - csd->pos;
   numToRead = std::min(numToRead, remaining);
 
+  // Read the bytes from the stream and write them into the buffer:
   uint8_t* buf = (uint8_t*) buffer;
   for(uint64_t i = 0; i < numToRead; i++)
     buf[i] = csd->data[csd->pos+i];
   csd->pos += numToRead;
 
+  // Return the number of bytes consumed (i.e. written into the buffer):
   return numToRead;
 }
 
@@ -136,16 +134,21 @@ bool runDescriptorReadTest()
   clap_plugin_descriptor_t desc = ClapGain::pluginDescriptor;
   ClapGain gain(&desc, nullptr);
 
-  // Read the feature list. We expect it to have "utility" and "mixing" set.
+  // Read the feature list. We expect it to have "audio-effect", "utility", "mixing" set:
   std::vector<std::string> features = gain.getFeatures();
   //ok &= features == { "audio-effect", "utility", "mixing" };  // Syntax error :-(
-  ok &= features.size() == 3;                   // ...so we need to do it the verbose way
+    // ...as much as I would like write the code like the line above, this apparently isn't 
+    // currently possible with C++ so we have to do it the verbose way:
+  ok &= features.size() == 3;
   if(ok)
   {
     ok &= features[0] == "audio-effect";
     ok &= features[1] == "utility";
     ok &= features[2] == "mixing";
   }
+  // Note that it is important to have at least one of the main categories (audio-effect, 
+  // instrument, note-effect, analyzer - I think) set. Otherwise the clap validator will complain.
+  // The other ones are optional and for further, finer specification.
 
 
   return ok;

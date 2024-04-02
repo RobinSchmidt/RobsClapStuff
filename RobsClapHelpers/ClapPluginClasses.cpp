@@ -1,8 +1,8 @@
 
-#include <cassert>   // assert
-#include <sstream>   // ostringstream
-#include <iomanip>   // setprecision
-#include <limits>    // numeric_limits
+#include <cassert>                 // assert
+#include <sstream>                 // ostringstream
+#include <iomanip>                 // setprecision
+#include <limits>                  // numeric_limits
 
 #include "ClapPluginClasses.h"
 
@@ -456,6 +456,13 @@ ToDo:
  index match, parameter lookup is greatly simplified because we do not need to search for the id.
  On the other hand, allowing a mismatch allows us to change the order of the parameters later 
  without breaking state recall.
+
+-Maybe rename ClapPluginStereo32Bit to ClapEffectStereo32Bit. Have also a ClapInstrumentStereo32Bit
+ class. This should provide hooks like noteOn/noteOff that subclasses can override. Maybe also
+ setMidiController - but that could actually be useful for effects as well. Maybe it should be a 
+ subclass of ClapEffectStereo32Bit ...but then we should perhaps not rename it to "Effect". Yeah - 
+ actually that baseclass can also be useful for analyzers and instruments, so renaming it into 
+ "Effect" may not be appropriate after all.
 
 
 */
