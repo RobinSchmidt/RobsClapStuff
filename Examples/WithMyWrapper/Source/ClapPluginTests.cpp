@@ -105,7 +105,7 @@ bool runStateRecallTest()
   gain.setParameter(1,  0.75); ok &= gain.paramsValue(1, &p); ok &= p == 0.75;
 
   // Create a clap input stream object with the streamData:
-  streamData.pos = 0;       // Reset poisition for reading
+  streamData.pos = 0;       // Reset position for reading
   clap_istream istream;
   istream.read = clapStreamRead;
   istream.ctx  = &streamData;
@@ -120,8 +120,11 @@ bool runStateRecallTest()
   // ToDo:
   // -Test this with plugins with more parameters such that the ids get longer strings
   // -Test it with parameters that have an empty string as name
-  // -Test it with more weird numbers that really need to the full 17 or 18 decimal digits
-  //  because the Gain.clap fails in the validator. maybe sue std::format
+  // -Test it with more weird numbers that really need to the full 17 or 18 decimal digits because 
+  //  the Gain.clap fails in the validator. maybe sue std::format
+  // -Make state recall tests with randomized parameter values like the clap validator does. The 
+  //  Gain.clap actually passes the state recall tests with the validator, so we should be fine. 
+  //  But it would nevertheless be nice to have a similar test here in this test suite.
 }
 
 bool runDescriptorReadTest()

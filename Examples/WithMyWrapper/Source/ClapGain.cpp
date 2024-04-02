@@ -110,20 +110,30 @@ void ClapGain::setParameter(clap_id id, double newValue)
 
 ToDo
 
--Bitwig gives an error about failure to save the state - this is expected because we don't 
- implement state saving yet. Ah - it was because implementsState returned true but stateSave
- returned false. ..might be fixed now (-> test it!)
 
--It currently fails in the validator. It needs to have the audio-effect feature, i think
+It currently fails 2 tests in the clap-validator (and passes 13, skips 6):
 
--The parameters are not stored with sufficient precision, see
- https://en.cppreference.com/w/cpp/string/basic_string/to_string
- ...basically, std::to_string is useless for that.
+- param-set-wrong-namespace: Sends events to the plugin with the 'CLAP_EVENT_PARAM_VALUE' event 
+  tyep but with a mismatching namespace ID. Asserts that the plugin's parameter values don't 
+  change. 
+  FAILED: Sending events with type ID 5 (CLAP_EVENT_PARAM_VALUE) and namespace ID 0xb33f to 
+  the plugin caused its parameter values to change. This should not happen. The plugin may not be 
+  checking the event's namespace ID.
 
--See also:
+- state-reproducibility-flush: Randomizes a plugin's parameters, saves its state, recreates the 
+  plugin instance, sets the same parameters as before, saves the state again, and then asserts that 
+  the two states are identical. The parameter values are set updated using the process function to 
+  create the first state, and using the flush function to create the second state.  
+  FAILED: 'clap_plugin_params::flush()' has been called with random parameter values, but the 
+  plugin's reported parameter values have not changed.
+
+
+
+
+
+
+-About double-string-double roundtrips (move to other file):
  https://stackoverflow.com/questions/29200635/convert-float-to-string-with-precision-number-of-decimal-digits-specified
-
-
  https://stackoverflow.com/questions/332111/how-do-i-convert-a-double-into-a-string-in-c
  https://en.cppreference.com/w/cpp/utility/to_chars
  https://github.com/nothings/stb/blob/master/stb_sprintf.h
@@ -136,5 +146,12 @@ ToDo
  https://possiblywrong.wordpress.com/2015/06/21/floating-point-round-trips/
 
  https://en.cppreference.com/w/cpp/types/numeric_limits/max_digits10 Has very short function
+
+
+
+
+
+
+
 
 */
