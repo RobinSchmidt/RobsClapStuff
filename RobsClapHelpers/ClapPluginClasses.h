@@ -93,6 +93,9 @@ public:
   // this to trigger additional actions like recomputing DSP coefficients.
 
 
+  void setAllParametersToDefault();
+
+
   //-----------------------------------------------------------------------------------------------
   // \name State handling
 

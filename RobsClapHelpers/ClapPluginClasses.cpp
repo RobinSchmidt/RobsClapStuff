@@ -80,7 +80,6 @@ void ClapPluginWithParams::paramsFlush(
     processEvent(hdr);
   }
 }
-// Needs test
 
 bool ClapPluginWithParams::stateSave(const clap_ostream *stream) noexcept
 { 
@@ -94,7 +93,7 @@ bool ClapPluginWithParams::stateSave(const clap_ostream *stream) noexcept
   // Notes:
   //
   // -I have no idea, if what I'm doing here is even remotely as intended. It's just guesswork. 
-  //  Needs thorough tests
+  //  Needs thorough tests. OK - the clap-validator passes all tests successfully.
   //
   // ToDo:
   //
@@ -145,7 +144,8 @@ void ClapPluginWithParams::addParameter(clap_id id, const std::string& name, dou
   info.default_value = defaultValue;
   info.flags         = flags;
   info.id            = id;
-  info.cookie        = nullptr;
+  info.cookie        = nullptr;                   // We currently don't use the cookie facility.
+  //info.cookie      = &params[params.size()-1];  // ...maybe use that later...
   strcpy_s(info.name,   CLAP_NAME_SIZE, name.c_str());
   strcpy_s(info.module, CLAP_PATH_SIZE, "");
   infos.push_back(info);
@@ -176,6 +176,12 @@ void ClapPluginWithParams::setParameter(clap_id id, double newValue)
   //
   // -Maybe get rid of that search - just assume that the id matches the index. I guess, if we have
   //  a lot of automation going on, that simplification can be of great benefit
+}
+
+void ClapPluginWithParams::setAllParametersToDefault()
+{
+  for(size_t i = 0; i < params.size(); ++i)
+    setParameter(params[i].id, infos[i].default_value);
 }
 
 std::string ClapPluginWithParams::getStateAsString() const
@@ -222,26 +228,17 @@ std::string ClapPluginWithParams::getStateAsString() const
   //  a lossless roundtrip
   // -Maybe store some optional information like the host with which it was saved
   // -Maybe store the parameter names optionally. Maybe have a "verbose" flag to control this
-  // -Maybe use a better double-to-string conversion function. to_string includes trailing zeros 
-  //  and I'm also not sure about how many digits it will generally store for parameters which need
-  //  very fine resolution
-  //
+  // -Maybe give the function a bool parameter "includeDefaultValues" or "skipDefaultValues" that 
+  //  decides whether or not the state string should also store parameter values when they are at 
+  //  their default value. 
 }
 
 bool ClapPluginWithParams::setStateFromString(const std::string& stateStr)
 {
+  setAllParametersToDefault();
+
   if(stateStr.empty())
     return false;
-
-
-  // ToDo (IMPORTANT):
-  //
-  // setAllParamsToDefault();
-  //
-  // This will be important when a plugin later adds more parameters for which no values are stored
-  // in the state. In such cases, we want to set them to their default values. Currently, they will 
-  // just be left at whatever values they are currently at - i.e. the state recall will just leave
-  // them alone instead of setting to default.
 
   // Extract the substring that contains the parameters, i.e. anything in between '[' and ']',
   // excluding the opening bracket and including the closing bracket 
@@ -274,6 +271,15 @@ bool ClapPluginWithParams::setStateFromString(const std::string& stateStr)
 
   return true;
 
+  // Notes:
+  //
+  // -The call to setAllParametersToDefault() at the beginning is important when the state string 
+  //  does not contain values for all of our parameters. This may happen if the state was created 
+  //  with an older version of the plugin that did not yet have certain parameters because they 
+  //  were added later. In such a case, the parameters which have no value in the state should be 
+  //  set to their default value. Without the call at the beginning, they would just be left at 
+  //  whatever values they are currently at - which is wrong behavior.
+  //
   // ToDo:
   //
   // -Check if the "Identifier" in the stateString matches our identifier. If not, it means that
@@ -448,5 +454,16 @@ ToDo:
  actually that baseclass can also be useful for analyzers and instruments, so renaming it into 
  "Effect" may not be appropriate after all.
 
+-Maybe add a self-check function to ClapPluginWithParams that verifies that:
+  -The ids match in the "params" and "infos" array
+  -The values are within the allowed range
+  -all ids are unique
+  -the ids range from 0 to numParameters-1
+  -the ids match the array index (this restriction may later be lifted such that we can freely 
+   reorder parameters from version to version and/or insert new parameters in the middle
+ But maybe such a function should only appear in the unit tests and not litter the production code.
+
+-Add a string conversion function to the parameter class. ...and maybe a callback that sets a 
+ parameter in the actual DSP algorithm
 
 */

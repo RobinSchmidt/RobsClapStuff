@@ -6,6 +6,7 @@ build file meaning that it includes all the .cpp files from RobsClapHelpers and 
 one compilation unit. If you want want to add the separate .cpp files to your project for browsing
 the code, you need to exclude them from the build. */
 
+// Standard library includes:
 #include <vector>
 #include <string>
 #include <sstream>       // ostringstream
@@ -14,9 +15,11 @@ the code, you need to exclude them from the build. */
 #include <cassert>       // assert
 #include <cstring>       // strcmp
 
+// The CLAP SDK:
+#include "../clap/include/clap/clap.h"   // Only the stable API, no draft extensions.
+//#include "../clap/include/clap/all.h"  // This would also include the drafts.
 
-#include "../clap/include/clap/clap.h"   // Only the stable API, no drafts
-
+// Rob's CLAP helpers, wrapped into their own namespace:
 namespace RobsClapHelpers
 {
 

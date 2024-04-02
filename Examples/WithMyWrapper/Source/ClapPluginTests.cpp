@@ -123,6 +123,9 @@ bool runStateRecallTest()
   // -Make state recall tests with randomized parameter values like the clap validator does. The 
   //  Gain.clap actually passes the state recall tests with the validator, so we should be fine. 
   //  But it would nevertheless be nice to have a similar test here in this test suite.
+  // -Make a state recall test with a state string that has only values for a subset of all 
+  //  parameters. Make sure that after the recall, the remaining parameters are at their default 
+  //  values.
 }
 
 bool runDescriptorReadTest()
