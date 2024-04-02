@@ -1,7 +1,7 @@
-
-#include <cassert>                 // assert
-
-#include "ClapPluginClasses.h"
+//
+//#include <cassert>                 // assert
+//
+//#include "ClapPluginClasses.h"
 
 //=================================================================================================
 // class ClapPluginWithParams

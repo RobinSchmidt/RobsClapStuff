@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../../../RobsClapHelpers/ClapPluginClasses.h"
+//#include "../../../RobsClapHelpers/ClapPluginClasses.h"
+#include "../../../RobsClapHelpers/RobsClapHelpers.h"
 
 
 /** A very simple gain plugin whose purpose is to demonstrate the usage of class 

@@ -116,6 +116,7 @@ void ClapGain::setParameter(clap_id id, double newValue)
 }
 
 
+/*
 void dummyFunc()
 {
 
@@ -125,7 +126,7 @@ void dummyFunc()
   //CLAP_CORE_EVENT_SPACE;
 
 }
-
+*/
 
 
 //=================================================================================================

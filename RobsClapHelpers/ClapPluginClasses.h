@@ -7,11 +7,11 @@
 // class.
 
 
-#include <vector>
+//#include <vector>
 //#include <string>
 
-#include "Utilities.h"
-#include "ClapPlugin.h"
+//#include "Utilities.h"
+//#include "ClapPlugin.h"
 
 
 /** A class to represent the current state (i.e. the value) of a parameter for a clap plugin. */

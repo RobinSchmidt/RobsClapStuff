@@ -1,7 +1,7 @@
-#include <cassert>
-#include <cstring>
-
-#include "ClapPlugin.h"
+//#include <cassert>
+//#include <cstring>
+//
+//#include "ClapPlugin.h"
 
 
 // The given line numbers above the functions give the lines where the corresponding function is
