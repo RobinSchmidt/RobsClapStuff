@@ -46,6 +46,10 @@ const clap_plugin_descriptor_t ClapGain::pluginDescriptor =
   //  with GUI (including ToolChain). Maybe call them RS-MET-PluginsWithGUI.clap and 
   //  RS-MET-PluginsNoGUI.clap. The plugins may overlap in functionality - but they should have 
   //  different ids nonetheless
+  //
+  // -For the version: define that in a central place so it can be used in several plugins. When 
+  //  releasing new versions of plugins, we want to set this in one place and not for every plugin
+  //  separately which is tedious and error prone.
 };
 
 

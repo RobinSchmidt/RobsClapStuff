@@ -1,1 +1,9 @@
-Rename the folders  clap-main, clap-helpers-main  to  clap, clap-helpers
+Make one .clap with several plugins
+
+-Gain/Utility: StereoGain (-40..+40), Pan (-1..+1), Pos (-1..+1), MidSide (100/0..100/100..0/100), 
+ Mono (switch), PanLaw, PosLaw ...check difference between pan and balance
+
+-WaveShaper: Drive, DC, Shape (Clip, SoftClip, Tanh)
+
+-TestTones: Tune, Type (Sine, Saw (Naive), Saw (Clean), Noise, Impulse), Gain. Should respond to 
+ midi, i.e. be of the instrument category
