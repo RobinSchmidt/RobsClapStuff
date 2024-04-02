@@ -1,8 +1,8 @@
 
 #include <cassert>                 // assert
-#include <sstream>                 // ostringstream
-#include <iomanip>                 // setprecision
-#include <limits>                  // numeric_limits
+//#include <sstream>                 // ostringstream
+//#include <iomanip>                 // setprecision
+//#include <limits>                  // numeric_limits
 
 #include "ClapPluginClasses.h"
 
@@ -12,6 +12,7 @@
 /** Function to convert a float or double to a string in a roundtrip safe way. That means, when 
 parsing the produced string with e.g. std::atof, we get the original value back exactly. Can be 
 used as replacement for std::to_string when an exact roundtrip is required. */
+/*
 template<typename T>
 inline std::string toStringExact(T x)
 {
@@ -30,6 +31,7 @@ inline std::string toStringExact(T x)
   //  range-max, denormals, etc.)
   // -Maybe move this into a file with helper functions.
 }
+*/
 
 //=================================================================================================
 // class ClapPluginWithParams

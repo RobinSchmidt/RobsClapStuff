@@ -21,6 +21,9 @@
     <ClCompile Include="..\..\..\..\RobsClapHelpers\ClapPluginClasses.cpp">
       <Filter>RobsClapHelpers</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\RobsClapHelpers\Utilities.cpp">
+      <Filter>RobsClapHelpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\ClapGain.h">
@@ -30,6 +33,9 @@
       <Filter>RobsClapHelpers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\RobsClapHelpers\ClapPluginClasses.h">
+      <Filter>RobsClapHelpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\RobsClapHelpers\Utilities.h">
       <Filter>RobsClapHelpers</Filter>
     </ClInclude>
   </ItemGroup>
