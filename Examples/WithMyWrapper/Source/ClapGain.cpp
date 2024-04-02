@@ -134,56 +134,6 @@ void dummyFunc()
 ToDo
 
 
-It currently fails 1 test in the clap-validator (and passes 14, skips 6):
-
-- param-set-wrong-namespace: Sends events to the plugin with the 'CLAP_EVENT_PARAM_VALUE' event 
-  tyep but with a mismatching namespace ID. Asserts that the plugin's parameter values don't 
-  change. 
-  FAILED: Sending events with type ID 5 (CLAP_EVENT_PARAM_VALUE) and namespace ID 0xb33f to 
-  the plugin caused its parameter values to change. This should not happen. The plugin may not be 
-  checking the event's namespace ID.
-
--> We need check the parameter event's namespace ID (whatever that is) - see:
-
-clap_event_header 
-{
-  uint32_t size;     // event size including this header, eg: sizeof (clap_event_note)
-  uint32_t time;     // sample offset within the buffer for this event
-  uint16_t space_id; // event space, see clap_host_event_registry
-  uint16_t type;     // event type
-  uint32_t flags;    // see clap_event_flags
-} clap_event_header_t;
-
-in events.h. Apparently, I need to check the space_id and either accept the event or not based on 
-the id.
-
-
-
-
-
-
-
-
--About double-string-double roundtrips (move to other file):
- https://stackoverflow.com/questions/29200635/convert-float-to-string-with-precision-number-of-decimal-digits-specified
- https://stackoverflow.com/questions/332111/how-do-i-convert-a-double-into-a-string-in-c
- https://en.cppreference.com/w/cpp/utility/to_chars
- https://github.com/nothings/stb/blob/master/stb_sprintf.h
- https://cplusplus.com/reference/cstdlib/strtod/
- https://stackoverflow.com/questions/2302969/convert-a-float-to-a-string
- https://stackoverflow.com/questions/62661223/sprintf-formatting-problem-for-doubles-with-high-precision
- https://github.com/google/double-conversion
- https://github.com/jk-jeon/Grisu-Exact
- https://github.com/ulfjack/ryu
- https://possiblywrong.wordpress.com/2015/06/21/floating-point-round-trips/
-
- https://en.cppreference.com/w/cpp/types/numeric_limits/max_digits10 Has very short function
-
-
-
-
-
-
 
 
 */

@@ -163,36 +163,4 @@ ToDo:
 - Test processing function. Test also, if sample accurate automation works (not sure how to test
   that, though)
 
-
-
-Move that somewhere else:
-
-For serialization, see:
-https://gist.github.com/shenfeng/4016355
-https://stackoverflow.com/questions/51230764/serialization-deserialization-of-a-vector-of-integers-in-c
-https://codereview.stackexchange.com/questions/280469/how-can-i-optimize-c-serialization
-https://uscilab.github.io/cereal/serialization_functions.html
-
-https://github.com/ShahriarRezghi/serio      Library for serialization
-https://uscilab.github.io/cereal/            another one
-https://flatbuffers.dev/                     dito
-https://www.boost.org/doc/libs/1_79_0/libs/serialization/doc/index.html
-https://cpp.libhunt.com/libs/serialization   List of C++ serialization libraries
-https://liamappelbe.medium.com/serialization-in-c-3d381e66ecec
-
-Hmm...this is difficult. Maybe we should use a std::string in a particular format like:
-
-Plugin : Gain
-Version : 1
-Format : 1
-Parameters : [Gain:0:12.54,Pan:1:-0.34]
-
-The format for the parameters is Name:id:value ...or maybe id:name:value, like
-0:Gain:12.54,1:Pan:-0.34  ...maybe use a semicolon ; as separator - maybe the comma should be
-reserved for later (maybe parameter arrays)
-
- 
-See: https://www.json.org/json-en.html
-https://en.wikipedia.org/wiki/JSON
-
 */
