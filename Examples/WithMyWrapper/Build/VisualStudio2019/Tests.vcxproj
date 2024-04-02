@@ -19,9 +19,25 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\RobsClapHelpers\ClapPlugin.cpp" />
-    <ClCompile Include="..\..\..\..\RobsClapHelpers\ClapPluginClasses.cpp" />
-    <ClCompile Include="..\..\..\..\RobsClapHelpers\Utilities.cpp" />
+    <ClCompile Include="..\..\..\..\RobsClapHelpers\ClapPlugin.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\RobsClapHelpers\ClapPluginClasses.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\RobsClapHelpers\RobsClapHelpers.cpp" />
+    <ClCompile Include="..\..\..\..\RobsClapHelpers\Utilities.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\Source\ClapGain.cpp" />
     <ClCompile Include="..\..\Source\ClapPluginTests.cpp" />
     <ClCompile Include="..\..\Source\Tests.cpp" />
@@ -29,6 +45,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\..\RobsClapHelpers\ClapPlugin.h" />
     <ClInclude Include="..\..\..\..\RobsClapHelpers\ClapPluginClasses.h" />
+    <ClInclude Include="..\..\..\..\RobsClapHelpers\RobsClapHelpers.h" />
     <ClInclude Include="..\..\..\..\RobsClapHelpers\Utilities.h" />
     <ClInclude Include="..\..\Source\ClapGain.h" />
     <ClInclude Include="..\..\Source\ClapPluginTests.h" />

@@ -76,3 +76,5 @@ protected:
   float ampL = 1.f, ampR = 1.f;          // Gain factors for left and right channel
 
 };
+
+// ToDo: rename to ExampleClapPlugins and add some more plugins

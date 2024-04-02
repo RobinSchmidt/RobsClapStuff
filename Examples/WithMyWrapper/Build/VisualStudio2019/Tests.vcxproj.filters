@@ -28,6 +28,9 @@
     <ClCompile Include="..\..\..\..\RobsClapHelpers\Utilities.cpp">
       <Filter>RobsClapHelpers</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\RobsClapHelpers\RobsClapHelpers.cpp">
+      <Filter>RobsClapHelpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\ClapPluginTests.h">
@@ -43,6 +46,9 @@
       <Filter>RobsClapHelpers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\RobsClapHelpers\Utilities.h">
+      <Filter>RobsClapHelpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\RobsClapHelpers\RobsClapHelpers.h">
       <Filter>RobsClapHelpers</Filter>
     </ClInclude>
   </ItemGroup>
