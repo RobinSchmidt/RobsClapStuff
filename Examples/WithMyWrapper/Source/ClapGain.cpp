@@ -123,4 +123,18 @@ ToDo
 -See also:
  https://stackoverflow.com/questions/29200635/convert-float-to-string-with-precision-number-of-decimal-digits-specified
 
+
+ https://stackoverflow.com/questions/332111/how-do-i-convert-a-double-into-a-string-in-c
+ https://en.cppreference.com/w/cpp/utility/to_chars
+ https://github.com/nothings/stb/blob/master/stb_sprintf.h
+ https://cplusplus.com/reference/cstdlib/strtod/
+ https://stackoverflow.com/questions/2302969/convert-a-float-to-a-string
+ https://stackoverflow.com/questions/62661223/sprintf-formatting-problem-for-doubles-with-high-precision
+ https://github.com/google/double-conversion
+ https://github.com/jk-jeon/Grisu-Exact
+ https://github.com/ulfjack/ryu
+ https://possiblywrong.wordpress.com/2015/06/21/floating-point-round-trips/
+
+ https://en.cppreference.com/w/cpp/types/numeric_limits/max_digits10 Has very short function
+
 */

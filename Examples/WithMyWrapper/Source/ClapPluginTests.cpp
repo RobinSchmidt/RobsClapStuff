@@ -1,6 +1,9 @@
 
 #include <algorithm>                // for min
 
+//#include <format>                 // Not yet available.  Maybe switch to C++20
+
+
 #include "ClapPluginTests.h"
 
 
@@ -117,6 +120,8 @@ bool runStateRecallTest()
   // ToDo:
   // -Test this with plugins with more parameters such that the ids get longer strings
   // -Test it with parameters that have an empty string as name
+  // -Test it with more weird numbers that really need to the full 17 or 18 decimal digits
+  //  because the Gain.clap fails in the validator. maybe sue std::format
 }
 
 bool runDescriptorReadTest()

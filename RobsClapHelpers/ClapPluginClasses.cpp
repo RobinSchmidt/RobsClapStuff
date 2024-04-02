@@ -1,6 +1,11 @@
 
 #include <cassert>
 
+#include <sstream>   // ostringstream
+#include <iomanip>   // setprecision
+#include <limits>    // numeric_limits
+
+
 #include "ClapPluginClasses.h"
 
 //=================================================================================================
@@ -166,6 +171,27 @@ void ClapPluginWithParams::setParameter(clap_id id, double newValue)
   //  a lot of automation going on, that simplification can be of great benefit
 }
 
+
+/*
+void doubleToString(double value, std::string& str)
+{
+  size_t length = str.size();
+
+
+}
+*/
+// Move to some library of helper functions
+
+template<typename T>
+std::string toStringExact(T x)
+{
+  std::ostringstream os;
+  os << std::setprecision(std::numeric_limits<T>::max_digits10) << x;
+  return os.str();
+}
+// Maybe move this into a file with Helper functions. Maybe rename it to toStringExact
+
+
 std::string ClapPluginWithParams::getStateAsString() const
 {
   std::string s;
@@ -191,7 +217,8 @@ std::string ClapPluginWithParams::getStateAsString() const
       assert(valueOK);
       s += std::to_string(info.id) + ':';
       s += std::string(info.name)  + ':';   // Maybe store the name optionally
-      s += std::to_string(value)   + ',';   // is too imprecise - makes validation fail
+      //s += std::to_string(value)   + ',';   // This is too imprecise. Makes validation fail.
+      s += toStringExact(value) + ',';    // This seems to be roundtrip safe.
     }
     s[s.size()-1] = ']';                    // Replace last comma with closing bracket
   }
@@ -200,11 +227,14 @@ std::string ClapPluginWithParams::getStateAsString() const
 
   // ToDo:
   //
+  // -Replace the calls to to_string with something that let's us set up the precision and ensures
+  //  a lossless roundtrip
   // -Maybe store some optional information like the host with which it was saved
   // -Maybe store the parameter names optionally. Maybe have a "verbose" flag to control this
   // -Maybe use a better double-to-string conversion function. to_string includes trailing zeros 
   //  and I'm also not sure about how many digits it will generally store for parameters which need
   //  very fine resolution
+  //
 }
 
 bool ClapPluginWithParams::setStateFromString(const std::string& stateStr)
