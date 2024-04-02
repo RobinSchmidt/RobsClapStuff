@@ -174,7 +174,7 @@ public:
   // baseclass needs also an implementation of this
 
 
-protected:
+
 
   //-----------------------------------------------------------------------------------------------
   // \name Callbacks to override by your subclass
@@ -183,6 +183,12 @@ protected:
   length numFrames. */
   virtual void processBlockStereo(const float* inL, const float* inR, float* outL, float* outR, 
     uint32_t numFrames) = 0;
+
+
+
+protected:
+
+
 
 
 

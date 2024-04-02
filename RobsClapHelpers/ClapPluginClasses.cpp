@@ -286,11 +286,6 @@ bool ClapPluginWithParams::setStateFromString(const std::string& stateStr)
   //  the host has called our state recall with the wrong kind of state (or that we changed our 
   //  plugin identifier between save and recall - which we probably should never do)
   // -Detect parse errors and return false in such cases
-  // -Check if numParamsFound matches the number of parameters of the plugin. If not maybe it 
-  //  means that it's an old state and parameters have been added since then . Maybe we should 
-  //  find at least as many params as paramsCount returns. For new parameters, we want to 
-  //  initialize them to default values. Maybe call an initParameters or resetParameters or
-  //  setParametersToDefaults before doing the actual state recall.
 }
 
 

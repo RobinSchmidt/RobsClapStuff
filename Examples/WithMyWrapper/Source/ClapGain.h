@@ -52,6 +52,10 @@ public:
 
 
 
+  void processBlockStereo(const float* inL, const float* inR, float* outL, float* outR, 
+    uint32_t numFrames) override;
+  // Maybe make this public to facilitate testing
+
 
   static const char* const features[4];
 
@@ -61,16 +65,6 @@ public:
 
 
 protected:
-
-
-
-
-
-  void processBlockStereo(const float* inL, const float* inR, float* outL, float* outR, 
-    uint32_t numFrames) override;
-  // Maybe make this public to facilitate testing
-
-
 
 
   // Internal algorithm coefficients:
