@@ -66,6 +66,9 @@ public:
 
   bool paramsTextToValue(clap_id paramId, const char *display, double *value) noexcept override;
 
+  void paramsFlush(const clap_input_events *in, const clap_output_events *out) noexcept override;
+
+
 
   //-----------------------------------------------------------------------------------------------
   // \name State handling overrides
@@ -162,6 +165,7 @@ public:
   received ve call processEvent with that event. In between the events we call processBlockStereo
   with the pointers an numFrames variables adjusted to the correct sub-buffer to be processed. */
   clap_process_status process(const clap_process *process) noexcept override;
+  // baseclass needs also an implementation of this
 
 
 protected:
@@ -178,5 +182,6 @@ protected:
   our implementation here, we currently handle only parameter change events (by calling 
   setParameter which you may override, if you want to respond to parameter changes). */
   virtual void processEvent(const clap_event_header_t* hdr);
+  // Should go into baseclass.
 
 };

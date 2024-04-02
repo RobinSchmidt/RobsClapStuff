@@ -59,6 +59,9 @@ ClapGain::ClapGain(const clap_plugin_descriptor *desc, const clap_host *host)
 {
   // Add the parameters:
   clap_param_info_flags flags = CLAP_PARAM_IS_AUTOMATABLE;
+  //flags |= CLAP_PARAM_REQUIRES_PROCESS;  // Note sure, if we need this -> figure out!
+  // ...naaah - it's probably not needed
+
   addParameter(kGain, "Gain", -40.0, +40.0, 0.0, flags);  // in dB
   addParameter(kPan,  "Pan",   -1.0,  +1.0, 0.0, flags);  // -1: left, 0: center, +1: right
 

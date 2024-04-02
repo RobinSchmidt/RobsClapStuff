@@ -104,6 +104,25 @@ bool ClapPluginWithParams::paramsTextToValue(
   //  returns a bool (true in case fo success, flase in case of failure).
 }
 
+void ClapPluginWithParams::paramsFlush(
+  const clap_input_events* in, const clap_output_events* out) noexcept
+{
+  const uint32_t numEvents = in->size(in);
+  for(uint32_t i = 0; i < numEvents; ++i)
+  {
+    const clap_event_header_t *hdr = in->get(in, i);
+    //processEvent(hdr);
+  }
+
+
+
+
+
+
+
+  // ..something to do...
+}
+
 bool ClapPluginWithParams::stateSave(const clap_ostream *stream) noexcept
 { 
   std::string stateString = getStateAsString();

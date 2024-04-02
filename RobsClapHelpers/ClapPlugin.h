@@ -2,6 +2,15 @@
 
 #include "../clap/include/clap/clap.h"   // Only the stable API, no drafts
 
+
+/**
+
+
+ToDo:
+-order the functions according to which extension they belong to
+
+*/
+
 class ClapPlugin
 {
 
