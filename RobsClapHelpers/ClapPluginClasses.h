@@ -7,12 +7,6 @@
 // class.
 
 
-//#include <vector>
-//#include <string>
-
-//#include "Utilities.h"
-//#include "ClapPlugin.h"
-
 
 /** A class to represent the current state (i.e. the value) of a parameter for a clap plugin. */
 
@@ -24,7 +18,6 @@ struct ClapPluginParameter
   clap_id id    = 0;
 };
 // ToDo: maybe have a function pointer parameter for converting to string
-
 
 
 
