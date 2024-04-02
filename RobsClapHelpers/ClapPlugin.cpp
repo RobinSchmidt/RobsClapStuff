@@ -120,7 +120,7 @@ void ClapPlugin::clapDestroy(const clap_plugin *plugin) noexcept
 
 
 // Line 440
-const void *ClapPlugin::clapExtension(const clap_plugin *plugin, const char *id) noexcept 
+const void* ClapPlugin::clapExtension(const clap_plugin *plugin, const char *id) noexcept 
 {
   auto &self = from(plugin);
 

@@ -109,17 +109,10 @@ void ClapPluginWithParams::paramsFlush(
   for(uint32_t i = 0; i < numEvents; ++i)
   {
     const clap_event_header_t *hdr = in->get(in, i);
-    //processEvent(hdr); // We need to move this function into this class
+    processEvent(hdr);
   }
-
-
-
-
-
-
-
-  // ..something to do...
 }
+// Needs test
 
 bool ClapPluginWithParams::stateSave(const clap_ostream *stream) noexcept
 { 

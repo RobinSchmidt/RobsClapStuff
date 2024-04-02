@@ -304,7 +304,11 @@ private:
   static uint32_t clapNotePortsCount(const clap_plugin *plugin, bool is_input) noexcept;
   static bool clapNotePortsInfo(const clap_plugin *plugin, uint32_t index, bool is_input,
     clap_note_port_info *info) noexcept;
-
+  // Maybe move these into the subclasses that actually implement them. Let the class ClapPlugin
+  // be only a bare bones plugin without any extensions. That will require to override the
+  // extension() method and also a re-implementation of the "from" method...hmm...I'm not sure, if
+  // that is a good idea. It would lead to more boilerplate, I think. So maybe, having all that
+  // glue stuff here (and providing default implementations) is better. 
 
 
   //-----------------------------------------------------------------------------------------------
