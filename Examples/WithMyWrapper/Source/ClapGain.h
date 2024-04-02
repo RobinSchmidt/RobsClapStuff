@@ -18,7 +18,7 @@ ClapPluginStereo32Bit, you need to do the following things:
 
 ...then you have to implement the factory and entry point...TBC...  */
 
-class ClapGain : public ClapPluginStereo32Bit
+class ClapGain : public RobsClapHelpers::ClapPluginStereo32Bit
 {
 
   using Base = ClapPluginStereo32Bit; // For conveniently calling baseclass methods

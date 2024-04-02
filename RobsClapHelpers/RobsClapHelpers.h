@@ -17,7 +17,11 @@ the code, you need to exclude them from the build. */
 
 #include "../clap/include/clap/clap.h"   // Only the stable API, no drafts
 
+namespace RobsClapHelpers
+{
 
 #include "Utilities.h"
 #include "ClapPlugin.h"
 #include "ClapPluginClasses.h"
+
+}
