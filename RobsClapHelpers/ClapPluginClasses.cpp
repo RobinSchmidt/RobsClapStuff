@@ -1,12 +1,35 @@
 
-#include <cassert>
-
+#include <cassert>   // assert
 #include <sstream>   // ostringstream
 #include <iomanip>   // setprecision
 #include <limits>    // numeric_limits
 
-
 #include "ClapPluginClasses.h"
+
+//=================================================================================================
+// Helper functions
+
+/** Function to convert a float or double to a string in a roundtrip safe way. That means, when 
+parsing the produced string with e.g. std::atof, we get the original value back exactly. Can be 
+used as replacement for std::to_string when an exact roundtrip is required. */
+template<typename T>
+inline std::string toStringExact(T x)
+{
+  std::ostringstream os;
+  os << std::setprecision(std::numeric_limits<T>::max_digits10) << x;
+  return os.str();
+
+  // Notes:
+  //
+  // -The implementation is taken from:
+  //  https://possiblywrong.wordpress.com/2015/06/21/floating-point-round-trips/
+  //
+  // ToDo:
+  //
+  // -The function needs some unit tests with some more extreme values (close to 0, near the 
+  //  range-max, denormals, etc.)
+  // -Maybe move this into a file with helper functions.
+}
 
 //=================================================================================================
 // class ClapPluginWithParams
@@ -172,24 +195,6 @@ void ClapPluginWithParams::setParameter(clap_id id, double newValue)
 }
 
 
-/*
-void doubleToString(double value, std::string& str)
-{
-  size_t length = str.size();
-
-
-}
-*/
-// Move to some library of helper functions
-
-template<typename T>
-std::string toStringExact(T x)
-{
-  std::ostringstream os;
-  os << std::setprecision(std::numeric_limits<T>::max_digits10) << x;
-  return os.str();
-}
-// Maybe move this into a file with Helper functions. Maybe rename it to toStringExact
 
 
 std::string ClapPluginWithParams::getStateAsString() const
@@ -263,7 +268,7 @@ bool ClapPluginWithParams::setStateFromString(const std::string& stateStr)
     // Replace closing ']' by ',' to avoid the need for a special case for last param.
 
   uint32_t numParamsFound = 0;
-  size_t i = 0;                            // Index into paramsStr
+  size_t i = 0;                                // Index into paramsStr
   while(i < paramsStr.size())
   {
     size_t j = paramsStr.find(':', i+1);
@@ -273,8 +278,8 @@ bool ClapPluginWithParams::setStateFromString(const std::string& stateStr)
     std::string idStr  = paramsStr.substr(i,   j-i  );
     std::string valStr = paramsStr.substr(k+1, m-k-1);
 
-    clap_id id  = atoi(idStr.c_str());
-    double  val = atof(valStr.c_str());    // Maybe use strtod as in the function above
+    clap_id id  = std::atoi(idStr.c_str());
+    double  val = std::atof(valStr.c_str());   // Maybe use strtod as in the function above?
     setParameter(id, val);
 
     numParamsFound++;
