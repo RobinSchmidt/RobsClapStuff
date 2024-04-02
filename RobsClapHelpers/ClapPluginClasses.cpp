@@ -329,18 +329,16 @@ std::vector<std::string> ClapPluginWithParams::getFeatures()
 
 void ClapPluginWithParams::processEvent(const clap_event_header_t* hdr)
 {
-  // Experimental:
   if(hdr->space_id != CLAP_CORE_EVENT_SPACE_ID)
     return;
-  // Document this! Compare with template and nakst example
 
   if(hdr->type == CLAP_EVENT_PARAM_VALUE)
   {
     const clap_event_param_value* paramValueEvent = (const clap_event_param_value*) hdr;
 
-    clap_id param_id = paramValueEvent->param_id;
-    double  value    = paramValueEvent->value;
-    //void*   cookie   = paramValueEvent->cookie; // We currently don't use the cookie facility.
+    const clap_id param_id = paramValueEvent->param_id;
+    const double  value    = paramValueEvent->value;
+    //const void* cookie   = paramValueEvent->cookie; // We currently don't use the cookie facility
     setParameter(param_id, value);
   }
 
@@ -350,6 +348,14 @@ void ClapPluginWithParams::processEvent(const clap_event_header_t* hdr)
   //  processEvent method, implement your handling for the other kinds of events and if the event 
   //  is not of that kind, just call this basesclass method to get the default behavior for the 
   //  event types that we handle here.
+  // -The first check of the space_id is required to make the validator pass all tests and it is
+  //  also what the official plugin-template.c and the nakst example do. I don't really know the
+  //  purpose of that, though. What is an "event space" anyhow? What other event spaces besides the
+  // "core event space" exist? -> Figure out and document!
+  //
+  // ToDo:
+  // -When we handle more types of events, we should use a switch statement. See the 
+  //  plugin-template.c. The nakst example also uses an if statement, though.
 }
 
 
