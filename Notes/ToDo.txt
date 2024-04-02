@@ -9,11 +9,12 @@ Make one .clap with several plugins
  midi, i.e. be of the instrument category
 
 
-Maybe make a file ClapHelpers.h/cpp with helper functions:
+Maybe make a file ClapHelpers.h/cpp or Utilities.h/cpp with helper functions:
 
 -double-to-string conversion
 -assertions that trigger debug breaks
 -memory leak checks
 -amp2db, db2amp, pitch2freq, freq2pitch, lin2lin, lin2exp, ...
+-string conversion functions for the parameters
 
 Wrap the shared code into a namespace. Maybe RobsClapHelpers
