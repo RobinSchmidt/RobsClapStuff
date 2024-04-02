@@ -194,9 +194,6 @@ void ClapPluginWithParams::setParameter(clap_id id, double newValue)
   //  a lot of automation going on, that simplification can be of great benefit
 }
 
-
-
-
 std::string ClapPluginWithParams::getStateAsString() const
 {
   std::string s;
@@ -222,14 +219,19 @@ std::string ClapPluginWithParams::getStateAsString() const
       assert(valueOK);
       s += std::to_string(info.id) + ':';
       s += std::string(info.name)  + ':';   // Maybe store the name optionally
-      //s += std::to_string(value)   + ',';   // This is too imprecise. Makes validation fail.
-      s += toStringExact(value) + ',';    // This seems to be roundtrip safe.
+      s += toStringExact(value)    + ',';   // This seems to be roundtrip safe.
     }
     s[s.size()-1] = ']';                    // Replace last comma with closing bracket
   }
    
   return s;
 
+  // Notes:
+  //
+  // -We use a custom double-to-string conversion function to ensure roundtrip safety, i.e. exact
+  //  restoring of the number when the string is parsed in state recall. Using std::to_string with
+  //  floats or doubles just isn't good enough for that.
+  //
   // ToDo:
   //
   // -Replace the calls to to_string with something that let's us set up the precision and ensures
