@@ -329,6 +329,11 @@ std::vector<std::string> ClapPluginWithParams::getFeatures()
 
 void ClapPluginWithParams::processEvent(const clap_event_header_t* hdr)
 {
+  // Experimental:
+  if(hdr->space_id != CLAP_CORE_EVENT_SPACE_ID)
+    return;
+  // Document this! Compare with template and nakst example
+
   if(hdr->type == CLAP_EVENT_PARAM_VALUE)
   {
     const clap_event_param_value* paramValueEvent = (const clap_event_param_value*) hdr;

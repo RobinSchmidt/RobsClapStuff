@@ -116,7 +116,15 @@ void ClapGain::setParameter(clap_id id, double newValue)
 }
 
 
+void dummyFunc()
+{
 
+
+  clap_host_event_registry reg;
+
+  //CLAP_CORE_EVENT_SPACE;
+
+}
 
 
 
@@ -126,7 +134,7 @@ void ClapGain::setParameter(clap_id id, double newValue)
 ToDo
 
 
-It currently fails 2 tests in the clap-validator (and passes 13, skips 6):
+It currently fails 1 test in the clap-validator (and passes 14, skips 6):
 
 - param-set-wrong-namespace: Sends events to the plugin with the 'CLAP_EVENT_PARAM_VALUE' event 
   tyep but with a mismatching namespace ID. Asserts that the plugin's parameter values don't 
@@ -135,16 +143,21 @@ It currently fails 2 tests in the clap-validator (and passes 13, skips 6):
   the plugin caused its parameter values to change. This should not happen. The plugin may not be 
   checking the event's namespace ID.
 
-- state-reproducibility-flush: Randomizes a plugin's parameters, saves its state, recreates the 
-  plugin instance, sets the same parameters as before, saves the state again, and then asserts that 
-  the two states are identical. The parameter values are set updated using the process function to 
-  create the first state, and using the flush function to create the second state.  
-  FAILED: 'clap_plugin_params::flush()' has been called with random parameter values, but the 
-  plugin's reported parameter values have not changed.
+-> We need check the parameter event's namespace ID (whatever that is) - see:
+
+clap_event_header 
+{
+  uint32_t size;     // event size including this header, eg: sizeof (clap_event_note)
+  uint32_t time;     // sample offset within the buffer for this event
+  uint16_t space_id; // event space, see clap_host_event_registry
+  uint16_t type;     // event type
+  uint32_t flags;    // see clap_event_flags
+} clap_event_header_t;
+
+in events.h. Apparently, I need to check the space_id and either accept the event or not based on 
+the id.
 
 
--> We need check the parameter evet's namespace ID (whatever that is)
--> We need to implement clap_plugin_params::flush()
 
 
 
