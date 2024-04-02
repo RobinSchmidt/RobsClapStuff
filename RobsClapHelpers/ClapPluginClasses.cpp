@@ -172,9 +172,9 @@ std::string ClapPluginWithParams::getStateAsString() const
 
   // Store some general info:
   s += "CLAP Plugin State\n\n";
-  s += "Identifier: " + std::string(getPluginIdentifier()) + "\n";
-  s += "Version: "    + std::string(getPluginVersion())    + "\n";
-  s += "Vendor: "     + std::string(getPluginVendor())     + "\n";
+  s += "Identifier: " + std::string(getPluginIdentifier()) + '\n';
+  s += "Version: "    + std::string(getPluginVersion())    + '\n';
+  s += "Vendor: "     + std::string(getPluginVendor())     + '\n';
 
   // Store the parameters:
   uint32_t numParams = paramsCount();
@@ -189,9 +189,9 @@ std::string ClapPluginWithParams::getStateAsString() const
       assert(infoOK);
       bool valueOK = paramsValue(info.id, &value);
       assert(valueOK);
-      s += std::to_string(info.id) + ":";
-      s += std::string(info.name)  + ":";   // Maybe store the name optionally
-      s += std::to_string(value)   + ",";
+      s += std::to_string(info.id) + ':';
+      s += std::string(info.name)  + ':';   // Maybe store the name optionally
+      s += std::to_string(value)   + ',';
     }
     s[s.size()-1] = ']';                    // Replace last comma with closing bracket
   }
