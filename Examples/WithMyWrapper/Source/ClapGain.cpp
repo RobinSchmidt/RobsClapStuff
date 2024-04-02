@@ -24,8 +24,6 @@ const clap_plugin_descriptor_t ClapGain::pluginDescriptor =
   .version      = "2024.04.01",           // I use the YYYY.MM.DD format for versioning
   .description  = "A simple gain to demonstrate writing a clap plugin.",
   .features     = ClapGain::features,
-  //.features = (const char *[]) { CLAP_PLUGIN_FEATURE_UTILITY, CLAP_PLUGIN_FEATURE_MIXING, NULL },
-
 
   // ToDo: 
   //
@@ -37,11 +35,14 @@ const clap_plugin_descriptor_t ClapGain::pluginDescriptor =
   //  like it was originally in the nakst example (on which this code is based). But with this 
   //  syntax, it doesn't compile in Visual Studio 2019. Figure out why. It would be cleaner to have 
   //  everything in one place and not litter the class declaration with the features array. It's 
-  //  also less error prone because in the code above, we must manually make sure that the "3" in 
-  //  features[3] matches the number of initializers in the list.
+  //  also less error prone because in the code above, we must manually make sure that the "4" in 
+  //  features[4] matches the number of initializers in the list. See:
+  //  https://stackoverflow.com/questions/33270731/error-c4576-in-vs2015-enterprise
+  //  https://github.com/swig/swig/issues/1851
+  //  ...just removing "(const char *[])" gives a "too many initializers" error.
   //
   // -Maybe reanme it to NoGuiGain or similar. Rationale: I may later want to make versions with 
-  //  GUIs of the same plugins. I'd like to have a collection fo simple GUI-less plugins (like the 
+  //  GUIs of the same plugins. I'd like to have a collection of simple GUI-less plugins (like the 
   //  mda or airwindows plugins) in a single .dll and then I want to have a collection of plugins 
   //  with GUI (including ToolChain). Maybe call them RS-MET-PluginsWithGUI.clap and 
   //  RS-MET-PluginsNoGUI.clap. The plugins may overlap in functionality - but they should have 
@@ -115,18 +116,6 @@ void ClapGain::setParameter(clap_id id, double newValue)
   //  library with such helper functions like amp2dB, dB2amp, pitch2freq, freq2pitch, etc.
 }
 
-
-/*
-void dummyFunc()
-{
-
-
-  clap_host_event_registry reg;
-
-  //CLAP_CORE_EVENT_SPACE;
-
-}
-*/
 
 
 //=================================================================================================
