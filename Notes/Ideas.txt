@@ -1,0 +1,11 @@
+Ideas for clap extensions that could be useful:
+
+A way to allow the host to provide a generic GUI for non-numerical parameters - for example strings,
+filenames, code, formulas, etc. That could be useful for things like a GUI-less FuncShaper, a 
+sampler that needs to know the file paths, etc. Maybe it could use a sort of key-value map where 
+both keys and values are strings. The plugin could tell the host a couple of keys like: "Formula",
+"FilePathOsc1", "TurtleString", etc. and the host could set the values like "tanh(a*x)", 
+"Waveforms/Saw.wav", "F=F+F--F+", etc.
+
+
+
