@@ -95,6 +95,12 @@ bool ClapPluginWithParams::stateSave(const clap_ostream *stream) noexcept
   //
   // -I have no idea, if what I'm doing here is even remotely as intended. It's just guesswork. 
   //  Needs thorough tests
+  //
+  // ToDo:
+  //
+  // -Maybe factor out the string-to-stream writing into a function 
+  //  writeStringToStream(const clap_ostream *stream, const string& str). Likewise
+  //  for readStreamToString(const clap_istream* stream) which should return a string
 }
 
 bool ClapPluginWithParams::stateLoad(const clap_istream* stream) noexcept 
