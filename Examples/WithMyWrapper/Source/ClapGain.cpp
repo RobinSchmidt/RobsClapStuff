@@ -128,6 +128,10 @@ It currently fails 2 tests in the clap-validator (and passes 13, skips 6):
   plugin's reported parameter values have not changed.
 
 
+-> We need check the parameter evet's namespace ID (whatever that is)
+-> We need to implement clap_plugin_params::flush()
+
+
 
 
 
