@@ -34,7 +34,7 @@ bool ClapPluginWithParams::paramsInfo(uint32_t index, clap_param_info* info) con
 
 bool ClapPluginWithParams::paramsValue(clap_id id, double* value) const noexcept
 {
-  int index = findParam(id);
+  int index = findParameter(id);
   //assert(index != -1);
   if(index != -1) 
   {
@@ -93,10 +93,10 @@ bool ClapPluginWithParams::stateSave(const clap_ostream *stream) noexcept
 
 bool ClapPluginWithParams::stateLoad(const clap_istream* stream) noexcept 
 { 
-  size_t consumed = 0;
-  size_t bufSize  = 25;  // 25 is only for test and debug - later use larger value - a few thousand maybe
-  std::string total;     // Total string
-  std::string buf;       // Partial string - rename to part..or chunk
+  size_t bufSize = 8192;   // May be tweaked - not yet sure what's best here
+  //size_t bufSize  = 19;  // May be used for test/debug to actually make it a limiting factor.
+  std::string total;       // Total string
+  std::string buf;         // Partial string - rename to part..or chunk
 
   bool endReached = false;
   while(!endReached)
@@ -104,15 +104,21 @@ bool ClapPluginWithParams::stateLoad(const clap_istream* stream) noexcept
     buf.resize(bufSize);
     size_t numBytes = stream->read(stream, &buf[0], bufSize);
     buf.resize(numBytes);
-    total    += buf;
-    consumed += numBytes;
+    total += buf;
     endReached = numBytes == 0;
   }
 
   return setStateFromString(total);
+
+  // ToDo:
+  //
+  // -Maybe the bufSize should depend on the number of parameters. Ideally, it should be large 
+  //  enough to hold the whole state string but not much larger. We can roughly predict this based
+  //  on the number of parameters. If it's shorter, we'll need more calls to stream->read which is 
+  //  not the end of the world, but still...
 }
 
-void ClapPluginWithParams::addParam(clap_id id, const std::string& name, double minValue, 
+void ClapPluginWithParams::addParameter(clap_id id, const std::string& name, double minValue, 
   double maxValue, double defaultValue, clap_param_info_flags flags)
 {
   assert(id == (clap_id) params.size());
@@ -138,7 +144,7 @@ void ClapPluginWithParams::addParam(clap_id id, const std::string& name, double 
   // -Also, no info with given id should exist already (write a findParamInfo function)
 }
 
-int ClapPluginWithParams::findParam(clap_id id) const
+int ClapPluginWithParams::findParameter(clap_id id) const
 {
   for(int i = 0; i < (int)params.size(); i++) 
   {
@@ -150,7 +156,7 @@ int ClapPluginWithParams::findParam(clap_id id) const
 
 void ClapPluginWithParams::setParameter(clap_id id, double newValue)
 {
-  int index = findParam(id);
+  int index = findParameter(id);
   if(index != -1)
     params[index].value = newValue;
 
@@ -203,8 +209,10 @@ std::string ClapPluginWithParams::getStateAsString() const
 
 bool ClapPluginWithParams::setStateFromString(const std::string& stateStr)
 {
-  // ToDo:
+  // ToDo (IMPORTANT):
+  //
   // setAllParamsToDefault();
+  //
   // This will be important when a plugin later adds more parameters for which no values are stored
   // in the state. In such cases, we want to set them to their default values. Currently, they will 
   // just be left at whatever values they are currently at - i.e. the state recall will just leave
@@ -215,7 +223,7 @@ bool ClapPluginWithParams::setStateFromString(const std::string& stateStr)
   // excluding the brackets themselves:
   size_t start, end;
   start = stateStr.find("Parameters: [", 0) + 13;
-  end   = stateStr.find("]", start);
+  end   = stateStr.find(']', start);
   std::string paramsStr = stateStr.substr(start, end-start+1);
   paramsStr[paramsStr.size()-1] = ',';  
     // Replace closing ']' by ',' to avoid the need for a special case for last param.
@@ -224,9 +232,9 @@ bool ClapPluginWithParams::setStateFromString(const std::string& stateStr)
   size_t i = 0;                            // Index into paramsStr
   while(i < paramsStr.size())
   {
-    size_t j = paramsStr.find(":", i+1);
-    size_t k = paramsStr.find(":", j+1);
-    size_t m = paramsStr.find(",", k+1);
+    size_t j = paramsStr.find(':', i+1);
+    size_t k = paramsStr.find(':', j+1);
+    size_t m = paramsStr.find(',', k+1);
 
     std::string idStr  = paramsStr.substr(i,   j-i  );
     std::string valStr = paramsStr.substr(k+1, m-k-1);
@@ -246,11 +254,7 @@ bool ClapPluginWithParams::setStateFromString(const std::string& stateStr)
   // -Check if the "Identifier" in the stateString matches our identifier. If not, it means that
   //  the host has called our state recall with the wrong kind of state (or that we changed our 
   //  plugin identifier between save and recall - which we probably should never do)
-  // -Try using a string_view instead of a string for the exctracted substring - or maybe do not
-  //  extract it at all (only for debugging) - operate on the original string all throughout
   // -Detect parse errors and return false in such cases
-  // -Try using ':' insetad of ":" etc. in the searches. Searching for a single character may be 
-  //  more efficient than searching for a substring of length 1.
   // -Check if numParamsFound matches the number of parameters of the plugin. If not maybe it 
   //  means that it's an old state and parameters have been added since then . Maybe we should 
   //  find at least as many params as paramsCount returns. For new parameters, we want to 
@@ -299,21 +303,6 @@ bool ClapPluginStereo32Bit::audioPortsInfo(
 
 clap_process_status ClapPluginStereo32Bit::process(const clap_process *p) noexcept
 {
-  // OLD:
-  // Make sure that we get one stereo input and one stereo output in single precision format. If
-  // not return an error message:
-  //const uint32_t numBussesIn  = process->audio_inputs_count;
-  //const uint32_t numBussesOut = process->audio_outputs_count;
-  //if(numBussesIn != 1 || numBussesOut != 1)
-  //  return CLAP_PROCESS_ERROR;
-  //const uint32_t numChannelsIn  = process->audio_inputs[0].channel_count;
-  //const uint32_t numChannelsOut = process->audio_outputs[0].channel_count;
-  //if(numChannelsIn != 2 || numChannelsOut != 2)
-  //  return CLAP_PROCESS_ERROR;
-  //if(isDoublePrecision(process))
-  //  return CLAP_PROCESS_ERROR;
-
-  // NEW:
   // Check number of input and output ports/busses:
   if(  p->audio_inputs_count  != 1 
     || p->audio_outputs_count != 1)

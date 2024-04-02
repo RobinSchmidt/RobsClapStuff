@@ -22,6 +22,7 @@ struct ClapPluginParameter
   double  value = 0.0;
   clap_id id    = 0;
 };
+// ToDo: maybe have a function pointer parameter for converting to string
 
 
 
@@ -80,14 +81,14 @@ public:
   //-----------------------------------------------------------------------------------------------
   // \name Add/Remove parameters
 
-  void addParam(clap_id id, const std::string& name, double minValue, double maxValue, 
+  void addParameter(clap_id id, const std::string& name, double minValue, double maxValue, 
     double defaultValue, clap_param_info_flags flags);
   // todo: maybe include a path/module string
   // rename to addParameter
 
   /** Tries to find a parameter with given id in our params array and returns its index when the id
   was found or -1 when the id is not found. */
-  int findParam(clap_id id) const;
+  int findParameter(clap_id id) const;
 
 
   virtual void setParameter(clap_id id, double newValue);
@@ -98,8 +99,13 @@ public:
   //-----------------------------------------------------------------------------------------------
   // \name State handling
 
+  /** This creates a string that represents the state which given by the values of all of our 
+  parameters. */
   virtual std::string getStateAsString() const;
+  // ToDo: document the format of the string
 
+  /** Restores the state, i.e. the values of all parameter, from the given string which was 
+  presumably created by calling getStateAsString at some time before. */
   virtual bool setStateFromString(const std::string& stateString);
 
 
@@ -107,7 +113,8 @@ public:
   // \name Misc
 
   std::vector<std::string> getFeatures();
-
+  // This might actually go into the baseclass. Functionality-wise, it belongs there. But then the 
+  // baseclass already gets coupled to std::string which might be undesirable ...we'll see....
 
 
 protected:

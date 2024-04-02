@@ -14,26 +14,39 @@ const char* const ClapGain::features[3] =
 const clap_plugin_descriptor_t ClapGain::pluginDescriptor = 
 {
   .clap_version = CLAP_VERSION_INIT,
-  .id = "RS-MET.StereoGain",   // rename to "Gain" ...maybe have a NoGui qualifier..NoGuiGain
-  .name = "StereoGain",
-  .vendor = "RS-MET",
-  .url = "https://rs-met.com",
-  .manual_url = "https://rs-met.com",
-  .support_url = "https://rs-met.com",
-  .version = "2024.04.01",                // I use the YYYY.MM.DD format for versioning
-  .description = "A simple gain to demonstrate writing a clap plugin.",
-  .features = ClapGain::features,
+  .id           = "RS-MET.StereoGain",   // rename to "Gain" ...maybe have a NoGui qualifier..NoGuiGain
+  .name         = "StereoGain",
+  .vendor       = "RS-MET",
+  .url          = "https://rs-met.com",
+  .manual_url   = "https://rs-met.com",
+  .support_url  = "https://rs-met.com",
+  .version      = "2024.04.01",           // I use the YYYY.MM.DD format for versioning
+  .description  = "A simple gain to demonstrate writing a clap plugin.",
+  .features     = ClapGain::features,
   //.features = (const char *[]) { CLAP_PLUGIN_FEATURE_UTILITY, CLAP_PLUGIN_FEATURE_MIXING, NULL },
+
+
+  // ToDo: 
+  //
+  // -Try to use a syntax like:
+  //
+  //  .features = (const char *[]) { CLAP_PLUGIN_FEATURE_UTILITY, 
+  //                                 CLAP_PLUGIN_FEATURE_MIXING, NULL },
+  //
+  //  like it was originally in the nakst example (on which this code is based). But with this 
+  //  syntax, it doesn't compile in Visual Studio 2019. Figure out why. It would be cleaner to have 
+  //  everything in one place and not litter the class declaration with the features array. It's 
+  //  also less error prone because in the code above, we must manually make sure that the "3" in 
+  //  features[3] matches the number of initializers in the list.
+  //
+  // -Maybe reanme it to NoGuiGain or similar. Rationale: I may later want to make versions with 
+  //  GUIs of the same plugins. I'd like to have a collection fo simple GUI-less plugins (like the 
+  //  mda or airwindows plugins) in a single .dll and then I want to have a collection of plugins 
+  //  with GUI (including ToolChain). Maybe call them RS-MET-PluginsWithGUI.clap and 
+  //  RS-MET-PluginsNoGUI.clap. The plugins may overlap in functionality - but they should have 
+  //  different ids nonetheless
 };
-// ToDo: try to use a syntax like:
-//
-// .features = (const char *[]) { CLAP_PLUGIN_FEATURE_UTILITY, CLAP_PLUGIN_FEATURE_MIXING, NULL },
-//
-// like it was originally in the nakst example (on which this code is based). But with this syntax,
-// it doesn't compile in Visual Studio 2019. Figure out why. It would be cleaner to have everything
-// in one place and not litter the class declaration with the features array. It's also less error 
-// prone because in the code above, we must manually make sure that the "3" in features[3] matches 
-// the number of initializers in the list.
+
 
 
 ClapGain::ClapGain(const clap_plugin_descriptor *desc, const clap_host *host) 
@@ -41,8 +54,8 @@ ClapGain::ClapGain(const clap_plugin_descriptor *desc, const clap_host *host)
 {
   // Add the parameters:
   clap_param_info_flags flags = CLAP_PARAM_IS_AUTOMATABLE;
-  addParam(kGain, "Gain", -40.0, +40.0, 0.0, flags);  // in dB
-  addParam(kPan,  "Pan",   -1.0,  +1.0, 0.0, flags);  // -1: hard left, 0: center, +1: hard right
+  addParameter(kGain, "Gain", -40.0, +40.0, 0.0, flags);  // in dB
+  addParameter(kPan,  "Pan",   -1.0,  +1.0, 0.0, flags);  // -1: left, 0: center, +1: right
 
   // Notes:
   //
@@ -75,8 +88,8 @@ void ClapGain::setParameter(clap_id id, double newValue)
   // Compute the internal algorithm coeffs from the user parameters:
   float amp   = (float) pow(10.0, (1.0/20)*params[kGain].value); // dB to linear scaler
   float pan01 = (float) (0.5 * (params[kPan].value + 1.0));      // -1..+1  ->  0..1
-  ampL = amp * (1.f - pan01);
-  ampR = amp * pan01;
+  ampL = 2.f * (amp * (1.f - pan01));
+  ampR = 2.f * (amp * pan01);
 
   // Verify formulas!
 

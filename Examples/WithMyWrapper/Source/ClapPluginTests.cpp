@@ -146,20 +146,14 @@ bool runDescriptorReadTest()
 
 /*
 
-Format for plugin states:
+ToDo:
 
-CLAP plugin state
-
-Format : RS01                             optional, if missing, assume RS01 - can also be JSON, XML
-Plugin-Id : RS-MET.StereoGain             mandatory
-Plugin-Vendor : RS-MET                    optional
-Plugin-Version : 2024.04.01               optional
-NumParams : 2                             optional
-Params : [0:Gain:-6.02;1:Pan:0.25]        manadatory if params exist
+- Test processing function. Test also, if sample accurate automation works (not sure how to test
+  that, though)
 
 
 
-
+Move that somewhere else:
 
 For serialization, see:
 https://gist.github.com/shenfeng/4016355
