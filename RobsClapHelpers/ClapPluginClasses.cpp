@@ -93,14 +93,12 @@ bool ClapPluginWithParams::paramsValueToText(
 bool ClapPluginWithParams::paramsTextToValue(
   clap_id paramId, const char *display, double *value) noexcept
 {
-  *value = strtod(display, nullptr); // VERIFY!!
+  *value = strtod(display, nullptr);
   return true;
 
   // ToDo:
   //
-  // -Test this. Bitwig does not seem to allow to enter string values for parameters. Find a host 
-  //  that does! ...ahh! With ctrl-click, we can enter a textual value!
-  // -Figure out what happens in case of a parse-error. It would be nice to have a  parser that 
+  // -Figure out what happens in case of a parse-error. It would be nice to have a parser that 
   //  returns a bool (true in case fo success, flase in case of failure).
 }
 
@@ -111,7 +109,7 @@ void ClapPluginWithParams::paramsFlush(
   for(uint32_t i = 0; i < numEvents; ++i)
   {
     const clap_event_header_t *hdr = in->get(in, i);
-    //processEvent(hdr);
+    //processEvent(hdr); // We need to move this function into this class
   }
 
 
@@ -400,6 +398,11 @@ clap_process_status ClapPluginStereo32Bit::process(const clap_process *p) noexce
         break;                        // We reached the end of the event list
       } 
     }
+    // Can this be factored out? Maybe into something like
+    // handleProcessEvents(p, frameIndex, numFrames, &eventIndex, numEvents, &nextEventFrame)
+    // where eventIndex, nextEventFrame should be references or pointers because the function needs
+    // to adjust them. Actually, numFrames and numEvents do nopt need to be passed because they
+    // are also stored in the process
 
     // Process the sub-block until the next event:
     processBlockStereo(

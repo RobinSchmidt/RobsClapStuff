@@ -15,3 +15,5 @@ Maybe make a file ClapHelpers.h/cpp with helper functions:
 -assertions that trigger debug breaks
 -memory leak checks
 -amp2db, db2amp, pitch2freq, freq2pitch, lin2lin, lin2exp, ...
+
+Wrap the shared code into a namespace. Maybe RobsClapHelpers
