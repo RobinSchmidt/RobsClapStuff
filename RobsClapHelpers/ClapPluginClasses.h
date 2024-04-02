@@ -120,7 +120,16 @@ public:
   // baseclass already gets coupled to std::string which might be undesirable ...we'll see....
 
 
+
+
+
 protected:
+
+  /** This is called from within our implementation of process to handle one event at a time. In 
+  our implementation here, we currently handle only parameter change events (by calling 
+  setParameter which you may override, if you want to respond to parameter changes). */
+  virtual void processEvent(const clap_event_header_t* hdr);
+  // Maybe make public
 
 
   std::vector<ClapPluginParameter> params;
@@ -178,10 +187,6 @@ protected:
   virtual void processBlockStereo(const float* inL, const float* inR, float* outL, float* outR, 
     uint32_t numFrames) = 0;
 
-  /** This is called from within our implementation of process to handle one event at a time. In 
-  our implementation here, we currently handle only parameter change events (by calling 
-  setParameter which you may override, if you want to respond to parameter changes). */
-  virtual void processEvent(const clap_event_header_t* hdr);
-  // Should go into baseclass.
+
 
 };

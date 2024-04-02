@@ -334,6 +334,27 @@ std::vector<std::string> ClapPluginWithParams::getFeatures()
   return features;
 }
 
+void ClapPluginWithParams::processEvent(const clap_event_header_t* hdr)
+{
+  if(hdr->type == CLAP_EVENT_PARAM_VALUE)
+  {
+    const clap_event_param_value* paramValueEvent = (const clap_event_param_value*) hdr;
+
+    clap_id param_id = paramValueEvent->param_id;
+    double  value    = paramValueEvent->value;
+    //void*   cookie   = paramValueEvent->cookie; // We currently don't use the cookie facility.
+    setParameter(param_id, value);
+  }
+
+  // Notes:
+  //
+  // -If you want to handle other kinds of events that we ignore here, you can override the 
+  //  processEvent method, implement your handling for the other kinds of events and if the event 
+  //  is not of that kind, just call this basesclass method to get the default behavior for the 
+  //  event types that we handle here.
+}
+
+
 
 //=================================================================================================
 // class ClapPluginStereo32Bit
@@ -428,25 +449,7 @@ clap_process_status ClapPluginStereo32Bit::process(const clap_process *p) noexce
   //  the host
 }
 
-void ClapPluginStereo32Bit::processEvent(const clap_event_header_t* hdr)
-{
-  if(hdr->type == CLAP_EVENT_PARAM_VALUE)
-  {
-    const clap_event_param_value* paramValueEvent = (const clap_event_param_value*) hdr;
 
-    clap_id param_id = paramValueEvent->param_id;
-    double  value    = paramValueEvent->value;
-    //void*   cookie   = paramValueEvent->cookie; // We currently don't use the cookie facility.
-    setParameter(param_id, value);
-  }
-
-  // Notes:
-  //
-  // -If you want to handle other kinds of events that we ignore here, you can override the 
-  //  processEvent method, implement your handling for the other kinds of events and if the event 
-  //  is not of that kind, just call this basesclass method to get the default behavior for the 
-  //  event types that we handle here.
-}
 
 //=================================================================================================
 
