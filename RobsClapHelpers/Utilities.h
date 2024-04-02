@@ -1,9 +1,13 @@
 #pragma once
 
+/** A collection of macros, functions and classes that are useful in programming audio 
+plugins. */
+
 #include <string>
 #include <sstream>                 // ostringstream
 #include <iomanip>                 // setprecision
 #include <limits>                  // numeric_limits
+
 
 /** Function to convert a float or double to a string in a roundtrip safe way. That means, when 
 parsing the produced string with e.g. std::atof, we get the original value back exactly. Can be 
