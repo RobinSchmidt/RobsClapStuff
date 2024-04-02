@@ -191,7 +191,7 @@ std::string ClapPluginWithParams::getStateAsString() const
       assert(valueOK);
       s += std::to_string(info.id) + ':';
       s += std::string(info.name)  + ':';   // Maybe store the name optionally
-      s += std::to_string(value)   + ',';
+      s += std::to_string(value)   + ',';   // is too imprecise - makes validation fail
     }
     s[s.size()-1] = ']';                    // Replace last comma with closing bracket
   }
@@ -209,6 +209,10 @@ std::string ClapPluginWithParams::getStateAsString() const
 
 bool ClapPluginWithParams::setStateFromString(const std::string& stateStr)
 {
+  if(stateStr.empty())
+    return false;
+
+
   // ToDo (IMPORTANT):
   //
   // setAllParamsToDefault();

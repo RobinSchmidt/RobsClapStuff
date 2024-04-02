@@ -113,5 +113,13 @@ ToDo
  implement state saving yet. Ah - it was because implementsState returned true but stateSave
  returned false. ..might be fixed now (-> test it!)
 
+-It currently fails in the validator. It needs to have the audio-effect feature, i think
+
+-The parameters are not stored with sufficient precision, see
+ https://en.cppreference.com/w/cpp/string/basic_string/to_string
+ ...basically, std::to_string is useless for that.
+
+-See also:
+ https://stackoverflow.com/questions/29200635/convert-float-to-string-with-precision-number-of-decimal-digits-specified
 
 */
