@@ -130,12 +130,13 @@ bool runDescriptorReadTest()
 
   // Read the feature list. We expect it to have "utility" and "mixing" set.
   std::vector<std::string> features = gain.getFeatures();
-  //ok &= features == { "utility", "mixing" };  // Nope! This is a syntax error :-(
-  ok &= features.size() == 2;                   // ...so we need to do it the verbose way
+  //ok &= features == { "audio-effect", "utility", "mixing" };  // Syntax error :-(
+  ok &= features.size() == 3;                   // ...so we need to do it the verbose way
   if(ok)
   {
-    ok &= features[0] == "utility";
-    ok &= features[1] == "mixing";
+    ok &= features[0] == "audio-effect";
+    ok &= features[1] == "utility";
+    ok &= features[2] == "mixing";
   }
 
 

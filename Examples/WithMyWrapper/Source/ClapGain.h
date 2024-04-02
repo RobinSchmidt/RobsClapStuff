@@ -52,7 +52,7 @@ public:
 
 
 
-  static const char* const features[3];
+  static const char* const features[4];
 
   static const clap_plugin_descriptor_t pluginDescriptor; 
 

@@ -2,8 +2,9 @@
 #include "ClapGain.h"
 
 
-const char* const ClapGain::features[3] = 
+const char* const ClapGain::features[4] = 
 { 
+  CLAP_PLUGIN_FEATURE_AUDIO_EFFECT,
   CLAP_PLUGIN_FEATURE_UTILITY, 
   CLAP_PLUGIN_FEATURE_MIXING, 
   NULL 
