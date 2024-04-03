@@ -401,7 +401,7 @@ clap_process_status ClapPluginStereo32Bit::process(const clap_process *p) noexce
     // Can this be factored out? Maybe into something like
     // handleProcessEvents(p, frameIndex, numFrames, &eventIndex, numEvents, &nextEventFrame)
     // where eventIndex, nextEventFrame should be references or pointers because the function needs
-    // to adjust them. Actually, numFrames and numEvents do nopt need to be passed because they
+    // to adjust them. Actually, numFrames and numEvents do not need to be passed because they
     // are also stored in the process
 
     // Process the sub-block until the next event:

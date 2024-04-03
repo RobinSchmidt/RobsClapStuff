@@ -50,6 +50,11 @@ public:
   void setParameter(clap_id id, double newValue) override;
 
 
+  bool paramsValueToText(clap_id paramId, double value, char *display, 
+    uint32_t size) noexcept override;
+
+
+
 
   void processBlockStereo(const float* inL, const float* inR, float* outL, float* outR, 
     uint32_t numFrames) override;

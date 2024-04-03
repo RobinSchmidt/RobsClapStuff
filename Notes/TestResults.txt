@@ -3,7 +3,7 @@ tests, etc.
 
 Performance:
 
--In the "DSP Performance Graph" in Bitwig (that opens when clicking on the little bluw CPU meter at 
+-In the "DSP Performance Graph" in Bitwig (that opens when clicking on the little blue CPU meter at 
  the top-left of the transport section), I get the following data:
 
    Block: 480 sample, Samplerate 48000 Hz, Deadline: 10 ms, Load (AVG): ~0.18 ms, 
@@ -23,7 +23,22 @@ Performance:
  Load (MAX): ~0.5  ms
 
 That seems to be rather high performance hit for a simple gain plugin! Am I doing something 
-wrong? Try to comment out the code in processBlockStereo...or maybe make a DoNothing/Dummy plugin 
+wrong? 
+
+-Commenting out the code in processBlockStereo doesn't seem to make a noticable difference - so the 
+ actual signal processing does not seem to be at fault. In bItwig, this has the resul to mute the 
+ output, so it apparently uses out-of place processing with zero-initialized output buffers.
+
+-Returning CLAP_PROCESS_CONTINUE immediately from ClapPluginStereo32Bit::process also doesn't seem 
+ to make a big difference
+
+-Returning CLAP_PROCESS_CONTINUE immediately from ClapPlugin::clapProcess also doesn't seem to make
+ a big difference.
+
+-Conclusion: This sort of CPU load seems to be incurred by the plugin-infrastructure within Bitwig 
+ itself and the plugin is not to blame. That's good news for me.
+
+Try to comment out the code in processBlockStereo...or maybe make a DoNothing/Dummy plugin 
 specifically for that purpose. Try overriding process and returning immediately. Maybe the event 
 handling and/or error checking takes a lot of CPU?
 

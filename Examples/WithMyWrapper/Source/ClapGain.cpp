@@ -110,13 +110,46 @@ void ClapGain::setParameter(clap_id id, double newValue)
   ampL = 2.f * (amp * (1.f - pan01));
   ampR = 2.f * (amp * pan01);
 
-
-
   // Notes:
   //
   // -One could use an optimized dB2amp formula that uses exp instead of pow. Maybe make a small
   //  library with such helper functions like amp2dB, dB2amp, pitch2freq, freq2pitch, etc.
 }
+
+bool ClapGain::paramsValueToText(clap_id paramId, double value, char *display, 
+  uint32_t size) noexcept
+{
+  if(paramId == kGain)
+  {
+    int pos = sprintf_s(display, size, "%.2f", value);
+    // For Bitwig, it is pointless to try to show more than 2 decimal digits after the point 
+    // because they will be zero anyway - even with fine-adjustment using shift. ..However, we can
+    // textually enter values with finer resolution
+
+    // This is ugly - maybe use strcpy:
+    display[pos+0] = ' ';
+    display[pos+1] = 'd';
+    display[pos+2] = 'B';
+    display[pos+3] = '\0';
+    // Also: factor this out into a function decibelsToString(double db, char* str, uint32_t size)
+    // It needs to be made safe and unit tested - it should always zero-terminate the string and 
+    // never write beyond size-1. Maybe make a function doubleToStringWithSuffix
+
+
+    return true;
+  }
+
+
+
+  return Base::paramsValueToText(paramId, value, display, size);  // Preliminary
+
+  // ToDo: 
+  //
+  // -Append a "dB" unit to the number in case of the "Gain" parameter - done - but this needs to
+  //  be refactored
+}
+
+
 
 //=================================================================================================
 
@@ -144,12 +177,13 @@ const clap_plugin_descriptor_t ClapWaveShaper::pluginDescriptor =
 ClapWaveShaper::ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_host *host) 
   : ClapPluginStereo32Bit(desc, host) 
 {
-  clap_param_info_flags flags = CLAP_PARAM_IS_AUTOMATABLE;
+  clap_param_info_flags automatable = CLAP_PARAM_IS_AUTOMATABLE;
+  clap_param_info_flags choice      = CLAP_PARAM_IS_STEPPED | CLAP_PARAM_IS_ENUM;
 
-  addParameter(kShape, "Shape",   0.0,   5.0, 0.0, 0    );   // flags = 0: Not automatable (VERIFY!)
-  addParameter(kDrive, "Drive", -20.0, +60.0, 0.0, flags);   // In dB
-  addParameter(kDC,    "DC",     -1.0,  +1.0, 0.0, flags);   // As raw offset
-  addParameter(kGain,  "Gain",  -60.0, +20.0, 0.0, flags);   // In dB
+  addParameter(kShape, "Shape",   0.0,   5.0, 0.0, choice     );   // Clip, Tanh, etc.
+  addParameter(kDrive, "Drive", -20.0, +60.0, 0.0, automatable);   // In dB
+  addParameter(kDC,    "DC",    -10.0, +10.0, 0.0, automatable);   // As raw offset
+  addParameter(kGain,  "Gain",  -60.0, +20.0, 0.0, automatable);   // In dB
 
   // ToDo:
   //
