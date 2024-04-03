@@ -10,6 +10,7 @@ bool runAllClapTests(bool printResults)
 
   ok &= runStateRecallTest();
   ok &= runDescriptorReadTest();
+  ok &= runNumberToStringTest();
 
   return ok;
 }
@@ -157,6 +158,35 @@ bool runDescriptorReadTest()
   return ok;
 }
 
+
+bool runNumberToStringTest()
+{
+  bool ok = true;
+
+
+  static const int bufSize = 20;
+  char buf[bufSize];                // Character buffer into which we write the strings.
+
+  // Helper function to initilaize the buffer with some recognizable content which shall be 
+  // overwritten by our number-to-string functions:
+  auto initBuffer = [&]()
+  {
+    for(int i = 0; i < bufSize; i++)
+      buf[i] = 'X';
+  };
+
+
+  initBuffer();
+
+  using namespace RobsClapHelpers;
+
+  toStringWithSuffix(2673.2512891, buf, bufSize, 2, nullptr);
+
+
+
+
+  return ok;
+}
 
 
 /*

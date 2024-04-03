@@ -34,3 +34,7 @@ inline T dbToAmp(T db)
 // ToDo: 
 // -Verify formulas - or:
 // -Use optimized formula using exp (copy the code from RAPT)
+
+
+int toStringWithSuffix(double value, char* dest, int size, int numDigitsAfterDot,
+  const char* suffix = nullptr);
