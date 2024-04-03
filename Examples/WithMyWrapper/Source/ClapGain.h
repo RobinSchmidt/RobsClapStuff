@@ -1,6 +1,5 @@
 #pragma once
 
-//#include "../../../RobsClapHelpers/ClapPluginClasses.h"
 #include "../../../RobsClapHelpers/RobsClapHelpers.h"
 
 
@@ -71,5 +70,81 @@ protected:
   float ampL = 1.f, ampR = 1.f;          // Gain factors for left and right channel
 
 };
+
+//=================================================================================================
+
+class ClapWaveShaper : public RobsClapHelpers::ClapPluginStereo32Bit
+{
+
+  using Base = ClapPluginStereo32Bit;
+
+public:
+
+  //-----------------------------------------------------------------------------------------------
+  // \name Boilerplate
+
+  enum Params
+  {
+    kShape,     // Selects the waveshaping function
+    kDrive,     // Input gain in dB
+    kDC,        // A DC offset as raw value (added after the drive)
+    kGain,      // Output gain for distorted signal in dB
+
+    //kInvert,    // Invert distorted signal (before mixing with original)
+    //kMix,
+
+    // alternative:
+    //kDry,  // +-100%
+    //kWet,  // dito
+
+    numParams
+  };
+
+  ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_host *host);
+
+  void setParameter(clap_id id, double newValue) override;
+
+  void processBlockStereo(const float* inL, const float* inR, float* outL, float* outR, 
+    uint32_t numFrames) override;
+
+  static const char* const features[3];
+
+  static const clap_plugin_descriptor_t pluginDescriptor; 
+
+
+  //-----------------------------------------------------------------------------------------------
+  // \name WaveShaper specific stuff
+
+  enum Shapes
+  {
+    kClip,
+    kTanh,
+    kAtan,
+
+    // ...more to come...
+
+    numShapes
+  };
+
+
+  inline float applyDistortion(float x)
+  {
+    return outAmp * tanh(inAmp * x + dc); // Preliminary
+    // ToDo: Use a switch, based on the selected shape. Or maybe use a function pointer 
+    // and assign it in setParameter - measure which way is faster and use that. Maybe get rid of 
+    // the duplication by using an inline function "applyDistortion(float x)"
+  }
+
+
+protected:
+
+  // Internal algorithm parameters/coeffs:
+  int   shape  = kClip;
+  float inAmp  = 1.f;
+  float outAmp = 1.f;
+  float dc     = 0.f;
+
+};
+
 
 // ToDo: rename to ExampleClapPlugins and add some more plugins

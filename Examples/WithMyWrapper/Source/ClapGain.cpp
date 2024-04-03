@@ -15,8 +15,8 @@ const char* const ClapGain::features[4] =
 const clap_plugin_descriptor_t ClapGain::pluginDescriptor = 
 {
   .clap_version = CLAP_VERSION_INIT,
-  .id           = "RS-MET.StereoGain",   // rename to "Gain" ...maybe have a NoGui qualifier..NoGuiGain
-  .name         = "StereoGain",
+  .id           = "RS-MET.StereoGainDemo",   // rename to "Gain" ...maybe have a NoGui qualifier..NoGuiGain
+  .name         = "StereoGainDemo",
   .vendor       = "RS-MET",
   .url          = "https://rs-met.com",
   .manual_url   = "https://rs-met.com",
@@ -50,7 +50,8 @@ const clap_plugin_descriptor_t ClapGain::pluginDescriptor =
   //
   // -For the version: define that in a central place so it can be used in several plugins. When 
   //  releasing new versions of plugins, we want to set this in one place and not for every plugin
-  //  separately which is tedious and error prone.
+  //  separately which is tedious and error prone. Do the same thing also for the vendor field and
+  //  the various url fields
 };
 
 
@@ -103,18 +104,90 @@ void ClapGain::setParameter(clap_id id, double newValue)
   Base::setParameter(id, newValue);
 
   // Compute the internal algorithm coeffs from the user parameters:
-  float amp   = (float) pow(10.0, (1.0/20)*params[kGain].value); // dB to linear scaler
-  float pan01 = (float) (0.5 * (params[kPan].value + 1.0));      // -1..+1  ->  0..1
+  //float amp   = (float) pow(10.0, (1.0/20)*params[kGain].value);       // dB to linear scaler
+  float amp   = (float) RobsClapHelpers::dbToAmp(params[kGain].value); // dB to linear scaler
+  float pan01 = (float) (0.5 * (params[kPan].value + 1.0));            // -1..+1  ->  0..1
   ampL = 2.f * (amp * (1.f - pan01));
   ampR = 2.f * (amp * pan01);
 
-  // Verify formulas!
+
 
   // Notes:
   //
   // -One could use an optimized dB2amp formula that uses exp instead of pow. Maybe make a small
   //  library with such helper functions like amp2dB, dB2amp, pitch2freq, freq2pitch, etc.
 }
+
+//=================================================================================================
+
+const char* const ClapWaveShaper::features[3] = 
+{ 
+  CLAP_PLUGIN_FEATURE_AUDIO_EFFECT,
+  CLAP_PLUGIN_FEATURE_DISTORTION, 
+  NULL 
+};
+
+const clap_plugin_descriptor_t ClapWaveShaper::pluginDescriptor = 
+{
+  .clap_version = CLAP_VERSION_INIT,
+  .id           = "RS-MET.WaveShaperDemo",
+  .name         = "WaveShaperDemo",
+  .vendor       = "RS-MET",
+  .url          = "https://rs-met.com",
+  .manual_url   = "https://rs-met.com",
+  .support_url  = "https://rs-met.com",
+  .version      = "2024.04.01",
+  .description  = "A simple waveshaper",
+  .features     = ClapWaveShaper::features,
+};
+
+ClapWaveShaper::ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_host *host) 
+  : ClapPluginStereo32Bit(desc, host) 
+{
+  clap_param_info_flags flags = CLAP_PARAM_IS_AUTOMATABLE;
+
+  addParameter(kShape, "Shape",   0.0,   5.0, 0.0, 0    );   // flags = 0: Not automatable (VERIFY!)
+  addParameter(kDrive, "Drive", -20.0, +60.0, 0.0, flags);   // In dB
+  addParameter(kDC,    "DC",     -1.0,  +1.0, 0.0, flags);   // As raw offset
+  addParameter(kGain,  "Gain",  -60.0, +20.0, 0.0, flags);   // In dB
+
+  // ToDo:
+  //
+  // -Check, if we can tell the host that the shape parameter is a choice parameter.
+  // -Override the value-to-text function
+}
+
+void ClapWaveShaper::setParameter(clap_id id, double newValue)
+{
+  Base::setParameter(id, newValue);
+
+  using namespace RobsClapHelpers;
+
+  switch(id)
+  {
+  case kShape: { shape  = (int)           newValue;  } break;
+  case kDrive: { inAmp  = (float) dbToAmp(newValue); } break;
+  case kDC:    { dc     = (float)         newValue;  } break;
+  case kGain:  { outAmp = (float) dbToAmp(newValue); } break;
+  default:
+  {
+    // error("Unknown parameter id in ClapWaveShaper::setParameter");
+  }
+  }
+}
+
+void ClapWaveShaper::processBlockStereo(
+  const float* inL, const float* inR, float* outL, float* outR, uint32_t numFrames)
+{
+  for(uint32_t n = 0; n < numFrames; ++n)
+  {
+    outL[n] = applyDistortion(inL[n]);
+    outR[n] = applyDistortion(inR[n]);
+  }
+}
+
+
+
 
 
 
@@ -123,6 +196,8 @@ void ClapGain::setParameter(clap_id id, double newValue)
 
 ToDo
 
+-Add waveshaer shapes: clip, tanh, atan, asinh, erf, x / (1 + |x|), x / sqrt(1 + x*x), 
+ x / (1 + x^2), sin, cbrt
 
 
 
