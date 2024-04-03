@@ -155,6 +155,7 @@ ClapWaveShaper::ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_ho
   //
   // -Check, if we can tell the host that the shape parameter is a choice parameter.
   // -Override the value-to-text function
+  // -DC needs greater range
 }
 
 void ClapWaveShaper::setParameter(clap_id id, double newValue)
