@@ -3,32 +3,18 @@
 
 int toStringWithSuffix(double value, char* dest, int size, int numDigits, const char* suffix)
 {
-  //int pos = 0;
-
+  // Create the number string via sprintf_s:
   char format[] = "%.2f";
-
-  //int pos = sprintf_s(dest, size, "%.2f", value);
-
+  char d = '0' + (char) clip(numDigits, 0, 9); // We don't support more than 9 digits after the dot
+  format[2] = d;
   int pos = sprintf_s(dest, size, format, value);
 
-
-  /*
-  if(dest == nullptr || size < 1)
-    return pos;
-
-  if(value < 0.0)
-  {
-    dest[0] = '-';
-    pos++;
-  }
-
-  double tmp = abs(value);
-  */
+  // Append the suffix via strcpy_s:
+  if(suffix != nullptr)
+    pos += strcpy_s(&dest[pos], size-pos, suffix);
 
 
-
-
-  return 0;  // preliminary
+  return pos;
 }
 
 

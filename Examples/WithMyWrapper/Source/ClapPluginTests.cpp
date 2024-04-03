@@ -180,9 +180,11 @@ bool runNumberToStringTest()
 
   using namespace RobsClapHelpers;
 
-  toStringWithSuffix(2673.2512891, buf, bufSize, 2, nullptr);
+  int pos;
 
+  pos = toStringWithSuffix(2673.2512891, buf, bufSize, 3, nullptr);
 
+  pos = toStringWithSuffix(2673.2512891, buf, bufSize, 3, " Hz");
 
 
   return ok;

@@ -38,3 +38,12 @@ inline T dbToAmp(T db)
 
 int toStringWithSuffix(double value, char* dest, int size, int numDigitsAfterDot,
   const char* suffix = nullptr);
+
+
+template<class T>
+inline T clip(T val, T min, T max)
+{
+  if(val < min) return min;
+  if(val > max) return max;
+  return val;
+}
