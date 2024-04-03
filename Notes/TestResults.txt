@@ -1,3 +1,41 @@
 In this file, I document some results from various kinds of tests like unit tests, performance 
 tests, etc.
 
+Performance:
+
+-In the "DSP Performance Graph" in Bitwig (that opens when clicking on the little bluw CPU meter at 
+ the top-left of the transport section), I get the following data:
+
+   Block: 480 sample, Samplerate 48000 Hz, Deadline: 10 ms, Load (AVG): ~0.18 ms, 
+   Load (MAX): ~0.5 ms, Period jitter: ~10%, Audio Input Latency: 0 samples, 
+   Audio Output latency: 480 samples, Timing: Software
+
+-The most relevant ones are:  
+ Load (AVG): ~0.18 ms
+ Load (MAX): ~0.5  ms
+
+-With 5 instances of StereoGainDemo, I get:
+ Load (AVG): ~0.5  ms
+ Load (MAX): ~1.5  ms
+
+-When deactivate them all, I get:
+ Load (AVG): ~0.18  ms
+ Load (MAX): ~0.5  ms
+
+That seems to be rather high performance hit for a simple gain plugin! Am I doing something 
+wrong? Try to comment out the code in processBlockStereo...or maybe make a DoNothing/Dummy plugin 
+specifically for that purpose. Try overriding process and returning immediately. Maybe the event 
+handling and/or error checking takes a lot of CPU?
+
+
+
+
+ToDo:
+
+-Try to tweak the compiler options in Visual Studio to get better performance:
+ -The floating point model is set to "precise". Maybe we should set it to "fast". It's under 
+  C/C++ -> Code Generation
+ -Maybe we should also disable exceptions?
+ -Maybe we should enable enhanced instruction sets
+ -What about string pooling?
+ -In the Optimization page, there's also the "Favor Size Or Speed" field which is set to "Neither".

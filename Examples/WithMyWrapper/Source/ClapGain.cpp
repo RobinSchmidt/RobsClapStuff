@@ -155,7 +155,7 @@ ClapWaveShaper::ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_ho
   //
   // -Check, if we can tell the host that the shape parameter is a choice parameter.
   // -Override the value-to-text function
-  // -DC needs greater range
+  // -DC needs greater range. And/or maybe it's more convenient to apply DC before the drive?
 }
 
 void ClapWaveShaper::setParameter(clap_id id, double newValue)
