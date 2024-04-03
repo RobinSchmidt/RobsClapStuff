@@ -217,6 +217,9 @@ void ClapWaveShaper::setParameter(clap_id id, double newValue)
   }
 }
 
+
+
+
 void ClapWaveShaper::processBlockStereo(
   const float* inL, const float* inR, float* outL, float* outR, uint32_t numFrames)
 {
