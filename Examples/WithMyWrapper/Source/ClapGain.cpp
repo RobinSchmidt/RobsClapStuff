@@ -2,6 +2,13 @@
 #include "ClapGain.h"
 
 
+const char urlRsMet[]    = "https://rs-met.com";
+const char vendorRsMet[] = "RS-MET";
+const char version[]     = "2024.04.03";           // I use the YYYY.MM.DD format for versioning
+
+//=================================================================================================
+// StereoGainDemo
+
 const char* const ClapGain::features[4] = 
 { 
   CLAP_PLUGIN_FEATURE_AUDIO_EFFECT,
@@ -17,11 +24,11 @@ const clap_plugin_descriptor_t ClapGain::pluginDescriptor =
   .clap_version = CLAP_VERSION_INIT,
   .id           = "RS-MET.StereoGainDemo",   // rename to "Gain" ...maybe have a NoGui qualifier..NoGuiGain
   .name         = "StereoGainDemo",
-  .vendor       = "RS-MET",
-  .url          = "https://rs-met.com",
-  .manual_url   = "https://rs-met.com",
-  .support_url  = "https://rs-met.com",
-  .version      = "2024.04.01",           // I use the YYYY.MM.DD format for versioning
+  .vendor       = vendorRsMet,
+  .url          = urlRsMet,
+  .manual_url   = urlRsMet,
+  .support_url  = urlRsMet,
+  .version      = version,
   .description  = "A simple gain to demonstrate writing a clap plugin.",
   .features     = ClapGain::features,
 
@@ -149,9 +156,8 @@ bool ClapGain::paramsValueToText(clap_id paramId, double value, char *display,
   //  be refactored
 }
 
-
-
 //=================================================================================================
+// WaveShaperDemo
 
 const char* const ClapWaveShaper::features[3] = 
 { 
