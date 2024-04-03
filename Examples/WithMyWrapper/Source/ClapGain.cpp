@@ -1,7 +1,7 @@
 
 #include "ClapGain.h"
 
-
+// Some common strings for the plugin descriptors:
 const char urlRsMet[]    = "https://rs-met.com";
 const char vendorRsMet[] = "RS-MET";
 const char version[]     = "2024.04.03";           // I use the YYYY.MM.DD format for versioning
@@ -16,13 +16,13 @@ const char* const ClapGain::features[4] =
   CLAP_PLUGIN_FEATURE_MIXING, 
   NULL 
 };
-// Note that one of the unit tests checks the feature list. So if you change it, you need to update
-// the unit test, too. It's in runDescriptorReadTest in ClapPluginTests.cpp.
+// Note that one of the unit tests checks this feature list. So if you change it, you need to 
+// update the unit test, too. It's in runDescriptorReadTest in ClapPluginTests.cpp.
 
 const clap_plugin_descriptor_t ClapGain::pluginDescriptor = 
 {
   .clap_version = CLAP_VERSION_INIT,
-  .id           = "RS-MET.StereoGainDemo",   // rename to "Gain" ...maybe have a NoGui qualifier..NoGuiGain
+  .id           = "RS-MET.StereoGainDemo",
   .name         = "StereoGainDemo",
   .vendor       = vendorRsMet,
   .url          = urlRsMet,
@@ -171,11 +171,11 @@ const clap_plugin_descriptor_t ClapWaveShaper::pluginDescriptor =
   .clap_version = CLAP_VERSION_INIT,
   .id           = "RS-MET.WaveShaperDemo",
   .name         = "WaveShaperDemo",
-  .vendor       = "RS-MET",
-  .url          = "https://rs-met.com",
-  .manual_url   = "https://rs-met.com",
-  .support_url  = "https://rs-met.com",
-  .version      = "2024.04.01",
+  .vendor       = vendorRsMet,
+  .url          = urlRsMet,
+  .manual_url   = urlRsMet,
+  .support_url  = urlRsMet,
+  .version      = version,
   .description  = "A simple waveshaper",
   .features     = ClapWaveShaper::features,
 };
@@ -237,7 +237,7 @@ void ClapWaveShaper::processBlockStereo(
 
 ToDo
 
--Add waveshaer shapes: clip, tanh, atan, asinh, erf, x / (1 + |x|), x / sqrt(1 + x*x), 
+-Add waveshaper shapes: clip, tanh, atan, asinh, erf, x / (1 + |x|), x / sqrt(1 + x*x), 
  x / (1 + x^2), sin, cbrt
 
 
