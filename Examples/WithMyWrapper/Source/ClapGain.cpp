@@ -64,15 +64,11 @@ void ClapGain::processBlockStereo(const float* inL, const float* inR, float* out
   }
 }
 
-void ClapGain::setParameter(clap_id id, double newValue)
+void ClapGain::parameterChanged(clap_id id, double newValue)
 {
   // This stores the new value in our inherited params array and needs to be called:
-  Base::setParameter(id, newValue);
-
-  // Compute the internal algorithm coeffs from the user parameters:
-  //float amp   = (float) RobsClapHelpers::dbToAmp(params[kGain].value); // dB to linear scaler
-  //float pan01 = (float) (0.5 * (params[kPan].value + 1.0));            // -1..+1  ->  0..1
-
+  //Base::setParameter(id, newValue);
+  // not needed anymore
 
   float amp   = (float) RobsClapHelpers::dbToAmp(getParameter(kGain)); // dB to linear scaler
   float pan01 = (float) (0.5 * (getParameter(kPan) + 1.0));            // -1..+1  ->  0..1
@@ -143,9 +139,9 @@ ClapWaveShaper::ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_ho
   //  drive.
 }
 
-void ClapWaveShaper::setParameter(clap_id id, double newValue)
+void ClapWaveShaper::parameterChanged(clap_id id, double newValue)
 {
-  Base::setParameter(id, newValue);
+  //Base::setParameter(id, newValue);
 
   using namespace RobsClapHelpers;
 

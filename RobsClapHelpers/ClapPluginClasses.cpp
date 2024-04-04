@@ -171,6 +171,8 @@ void ClapPluginWithParams::setParameter(clap_id id, double newValue)
   if(index != -1)
     params[index].value = newValue;
 
+  parameterChanged(id, newValue);
+
   // ToDo:
   //
   // -Maybe get rid of that search - just assume that the id matches the index. I guess, if we have

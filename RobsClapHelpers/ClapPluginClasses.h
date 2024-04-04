@@ -90,14 +90,20 @@ public:
 
   void setAllParametersToDefault();
 
-  virtual void setParameter(clap_id id, double newValue);
+  void setParameter(clap_id id, double newValue);
   // The baseclass implementation just stores away the value. You will probably want to override 
   // this to trigger additional actions like recomputing DSP coefficients.
+  // make non-virtual maybe even final. Subclasses shall override a new function 
+  // parameterChanged(id, val)
 
 
   /** Returns the current value of the parameter with the given id. If the id doesn't exist, it 
   will return zero. */
-  double getParameter(clap_id id) const; 
+  double getParameter(clap_id id) const;
+
+  virtual void parameterChanged(clap_id id, double newValue) = 0;
+
+
 
 
   //-----------------------------------------------------------------------------------------------

@@ -47,7 +47,7 @@ public:
   This baseclass method is responsible for interleaving the calls to setParameter and calls to 
   processBlockStereo. Here, we just have to override both methods and do the appropriate actions 
   there and we get sample-accurate parameter automation for free. */
-  void setParameter(clap_id id, double newValue) override;
+  void parameterChanged(clap_id id, double newValue) override;
 
 
   bool paramsValueToText(clap_id paramId, double value, char *display, 
@@ -107,7 +107,7 @@ public:
 
   ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_host *host);
 
-  void setParameter(clap_id id, double newValue) override;
+  void parameterChanged(clap_id id, double newValue) override;
 
   void processBlockStereo(const float* inL, const float* inR, float* outL, float* outR, 
     uint32_t numFrames) override;
