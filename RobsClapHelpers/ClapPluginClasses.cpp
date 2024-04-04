@@ -214,7 +214,7 @@ std::string ClapPluginWithParams::getStateAsString() const
       assert(valueOK);
       s += std::to_string(info.id) + ':';
       s += std::string(info.name)  + ':';   // Maybe store the name optionally
-      s += toStringExact(value)    + ',';   // This seems to be roundtrip safe.
+      s += toStringExact(value)    + ',';   // Roundtrip-safe double-to-string conversion
     }
     s[s.size()-1] = ']';                    // Replace last comma with closing bracket
   }
@@ -229,13 +229,13 @@ std::string ClapPluginWithParams::getStateAsString() const
   //
   // ToDo:
   //
-  // -Replace the calls to to_string with something that let's us set up the precision and ensures
-  //  a lossless roundtrip
   // -Maybe store some optional information like the host with which it was saved
-  // -Maybe store the parameter names optionally. Maybe have a "verbose" flag to control this
+  // -Maybe store the parameter names optionally. Maybe have a "verbose" flag to control this. But
+  //  this will also complicate the implementation of setStateFromString - so maybe don't.
   // -Maybe give the function a bool parameter "includeDefaultValues" or "skipDefaultValues" that 
   //  decides whether or not the state string should also store parameter values when they are at 
-  //  their default value. 
+  //  their default value. But this has the problem of potential false state recall when default
+  //  values are changed later - so maybe don't.
 }
 
 bool ClapPluginWithParams::setStateFromString(const std::string& stateStr)
@@ -246,8 +246,8 @@ bool ClapPluginWithParams::setStateFromString(const std::string& stateStr)
     return false;
 
   // Extract the substring that contains the parameters, i.e. anything in between '[' and ']',
-  // excluding the opening bracket and including the closing bracket 
-  // excluding the brackets themselves:
+  // excluding the opening bracket and including the closing bracket excluding the brackets 
+  // themselves:
   size_t start, end;
   start = stateStr.find("Parameters: [", 0) + 13;
   end   = stateStr.find(']', start);
@@ -331,7 +331,7 @@ void ClapPluginWithParams::processEvent(const clap_event_header_t* hdr)
   // -The first check of the space_id is required to make the validator pass all tests and it is
   //  also what the official plugin-template.c and the nakst example do. I don't really know the
   //  purpose of that, though. What is an "event space" anyhow? What other event spaces besides the
-  // "core event space" exist? -> Figure out and document!
+  //  "core event space" exist? -> Figure out and document!
   //
   // ToDo:
   // -When we handle more types of events, we should use a switch statement. See the 
@@ -362,6 +362,11 @@ bool ClapPluginStereo32Bit::audioPortsInfo(
   // -To support 64 bit processing, we would need to use CLAP_AUDIO_PORT_SUPPORTS_64BITS with 
   //  info->flags. Presumably, if we do not set this flag, our audio process function will never be
   //  called with 64 bit buffers - right?
+  //
+  // ToDo:
+  //
+  // -I think strcpy_s is a Microsoft compiler specific function? Figure out! If so, replace it to 
+  //  make the code portable.
 }
 
 clap_process_status ClapPluginStereo32Bit::process(const clap_process *p) noexcept

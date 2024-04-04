@@ -256,6 +256,7 @@ bool runNumberToStringTest()
 
   // ToDo:
   // -Check if automatic switch to exponential notation works as intended
+  // -Use an empty string as suffix
 }
 
 

@@ -123,11 +123,25 @@ void ClapGain::setParameter(clap_id id, double newValue)
   //  library with such helper functions like amp2dB, dB2amp, pitch2freq, freq2pitch, etc.
 }
 
-bool ClapGain::paramsValueToText(clap_id paramId, double value, char *display, 
-  uint32_t size) noexcept
+bool ClapGain::paramsValueToText(clap_id id, double val, char *buf, uint32_t len) noexcept
 {
+  using namespace RobsClapHelpers;
+  switch(id)
+  {
+  case kGain: { return toStringWithSuffix(val, buf, len, 2, " dB") > 0; }
+  case kPan:  { return toStringWithSuffix(val, buf, len, 3       ) > 0; } 
+  }
+  return Base::paramsValueToText(id, val, buf, len);
+  // ToDo: get rid of the "> 0" and the "using namespace ..." by having a member function 
+  // toDisplay that wraps toStringWithSuffix returns a 
+
+
+    /*
   if(paramId == kGain)
   {
+
+
+
     int pos = sprintf_s(display, size, "%.2f", value);
     // For Bitwig, it is pointless to try to show more than 2 decimal digits after the point 
     // because they will be zero anyway - even with fine-adjustment using shift. ..However, we can
@@ -144,11 +158,14 @@ bool ClapGain::paramsValueToText(clap_id paramId, double value, char *display,
 
 
     return true;
+
   }
 
 
 
   return Base::paramsValueToText(paramId, value, display, size);  // Preliminary
+    */
+
 
   // ToDo: 
   //
