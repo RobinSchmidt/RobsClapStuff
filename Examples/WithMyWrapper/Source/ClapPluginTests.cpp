@@ -164,7 +164,7 @@ bool runNumberToStringTest()
   bool ok = true;
 
 
-  static const int bufSize = 20;
+  static const int bufSize = 10;
   char buf[bufSize];                // Character buffer into which we write the strings.
 
   // Helper function to initilaize the buffer with some recognizable content which shall be 
@@ -184,7 +184,11 @@ bool runNumberToStringTest()
 
   pos = toStringWithSuffix(2673.2512891, buf, bufSize, 3, nullptr);
 
+  pos = toStringWithSuffix(1.e20, buf, bufSize, 3, nullptr);  // This need a laaarge buffer!!!
+
   pos = toStringWithSuffix(2673.2512891, buf, bufSize, 3, " Hz");
+
+
 
 
   return ok;
