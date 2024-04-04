@@ -229,15 +229,25 @@ bool runNumberToStringTest()
   pos  = toStringWithSuffix(2673.2512891, nullptr, 20, 3, nullptr);
   ok  &= pos == -1; 
 
+  // Big numbers - should use exponential notation:
+  initBuffer();
+  pos = toStringWithSuffix(1.e20, buf, bufSize, 3, nullptr);
+  ok  &= Str(buf) == Str("1e+20");
+  ok  &= pos == 5;
+  initBuffer();
+  pos = toStringWithSuffix(-1.e20, buf, bufSize, 3, nullptr);
+  ok  &= Str(buf) == Str("-1e+20");
+  ok  &= pos == 6;
 
-
-
-
-  //ok  &= std::string(buf) == std::string("2673.251");
-
-  pos = toStringWithSuffix(1.e20, buf, bufSize, 3, nullptr);  // This need a laaarge buffer!!!
-
+  // Now with a suffix:
+  initBuffer();
   pos = toStringWithSuffix(2673.2512891, buf, bufSize, 3, " Hz");
+  ok  &= Str(buf) == Str("2673.251 Hz");
+  ok  &= pos == 11;
+
+
+
+
 
 
 
