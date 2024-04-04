@@ -177,6 +177,14 @@ void ClapPluginWithParams::setParameter(clap_id id, double newValue)
   //  a lot of automation going on, that simplification can be of great benefit
 }
 
+double ClapPluginWithParams::getParameter(clap_id id) const
+{
+  int index = findParameter(id);
+  if(index != -1)
+    return params[index].value;
+  return 0.0;
+}
+
 void ClapPluginWithParams::setAllParametersToDefault()
 {
   for(size_t i = 0; i < params.size(); ++i)

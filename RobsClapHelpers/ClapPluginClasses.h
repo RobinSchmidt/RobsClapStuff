@@ -24,7 +24,7 @@ struct ClapPluginParameter
 //=================================================================================================
 
 /** A subclass of ClapPlugin that implements handling of parameters and state. The state handling 
-will simply store and recall all the values the parameters. Subclasses shoould use addParameter
+will simply store and recall all the values the parameters. Subclasses should use addParameter
 in their constructor.
 
 ToDo:
@@ -88,12 +88,16 @@ public:
   int findParameter(clap_id id) const;
 
 
+  void setAllParametersToDefault();
+
   virtual void setParameter(clap_id id, double newValue);
   // The baseclass implementation just stores away the value. You will probably want to override 
   // this to trigger additional actions like recomputing DSP coefficients.
 
 
-  void setAllParametersToDefault();
+  /** Returns the current value of the parameter with the given id. If the id doesn't exist, it 
+  will return zero. */
+  double getParameter(clap_id id) const; 
 
 
   //-----------------------------------------------------------------------------------------------
@@ -132,6 +136,9 @@ protected:
   setParameter which you may override, if you want to respond to parameter changes). */
   virtual void processEvent(const clap_event_header_t* hdr);
   // Maybe make public
+
+
+private:
 
 
   std::vector<ClapPluginParameter> params;

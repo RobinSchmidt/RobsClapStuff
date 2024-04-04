@@ -70,8 +70,12 @@ void ClapGain::setParameter(clap_id id, double newValue)
   Base::setParameter(id, newValue);
 
   // Compute the internal algorithm coeffs from the user parameters:
-  float amp   = (float) RobsClapHelpers::dbToAmp(params[kGain].value); // dB to linear scaler
-  float pan01 = (float) (0.5 * (params[kPan].value + 1.0));            // -1..+1  ->  0..1
+  //float amp   = (float) RobsClapHelpers::dbToAmp(params[kGain].value); // dB to linear scaler
+  //float pan01 = (float) (0.5 * (params[kPan].value + 1.0));            // -1..+1  ->  0..1
+
+
+  float amp   = (float) RobsClapHelpers::dbToAmp(getParameter(kGain)); // dB to linear scaler
+  float pan01 = (float) (0.5 * (getParameter(kPan) + 1.0));            // -1..+1  ->  0..1
   ampL = 2.f * (amp * (1.f - pan01));
   ampR = 2.f * (amp * pan01);
 
