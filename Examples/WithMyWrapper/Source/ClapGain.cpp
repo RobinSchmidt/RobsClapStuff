@@ -125,11 +125,10 @@ void ClapGain::setParameter(clap_id id, double newValue)
 
 bool ClapGain::paramsValueToText(clap_id id, double val, char *buf, uint32_t len) noexcept
 {
-  using namespace RobsClapHelpers;
   switch(id)
   {
-  case kGain: { return toStringWithSuffix(val, buf, len, 2, " dB") > 0; }
-  case kPan:  { return toStringWithSuffix(val, buf, len, 3       ) > 0; } 
+  case kGain: { return toDisplay(val, buf, len, 2, " dB"); }
+  case kPan:  { return toDisplay(val, buf, len, 3       ); } 
   }
   return Base::paramsValueToText(id, val, buf, len);
   // ToDo: get rid of the "> 0" and the "using namespace ..." by having a member function 

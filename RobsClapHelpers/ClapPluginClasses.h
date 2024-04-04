@@ -116,6 +116,11 @@ public:
   // This might actually go into the baseclass. Functionality-wise, it belongs there. But then the 
   // baseclass already gets coupled to std::string which might be undesirable ...we'll see....
 
+  bool toDisplay(double value, char* destination, int size, int precision,
+    const char* suffix = nullptr)
+  {
+    return toStringWithSuffix(value, destination, size, precision, suffix) > 0;
+  }
 
 
 
