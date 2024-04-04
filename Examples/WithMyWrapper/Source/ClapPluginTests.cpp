@@ -180,7 +180,7 @@ bool runNumberToStringTest()
 
   using namespace RobsClapHelpers;
 
-  int pos;
+  int pos;  // Maybe rename to len or length
 
   // Buffer more than long enough:
   initBuffer();
