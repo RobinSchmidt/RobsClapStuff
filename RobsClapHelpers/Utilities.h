@@ -24,6 +24,7 @@ inline T dbToAmp(T db)
 // ToDo: 
 // -Verify formulas - or:
 // -Use optimized formula using exp (copy the code from RAPT)
+// -Add ampToDb, pitchToFreq, freqToPitch, etc.
 
 
 /** Function to convert a float or double to a string in a roundtrip safe way. That means, when 

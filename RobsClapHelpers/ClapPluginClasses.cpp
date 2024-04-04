@@ -47,13 +47,7 @@ bool ClapPluginWithParams::paramsValue(clap_id id, double* value) const noexcept
 bool ClapPluginWithParams::paramsValueToText(
   clap_id paramId, double value, char* display, uint32_t size) noexcept
 {
-  // OLD:
-  //sprintf_s(display, size, "%.3f", value);
-  //return true;
-
-  // NEW:
-  int lengthWritten = toStringWithSuffix(value, display, size, 3, nullptr); // nullptr: no suffix
-  return lengthWritten > 0; 
+  return toDisplay(value, display, size, 3);
 
   // ToDo: 
   //

@@ -15,9 +15,11 @@ const char* const ClapGain::features[4] =
   CLAP_PLUGIN_FEATURE_UTILITY, 
   CLAP_PLUGIN_FEATURE_MIXING, 
   NULL 
+
+  // Note that one of the unit tests checks this feature list. So if you change it, you need to 
+  // update the unit test, too - or else it will fail. It's in runDescriptorReadTest in 
+  // ClapPluginTests.cpp.
 };
-// Note that one of the unit tests checks this feature list. So if you change it, you need to 
-// update the unit test, too. It's in runDescriptorReadTest in ClapPluginTests.cpp.
 
 const clap_plugin_descriptor_t ClapGain::pluginDescriptor = 
 {
@@ -29,58 +31,19 @@ const clap_plugin_descriptor_t ClapGain::pluginDescriptor =
   .manual_url   = urlRsMet,
   .support_url  = urlRsMet,
   .version      = version,
-  .description  = "A simple gain to demonstrate writing a clap plugin.",
+  .description  = "Stereo gain and panning",
   .features     = ClapGain::features,
-
-  // ToDo: 
-  //
-  // -Try to use a syntax like:
-  //
-  //  .features = (const char *[]) { CLAP_PLUGIN_FEATURE_UTILITY, 
-  //                                 CLAP_PLUGIN_FEATURE_MIXING, NULL },
-  //
-  //  like it was originally in the nakst example (on which this code is based). But with this 
-  //  syntax, it doesn't compile in Visual Studio 2019. Figure out why. It would be cleaner to have 
-  //  everything in one place and not litter the class declaration with the features array. It's 
-  //  also less error prone because in the code above, we must manually make sure that the "4" in 
-  //  features[4] matches the number of initializers in the list. See:
-  //  https://stackoverflow.com/questions/33270731/error-c4576-in-vs2015-enterprise
-  //  https://github.com/swig/swig/issues/1851
-  //  ...just removing "(const char *[])" gives a "too many initializers" error.
-  //
-  // -Maybe reanme it to NoGuiGain or similar. Rationale: I may later want to make versions with 
-  //  GUIs of the same plugins. I'd like to have a collection of simple GUI-less plugins (like the 
-  //  mda or airwindows plugins) in a single .dll and then I want to have a collection of plugins 
-  //  with GUI (including ToolChain). Maybe call them RS-MET-PluginsWithGUI.clap and 
-  //  RS-MET-PluginsNoGUI.clap. The plugins may overlap in functionality - but they should have 
-  //  different ids nonetheless
-  //
-  // -For the version: define that in a central place so it can be used in several plugins. When 
-  //  releasing new versions of plugins, we want to set this in one place and not for every plugin
-  //  separately which is tedious and error prone. Do the same thing also for the vendor field and
-  //  the various url fields
 };
-
-
 
 ClapGain::ClapGain(const clap_plugin_descriptor *desc, const clap_host *host) 
   : ClapPluginStereo32Bit(desc, host) 
 {
-  // ToDo: Maybe one of these checks could make sense:
-  // assert(*desc ==  pluginDescriptor);
-  // assert( desc == &pluginDescriptor);
-  // The former would just assert that the content of the descriptor matches while the second 
-  // actually asserts that a pointer to our own static member is passed, i.e. the second check 
-  // would be stronger. 
-
+  // Flags for our parameters - they are automatable:
+  clap_param_info_flags automatable = CLAP_PARAM_IS_AUTOMATABLE;
 
   // Add the parameters:
-  clap_param_info_flags flags = CLAP_PARAM_IS_AUTOMATABLE;
-  //flags |= CLAP_PARAM_REQUIRES_PROCESS;  // Note sure, if we need this -> figure out!
-  // ...naaah - it's probably not needed
-
-  addParameter(kGain, "Gain", -40.0, +40.0, 0.0, flags);  // in dB
-  addParameter(kPan,  "Pan",   -1.0,  +1.0, 0.0, flags);  // -1: left, 0: center, +1: right
+  addParameter(kGain, "Gain", -40.0, +40.0, 0.0, automatable);  // in dB
+  addParameter(kPan,  "Pan",   -1.0,  +1.0, 0.0, automatable);  // -1: left, 0: center, +1: right
 
   // Notes:
   //
@@ -89,10 +52,6 @@ ClapGain::ClapGain(const clap_plugin_descriptor *desc, const clap_host *host)
   //  equal the index at which it is stored in our inherited params array. Later, this restriction
   //  may (or may not) be lifted. Doing so will require more complex code in ClapPluginWithParams. 
   //  At the moment, we only have a simple impementation.
-  // -Maybe we should also set the CLAP_PARAM_REQUIRES_PROCESS flag. The clap doc says that when 
-  //  this flag is set, the parameter events will be passed via process. Without the flag, that 
-  //  seem not to be ensured - although Bitwig seems to do it anyway. The plugin works even without
-  //  the flag - but maybe that's only so in Bitwig? Figure out!
 }
 
 void ClapGain::processBlockStereo(const float* inL, const float* inR, float* outL, float* outR,
@@ -107,20 +66,22 @@ void ClapGain::processBlockStereo(const float* inL, const float* inR, float* out
 
 void ClapGain::setParameter(clap_id id, double newValue)
 {
-  // This stores the new value in our inherited params array:
+  // This stores the new value in our inherited params array and needs to be called:
   Base::setParameter(id, newValue);
 
   // Compute the internal algorithm coeffs from the user parameters:
-  //float amp   = (float) pow(10.0, (1.0/20)*params[kGain].value);       // dB to linear scaler
   float amp   = (float) RobsClapHelpers::dbToAmp(params[kGain].value); // dB to linear scaler
   float pan01 = (float) (0.5 * (params[kPan].value + 1.0));            // -1..+1  ->  0..1
   ampL = 2.f * (amp * (1.f - pan01));
   ampR = 2.f * (amp * pan01);
 
-  // Notes:
+  // ToDo:
   //
-  // -One could use an optimized dB2amp formula that uses exp instead of pow. Maybe make a small
-  //  library with such helper functions like amp2dB, dB2amp, pitch2freq, freq2pitch, etc.
+  // -Maybe avoid having to call the baseclass method by letting the baseclass method calling a
+  //  new function parameterChanged(id, newValue). That is safer because calling the baseclass 
+  //  method is easy to forget.
+  // -Maybe instead of accessing the parameters via params[kGain].value, use a function 
+  //  getParameter(kGain), etc. That looks cleaner.
 }
 
 bool ClapGain::paramsValueToText(clap_id id, double val, char *buf, uint32_t len) noexcept
@@ -131,45 +92,6 @@ bool ClapGain::paramsValueToText(clap_id id, double val, char *buf, uint32_t len
   case kPan:  { return toDisplay(val, buf, len, 3       ); } 
   }
   return Base::paramsValueToText(id, val, buf, len);
-  // ToDo: get rid of the "> 0" and the "using namespace ..." by having a member function 
-  // toDisplay that wraps toStringWithSuffix returns a 
-
-
-    /*
-  if(paramId == kGain)
-  {
-
-
-
-    int pos = sprintf_s(display, size, "%.2f", value);
-    // For Bitwig, it is pointless to try to show more than 2 decimal digits after the point 
-    // because they will be zero anyway - even with fine-adjustment using shift. ..However, we can
-    // textually enter values with finer resolution
-
-    // This is ugly - maybe use strcpy:
-    display[pos+0] = ' ';
-    display[pos+1] = 'd';
-    display[pos+2] = 'B';
-    display[pos+3] = '\0';
-    // Also: factor this out into a function decibelsToString(double db, char* str, uint32_t size)
-    // It needs to be made safe and unit tested - it should always zero-terminate the string and 
-    // never write beyond size-1. Maybe make a function doubleToStringWithSuffix
-
-
-    return true;
-
-  }
-
-
-
-  return Base::paramsValueToText(paramId, value, display, size);  // Preliminary
-    */
-
-
-  // ToDo: 
-  //
-  // -Append a "dB" unit to the number in case of the "Gain" parameter - done - but this needs to
-  //  be refactored
 }
 
 //=================================================================================================
@@ -192,7 +114,7 @@ const clap_plugin_descriptor_t ClapWaveShaper::pluginDescriptor =
   .manual_url   = urlRsMet,
   .support_url  = urlRsMet,
   .version      = version,
-  .description  = "A simple waveshaper",
+  .description  = "Waveshaper with various shapes",
   .features     = ClapWaveShaper::features,
 };
 
@@ -209,9 +131,12 @@ ClapWaveShaper::ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_ho
 
   // ToDo:
   //
-  // -Check, if we can tell the host that the shape parameter is a choice parameter.
   // -Override the value-to-text function
-  // -DC needs greater range. And/or maybe it's more convenient to apply DC before the drive?
+  // -Maybe it's more convenient to apply DC before the drive? With quite high drive, modulating DC
+  //  is like PWM. But the "good" range for DC depends on the amount of drive, if DC is applied 
+  //  after the drive (higher drive allower for a higher DC range with making the signal disappear)
+  //  That is not so nice. It would be better, if the good range for DC would be independent of 
+  //  drive.
 }
 
 void ClapWaveShaper::setParameter(clap_id id, double newValue)
@@ -259,6 +184,45 @@ ToDo
 -Add waveshaper shapes: clip, tanh, atan, asinh, erf, x / (1 + |x|), x / sqrt(1 + x*x), 
  x / (1 + x^2), sin, cbrt
 
+-Try to use a syntax for the features field like:
+ 
+   .features = (const char *[]) { CLAP_PLUGIN_FEATURE_UTILITY, 
+                                  CLAP_PLUGIN_FEATURE_MIXING, NULL },
+ 
+ like it was originally in the nakst example (on which this code is based). But with this 
+ syntax, it doesn't compile in Visual Studio 2019. Figure out why. It would be cleaner to have 
+ everything in one place and not litter the class declaration with the features array. It's 
+ also less error prone because in the code above, we must manually make sure that the "4" in 
+ features[4] matches the number of initializers in the list. See:
+ https://stackoverflow.com/questions/33270731/error-c4576-in-vs2015-enterprise
+ https://github.com/swig/swig/issues/1851
+ https://en.cppreference.com/w/c/language/struct_initialization
+ ...just removing "(const char *[])" gives a "too many initializers" error.
+
+-Figure out if in the constructors one of these checks could make sense:
+   assert(*desc ==  pluginDescriptor);
+   assert( desc == &pluginDescriptor);
+ The former would just assert that the content of the descriptor matches while the second 
+ actually asserts that a pointer to our own static member is passed, i.e. the second check 
+ would be stronger. 
+
+-Check, if we need the CLAP_PARAM_REQUIRES_PROCESS flag for the parameters. I don't thinks so, 
+ though - but figure out and document under which circumstances this will be needed. The clap doc 
+ says that when this flag is set, the parameter events will be passed via process. Without the 
+ flag, that seem not to be ensured - they may be passed via flush... - although Bitwig seems to do
+ it via process anyway. Or does it? Check in the debugger! The plugin works even without the flag.
+ But maybe that's only so in Bitwig? Figure out!
+
+-A way to reduce the boilerplate even more would be to let the ClapPluginParameter class have two
+ function pointers for the conversion to string and for a callback that can be called whenever the
+ value changes. That would require making the value private and provide a setValue function that
+ sets the value and then calls the callback. Then, instead of overriding setParameter and
+ paramsValueToText, we would just assign these two additional members in the constructor. But for 
+ this callback mechanism to really reduce boilerplate, we assume that appropriate callback target
+ functions already exist anyway - if they don't, they would have to written which is again more 
+ boilerplate. However, when using classes from my rapt/rosic DSP libraries, these functions do 
+ indeed already exist (like setCutoff, setResonance, etc.). For my own use cases, that might be 
+ fine but in order to be more generally useful, that approach might be a bit too opinionated.
 
 
 */
