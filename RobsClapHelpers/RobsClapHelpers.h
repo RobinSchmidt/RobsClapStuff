@@ -12,6 +12,7 @@ the code, you need to exclude them from the build. */
 #include <sstream>       // ostringstream
 #include <iomanip>       // setprecision
 #include <limits>        // numeric_limits
+#include <algorithm>     // min, max
 #include <cassert>       // assert
 #include <cstring>       // strcmp
 

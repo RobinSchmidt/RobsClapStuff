@@ -164,7 +164,7 @@ bool runNumberToStringTest()
   bool ok = true;
 
 
-  static const int bufSize = 10;
+  static const int bufSize = 20;
   char buf[bufSize];                // Character buffer into which we write the strings.
 
   // Helper function to initilaize the buffer with some recognizable content which shall be 
@@ -175,14 +175,41 @@ bool runNumberToStringTest()
       buf[i] = 'X';
   };
 
-
-  initBuffer();
+  // Abbreviation for the constructor of std::string from a C-string:
+  auto Str = [](const char *cStr) { return std::string(cStr); };
 
   using namespace RobsClapHelpers;
 
   int pos;
 
-  pos = toStringWithSuffix(2673.2512891, buf, bufSize, 3, nullptr);
+  // Buffer more than long enough:
+  initBuffer();
+  pos  = toStringWithSuffix(2673.2512891, buf, 20, 3 , nullptr);
+  ok  &= Str(buf) == Str("2673.251");
+  ok  &= pos == 8;
+
+  // Buffer exactly long enough:
+  initBuffer();
+  pos  = toStringWithSuffix(2673.2512891, buf,  9, 3, nullptr);
+  ok  &= Str(buf) == Str("2673.251");
+  ok  &= pos == 8;
+
+  // Buffer too short by 1:
+  initBuffer();
+  pos  = toStringWithSuffix(2673.2512891, buf,  8, 3, nullptr);
+  ok  &= Str(buf) == Str("2673.25");
+  ok  &= pos == 7;
+
+  // Buffer too short by 3:
+  initBuffer();
+  pos  = toStringWithSuffix(2673.2512891, buf,  6, 3, nullptr);
+  ok  &= Str(buf) == Str("2673.");
+  ok  &= pos == 5;
+
+
+
+
+  //ok  &= std::string(buf) == std::string("2673.251");
 
   pos = toStringWithSuffix(1.e20, buf, bufSize, 3, nullptr);  // This need a laaarge buffer!!!
 
