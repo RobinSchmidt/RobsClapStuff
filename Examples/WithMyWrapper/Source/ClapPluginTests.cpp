@@ -246,10 +246,31 @@ bool runNumberToStringTest()
   ok  &= pos == 11;
 
 
+  // Now test the string copying function:
 
+  // Buffer more than long enough:
+  initBuffer();
+  pos = copyString("0123456789", buf, 20);
+  ok  &= Str(buf) == Str("0123456789");
+  ok  &= pos == 10;
 
+  // Buffer exactly long enough:
+  initBuffer();
+  pos = copyString("0123456789", buf, 11);
+  ok  &= Str(buf) == Str("0123456789");
+  ok  &= pos == 10;
 
+  // Buffer too short by 1:
+  initBuffer();
+  pos = copyString("0123456789", buf, 10);
+  ok  &= Str(buf) == Str("012345678");
+  ok  &= pos == 9;
 
+  // Buffer has length 2:
+  initBuffer();
+  pos = copyString("0123456789", buf, 2);
+  ok  &= Str(buf) == Str("0");
+  ok  &= pos == 1;
 
 
   return ok;

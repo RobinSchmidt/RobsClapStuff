@@ -109,6 +109,10 @@ public:
 
   void parameterChanged(clap_id id, double newValue) override;
 
+
+  bool paramsValueToText(clap_id paramId, double value, char *display, 
+    uint32_t size) noexcept override;
+
   void processBlockStereo(const float* inL, const float* inR, float* outL, float* outR, 
     uint32_t numFrames) override;
 
@@ -125,11 +129,14 @@ public:
     kClip,
     kTanh,
     kAtan,
+    kErf,
 
     // ...more to come...
 
     numShapes
   };
+
+  bool shapeToString(double val, char *display, uint32_t size);
 
 
   inline float applyDistortion(float x)
@@ -146,6 +153,7 @@ public:
     case kClip: y = clip(y, -1.f, +1.f); break;
     case kTanh: y = tanh(y);             break;
     case kAtan: y = pi2r * atan(pi2*y);  break;
+    case kErf:  y = erf(y);              break;
     default:    y = 0.f;                 break;  // Error! Unknown shape.
     }
 

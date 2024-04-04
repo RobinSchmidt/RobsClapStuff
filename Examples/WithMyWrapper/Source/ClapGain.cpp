@@ -170,8 +170,16 @@ void ClapWaveShaper::parameterChanged(clap_id id, double newValue)
   }
 }
 
-
-
+bool ClapWaveShaper::paramsValueToText(clap_id id, double val, char *buf, uint32_t len) noexcept
+{
+  switch(id)
+  {
+  case kShape: { return shapeToString(val, buf, len);                 }
+  case kDrive: { return toDisplay(val, buf, len, 2, " dB"); }
+  case kGain:  { return toDisplay(val, buf, len, 2, " dB"); }
+  }
+  return Base::paramsValueToText(id, val, buf, len);
+}
 
 void ClapWaveShaper::processBlockStereo(
   const float* inL, const float* inR, float* outL, float* outR, uint32_t numFrames)
@@ -182,6 +190,21 @@ void ClapWaveShaper::processBlockStereo(
     outR[n] = applyDistortion(inR[n]);
   }
 }
+
+
+bool ClapWaveShaper::shapeToString(double val, char *display, uint32_t size)
+{
+  int ival = (int) val;
+  switch(ival)
+  {
+
+
+
+  }
+
+  return true;
+}
+
 
 
 

@@ -50,6 +50,22 @@ int toStringWithSuffix(double value, char* dest, int size, int numDigits, const 
   // https://iq.opengenus.org/convert-double-to-string-in-cpp/
 }
 
+int copyString(const char* src, char* dst, int dstSize)
+{
+  if(dst == nullptr || dstSize < 1)
+    return -1;
+
+  int i = 0;
+  while(i < dstSize-1 && src[i] != '\0')
+  {
+    dst[i] = src[i];
+    i++;
+  }
+  dst[i] = '\0';
+
+  return i;
+}
+
 
 
 /*

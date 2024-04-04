@@ -56,3 +56,7 @@ terminating null. */
 int toStringWithSuffix(double value, char* destination, int size, int numDigitsAfterDot,
   const char* suffix = nullptr);
 
+
+int copyString(const char* src, char* dst, int dstSize);
+
+
