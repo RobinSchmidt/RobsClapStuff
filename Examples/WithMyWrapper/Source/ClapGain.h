@@ -9,8 +9,8 @@ ClapPluginStereo32Bit. The purpose of this class is enable writing of common ste
 ClapPluginStereo32Bit, you need to do the following things:
 
 (1) Declare your parameters in the Params enum.
-(2) Implement the constructor. It should populate the inherited parameter array usig addParameter.
-(3) Override setParameter to handle parameter changes.
+(2) Implement the constructor. It should populate the inherited parameter array using addParameter.
+(3) Override parameterChanged to handle parameter changes.
 (4) Override processBlockStereo to process (sub) blocks of audio sample frames.
 (5) Fill the features array.
 (6) Fill the pluginDescriptor.
@@ -39,7 +39,6 @@ public:
     numParams
   };
 
-
   /** Constructor. It populates our inherited array of parameters using calls to addParameter. */
   ClapGain(const clap_plugin_descriptor *desc, const clap_host *host);
 
@@ -49,23 +48,19 @@ public:
   there and we get sample-accurate parameter automation for free. */
   void parameterChanged(clap_id id, double newValue) override;
 
-
+  /** Converts a parameter value to text for display on the GUI */
   bool paramsValueToText(clap_id paramId, double value, char *display, 
     uint32_t size) noexcept override;
 
-
-
-
+  /** Overrides the sub-block processing function to do the actual signal processing. */
   void processBlockStereo(const float* inL, const float* inR, float* outL, float* outR, 
     uint32_t numFrames) override;
   // Maybe make this public to facilitate testing
 
 
+  // This is needed for our plugin descriptor:
   static const char* const features[4];
-
   static const clap_plugin_descriptor_t pluginDescriptor; 
-
-
 
 
 protected:
@@ -77,6 +72,8 @@ protected:
 };
 
 //=================================================================================================
+
+/** A simple waveshape with various shapes to choose from. */
 
 class ClapWaveShaper : public RobsClapHelpers::ClapPluginStereo32Bit
 {
@@ -109,7 +106,6 @@ public:
 
   void parameterChanged(clap_id id, double newValue) override;
 
-
   bool paramsValueToText(clap_id paramId, double value, char *display, 
     uint32_t size) noexcept override;
 
@@ -117,7 +113,6 @@ public:
     uint32_t numFrames) override;
 
   static const char* const features[3];
-
   static const clap_plugin_descriptor_t pluginDescriptor; 
 
 
@@ -155,4 +150,3 @@ protected:
 };
 
 
-// ToDo: rename to ExampleClapPlugins and add some more plugins

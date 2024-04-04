@@ -198,10 +198,6 @@ float ClapWaveShaper::applyDistortion(float x)
 }
 
 
-
-
-
-
 //=================================================================================================
 /*
 
@@ -255,6 +251,8 @@ ToDo
  That is not so nice. It would be better, if the good range for DC would be independent of 
  drive.
 
+-Rename files to ExampleClapPlugins.h/cpp or DemoClapPlugins and add some more plugins.
 
+-A signal generator would be nice to demonstrate how to respond to midi events
 
 */
