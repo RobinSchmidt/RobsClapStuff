@@ -130,11 +130,11 @@ public:
     kTanh,
     kAtan,
     kErf,
-    kRatAbs,    // 1 / (1 + |x|)
-    kRatSqrt,   // 1 / sqrt(1 + x*x)
-    kRatSqr,    // 1 / (1 + x*x)
 
     // ...more to come...
+    //kRatAbs,    // 1 / (1 + |x|)
+    //kRatSqrt,   // 1 / sqrt(1 + x*x)
+    //kRatSqr,    // 1 / (1 + x*x)
 
     numShapes
   };
