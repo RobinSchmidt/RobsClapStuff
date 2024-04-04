@@ -90,17 +90,20 @@ public:
 
   void setAllParametersToDefault();
 
+  /** Sets the parameter with the given id to the new value. After storing the new value in our 
+  params array, this will invoke a call to parameterChanged which your subclass should override, if
+  it needs to respond to parameter change events. */
   void setParameter(clap_id id, double newValue);
-  // The baseclass implementation just stores away the value. You will probably want to override 
-  // this to trigger additional actions like recomputing DSP coefficients.
-  // make non-virtual maybe even final. Subclasses shall override a new function 
-  // parameterChanged(id, val)
-
 
   /** Returns the current value of the parameter with the given id. If the id doesn't exist, it 
   will return zero. */
   double getParameter(clap_id id) const;
 
+  /** Subclasses should override this to respond to parameter changes. For example, they may want 
+  to recalculate some coefficients for the DSP algorithm when a parameter was changed. It has been 
+  made purely virtual because in most cases, you will really want to override this and would be a 
+  mistake not to. If you have one of those rare an atypical special cases where you don't need to 
+  respond to parameter changes, you can just override it with an empty implementation. */
   virtual void parameterChanged(clap_id id, double newValue) = 0;
 
 
@@ -125,6 +128,8 @@ public:
   std::vector<std::string> getFeatures();
   // This might actually go into the baseclass. Functionality-wise, it belongs there. But then the 
   // baseclass already gets coupled to std::string which might be undesirable ...we'll see....
+  // ...but now that we have a unity build system, it doesn't really matter anymore. <string> is
+  // available already in the baseclass.
 
   bool toDisplay(double value, char* destination, int size, int precision,
     const char* suffix = nullptr)

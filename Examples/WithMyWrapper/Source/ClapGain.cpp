@@ -122,9 +122,18 @@ ClapWaveShaper::ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_ho
   : ClapPluginStereo32Bit(desc, host) 
 {
   clap_param_info_flags automatable = CLAP_PARAM_IS_AUTOMATABLE;
-  clap_param_info_flags choice      = CLAP_PARAM_IS_STEPPED | CLAP_PARAM_IS_ENUM;
+  //clap_param_info_flags choice      = CLAP_PARAM_IS_STEPPED | CLAP_PARAM_IS_ENUM;
+  //clap_param_info_flags choice      = CLAP_PARAM_IS_STEPPED;
+  //clap_param_info_flags choice      = 0
 
-  addParameter(kShape, "Shape",   0.0,   5.0, 0.0, choice     );   // Clip, Tanh, etc.
+  clap_param_info_flags choice      = automatable | CLAP_PARAM_IS_STEPPED | CLAP_PARAM_IS_ENUM;
+
+  //automatable = 0;  // for test
+
+
+  //addParameter(kShape, "Shape",   0.0,   5.0, 0.0, choice     );   // Clip, Tanh, etc.
+
+  addParameter(kShape, "Shape",   0.0,   5.0, 0.0, choice     );
   addParameter(kDrive, "Drive", -20.0, +60.0, 0.0, automatable);   // In dB
   addParameter(kDC,    "DC",    -10.0, +10.0, 0.0, automatable);   // As raw offset
   addParameter(kGain,  "Gain",  -60.0, +20.0, 0.0, automatable);   // In dB
@@ -137,6 +146,9 @@ ClapWaveShaper::ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_ho
   //  after the drive (higher drive allower for a higher DC range with making the signal disappear)
   //  That is not so nice. It would be better, if the good range for DC would be independent of 
   //  drive.
+  // -If we do not set tha automatble flag, the shape parameter appears in Bitwig only immediately
+  //  after insertion at the top, where the most recent parameter is shown. If we tweak any other 
+  //  parameter, then that parameter is shwon and the shape parameter is inaccessible.
 }
 
 void ClapWaveShaper::parameterChanged(clap_id id, double newValue)
