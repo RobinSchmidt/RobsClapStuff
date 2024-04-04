@@ -9,7 +9,7 @@ int toStringWithSuffix(double value, char* dest, int size, int numDigits, const 
   // Crate a temporary std::string using ostringstream:
   std::ostringstream os;
   os.precision(numDigits);
-  if(abs(value) <= 1.e15)       // Ad hoc: use exponential notation for numbers > 10^15
+  if(abs(value) <= 1.e15)         // Use fixed point notation for numbers with abs <= 10^15
     os << std::fixed;
   os << value;
   std::string str = os.str(); 
@@ -18,22 +18,20 @@ int toStringWithSuffix(double value, char* dest, int size, int numDigits, const 
 
   // Copy (an initial section of) the temporary string into the destination buffer:
   const char* cStr = str.c_str();
-  int terminator = std::min(size-1, (int)str.size());
-  for(int i = 0; i < terminator; i++)
+  int nullPos = std::min(size-1, (int)str.size());  // Position of terminating null
+  for(int i = 0; i < nullPos; i++)
     dest[i] = cStr[i];
-  dest[terminator] = '\0';
+  dest[nullPos] = '\0';
+  return nullPos;
 
-  return terminator;
+  // Notes:
+  //
+  // -The use of std::ostringstream makes the implementation somewhat slow compared to a less safe
+  //  solution using a function from the sprintf family. In the future with C++20, we may switch to
+  //  std::format. For the time being, I think, this is OK. Conversion of doubles to strings is 
+  //  typically not performance critical in the context of audio plugins.
 
 
-
-
-
-
-  // ...this seems to be all unsafe! Maybe use C++ std::stringstream and then copy the result over
-  // into the provided buffer
-
-  // ...Maybe switch to exponential notation when the number is larger than 10^15, i.e 1.e15
 
   // See:
   // https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/sprintf-s-sprintf-s-l-swprintf-s-swprintf-s-l?view=msvc-170
