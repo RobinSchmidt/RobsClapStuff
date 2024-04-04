@@ -206,6 +206,30 @@ bool runNumberToStringTest()
   ok  &= Str(buf) == Str("2673.");
   ok  &= pos == 5;
 
+  // Buffer has length 2 - only the first digit and the null-terminator fit:
+  initBuffer();
+  pos  = toStringWithSuffix(2673.2512891, buf,  2, 3, nullptr);
+  ok  &= Str(buf) == Str("2");
+  ok  &= pos == 1;
+
+  // Buffer has length 1 - only the null-terminator fits in and we get an empty string:
+  initBuffer();
+  pos  = toStringWithSuffix(2673.2512891, buf,  1, 3, nullptr);
+  ok  &= Str(buf) == Str("");
+  ok  &= pos == 0;
+
+  // Buffer has length 0 - nothing is written into the buffer and the error code of -1 is 
+  // returned:
+  initBuffer();
+  pos  = toStringWithSuffix(2673.2512891, buf,  0, 3, nullptr);
+  ok  &= pos == -1;  // -1 is the error code
+
+  // Buffer is a nullptr - this is also an error:
+  initBuffer();
+  pos  = toStringWithSuffix(2673.2512891, nullptr, 20, 3, nullptr);
+  ok  &= pos == -1; 
+
+
 
 
 
@@ -219,6 +243,9 @@ bool runNumberToStringTest()
 
 
   return ok;
+
+  // ToDo:
+  // -Check if automatic switch to exponential notation works as intended
 }
 
 

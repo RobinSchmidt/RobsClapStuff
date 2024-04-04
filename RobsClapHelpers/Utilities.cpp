@@ -3,6 +3,9 @@
 
 int toStringWithSuffix(double value, char* dest, int size, int numDigits, const char* suffix)
 {
+  if(dest == nullptr || size < 1)
+    return -1;   // -1 indicates error just like in sprintf_s
+
   // Crate a temporary std::string using ostringstream:
   std::ostringstream os;
   os.precision(numDigits);
@@ -22,59 +25,7 @@ int toStringWithSuffix(double value, char* dest, int size, int numDigits, const 
 
   return terminator;
 
-  //return os.str();
 
-
-
-
-
-
-
-
-
-  /*
-  // For safety reasons, we first write the string into an internal buffer that is large enough for
-  // the worst case
-
-  static const int tmpSize = 32; // Ad hoc - verify if this is enough in the worst case!
-  char tmp[tmpSize]; 
-
-  // Create the number string via sprintf_s:
-  char format[] = "%.2f";
-  char d = '0' + (char) clip(numDigits, 0, 9); // We don't support more than 9 digits after the dot
-  format[2] = d;                               // Use decimal notation by default
-  if(abs(value) >= 1.e15)                      // Use exponential notation for very large values
-    format[3] = 'e';
-
-  int pos = sprintf_s(tmp, tmpSize, format, value);
-
-  // Copy the result from the temporary buffer into the destination (with truncation, if needed):
-  int copyLength = std::min(size-1, pos-1);
-  for(int i = 0; i < copyLength; i++)
-    dest[i] = tmp[i];
-
-  if(suffix == nullptr)
-  {
-
-  }
-
-  // Append suffix:
-  int i = 0;
-  while(pos+i < size-1 && 
-
-  return pos;
-  */
-
-
-  //// Append the suffix via strcpy_s:
-  //if(suffix != nullptr)
-  //  pos += strcpy_s(&tmp[pos], tmpSize-pos, suffix);
-
-
-
-
-
-  // 
 
 
 
