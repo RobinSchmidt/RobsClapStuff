@@ -130,6 +130,9 @@ public:
     kTanh,
     kAtan,
     kErf,
+    kRatAbs,    // 1 / (1 + |x|)
+    kRatSqrt,   // 1 / sqrt(1 + x*x)
+    kRatSqr,    // 1 / (1 + x*x)
 
     // ...more to come...
 
@@ -138,33 +141,7 @@ public:
 
   bool shapeToString(double val, char *display, uint32_t size);
 
-
-  inline float applyDistortion(float x)
-  {
-    using namespace RobsClapHelpers;
-
-    float y = inAmp * x + dc;  // Temporary
-
-    static const float pi2  = 1.5707963267948966192;
-    static const float pi2r = 1.f / pi2;
-
-    switch(shape)
-    {
-    case kClip: y = clip(y, -1.f, +1.f); break;
-    case kTanh: y = tanh(y);             break;
-    case kAtan: y = pi2r * atan(pi2*y);  break;
-    case kErf:  y = erf(y);              break;
-    default:    y = 0.f;                 break;  // Error! Unknown shape.
-    }
-
-    return outAmp * y;
-
-
-    //return outAmp * tanh(inAmp * x + dc); // Preliminary
-    // ToDo: Use a switch, based on the selected shape. Or maybe use a function pointer 
-    // and assign it in setParameter - measure which way is faster and use that. Maybe get rid of 
-    // the duplication by using an inline function "applyDistortion(float x)"
-  }
+  float applyDistortion(float x);
 
 
 protected:

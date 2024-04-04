@@ -138,9 +138,14 @@ ClapWaveShaper::ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_ho
   addParameter(kDC,    "DC",    -10.0, +10.0, 0.0, automatable);   // As raw offset
   addParameter(kGain,  "Gain",  -60.0, +20.0, 0.0, automatable);   // In dB
 
+  // Notes:
+  //
+  // -I actually didn't want to to make the shape automatable - but when not setting the flag, the
+  //  parameter doesn't appear at all in generic GUI that Bitwig provides. Apparently, bitwig shown 
+  //  only knobs fro automatable parameters.
+  //
   // ToDo:
   //
-  // -Override the value-to-text function
   // -Maybe it's more convenient to apply DC before the drive? With quite high drive, modulating DC
   //  is like PWM. But the "good" range for DC depends on the amount of drive, if DC is applied 
   //  after the drive (higher drive allower for a higher DC range with making the signal disappear)
@@ -203,9 +208,29 @@ bool ClapWaveShaper::shapeToString(double val, char *display, uint32_t size)
   case kErf:  return copyString("Erf",   display, size) > 0;
   default:    return copyString("ERROR", display, size) > 0;
   }
-  return true;
+  return false;    // Actually, this is unreachable
 }
 
+float ClapWaveShaper::applyDistortion(float x)
+{
+  using namespace RobsClapHelpers;
+
+  // Needed for atan-shaper
+  static const float pi2  = 1.5707963267948966192f;  // pi/2
+  static const float pi2r = 1.f / pi2;
+
+  float y = inAmp * x + dc;        // Intermediate
+  switch(shape)
+  {
+  case kClip: y = clip(y, -1.f, +1.f); break;
+  case kTanh: y = tanh(y);             break;
+  case kAtan: y = pi2r * atan(pi2*y);  break;
+  case kErf:  y = erf(y);              break;
+  default:    y = 0.f;                 break;  // Error! Unknown shape. Return 0.
+  }
+
+  return outAmp * y;
+}
 
 
 
@@ -217,8 +242,7 @@ bool ClapWaveShaper::shapeToString(double val, char *display, uint32_t size)
 
 ToDo
 
--Add waveshaper shapes: clip, tanh, atan, asinh, erf, x / (1 + |x|), x / sqrt(1 + x*x), 
- x / (1 + x^2), sin, cbrt
+-Add waveshaper shapes: asinh, x / (1 + |x|), x / sqrt(1 + x*x), x / (1 + x^2), sin, cbrt
 
 -Try to use a syntax for the features field like:
  
