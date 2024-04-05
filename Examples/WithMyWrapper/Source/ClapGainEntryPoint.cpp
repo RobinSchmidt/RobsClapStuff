@@ -20,8 +20,8 @@ static const clap_plugin_factory_t pluginFactory =
 { 
   switch(index)
   {
-  case 0:  return &ClapGain::pluginDescriptor;
-  case 1:  return &ClapWaveShaper::pluginDescriptor;
+  case 0:  return &ClapGain::descriptor;
+  case 1:  return &ClapWaveShaper::descriptor;
   default: return nullptr;
   }
 },
@@ -38,16 +38,16 @@ static const clap_plugin_factory_t pluginFactory =
   // C++ wrapper object and return a pointer to its wrapped C-struct to the host:
 
   // StereoGainDemo:
-  if(strcmp(pluginID, ClapGain::pluginDescriptor.id) == 0)
+  if(strcmp(pluginID, ClapGain::descriptor.id) == 0)
   {
-    ClapGain* gain = new ClapGain(&ClapGain::pluginDescriptor, host);
+    ClapGain* gain = new ClapGain(&ClapGain::descriptor, host);
     return gain->getPluginStructC();
   }
 
   // WaveShaperDemo:
-  if(strcmp(pluginID, ClapWaveShaper::pluginDescriptor.id) == 0)
+  if(strcmp(pluginID, ClapWaveShaper::descriptor.id) == 0)
   {
-    ClapWaveShaper* shaper = new ClapWaveShaper(&ClapWaveShaper::pluginDescriptor, host);
+    ClapWaveShaper* shaper = new ClapWaveShaper(&ClapWaveShaper::descriptor, host);
     return shaper->getPluginStructC();
   }
 

@@ -21,7 +21,7 @@ const char* const ClapGain::features[4] =
   // ClapPluginTests.cpp.
 };
 
-const clap_plugin_descriptor_t ClapGain::pluginDescriptor = 
+const clap_plugin_descriptor_t ClapGain::descriptor = 
 {
   .clap_version = CLAP_VERSION_INIT,
   .id           = "RS-MET.StereoGainDemo",
@@ -95,7 +95,7 @@ const char* const ClapWaveShaper::features[3] =
   NULL 
 };
 
-const clap_plugin_descriptor_t ClapWaveShaper::pluginDescriptor = 
+const clap_plugin_descriptor_t ClapWaveShaper::descriptor = 
 {
   .clap_version = CLAP_VERSION_INIT,
   .id           = "RS-MET.WaveShaperDemo",

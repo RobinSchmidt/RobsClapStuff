@@ -64,7 +64,7 @@ public:
 
   // This is needed for our plugin descriptor:
   static const char* const features[4];
-  static const clap_plugin_descriptor_t pluginDescriptor;  // rename to descriptor
+  static const clap_plugin_descriptor_t descriptor;
   // This is still somewhat unelegant - try to get rid!
 
 
@@ -120,7 +120,7 @@ public:
   // the state of a DSP algo (like storing past inputs and outputs in filters)
 
   static const char* const features[3];
-  static const clap_plugin_descriptor_t pluginDescriptor;   // rename to descriptor
+  static const clap_plugin_descriptor_t descriptor;
 
 
   //-----------------------------------------------------------------------------------------------
