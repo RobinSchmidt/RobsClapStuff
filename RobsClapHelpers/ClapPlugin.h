@@ -14,14 +14,56 @@ class ClapPlugin
 public:
 
   //-----------------------------------------------------------------------------------------------
-  // \name Lifetime
+  // \name Core
 
-  /** */
+  /** Constructor of the plugin C++ wrapper. It will assign all the function pointers in our 
+  "_plugin" member variable (which is the underlying C-struct) to point to our static member 
+  functions that provide the glue. ...TBC...  */
   ClapPlugin(const clap_plugin_descriptor *desc, const clap_host *host);
   // ToDo: document what to do with the parameters. I think the descriptor should be filled out by 
   // the constructor and the host pointer can be stored away for later requests to the host?
 
   virtual ~ClapPlugin() = default;
+
+  /** Maps to clap_plugin.init. [main-thread]
+
+  Must be called after creating the plugin. If init returns false, the host must destroy the plugin
+  instance. If init returns true, then the plugin is initialized and in the deactivated state. 
+  Unlike in `plugin-factory::create_plugin`, in init you have complete access to the host and host 
+  extensions, so clap related setup activities should be done here rather than in create_plugin. */
+  virtual bool init() noexcept { return true; }
+
+  /**  Maps to clap_plugin.activate. [main-thread & !active]
+  
+  Activate and deactivate the plugin. In this call the plugin may allocate memory and prepare 
+  everything needed for the process call. The process's sample rate will be constant and process's 
+  frame count will included in the [min, max] range, which is bounded by [1, INT32_MAX]. Once 
+  activated the latency and port configuration must remain constant, until deactivation. Returns 
+  true on success. */
+  virtual bool activate(double sampleRate, uint32_t minFrameCount, uint32_t maxFrameCount) noexcept
+  { return true; }
+
+
+  virtual void deactivate() noexcept {}
+
+  virtual bool startProcessing() noexcept { return true; }
+
+  virtual void stopProcessing() noexcept {}
+
+  virtual void reset() noexcept {}
+
+  virtual clap_process_status process(const clap_process *process) noexcept 
+  {
+    return CLAP_PROCESS_SLEEP;
+  }
+
+  virtual const void *extension(const char *id) noexcept { return nullptr; }
+ 
+
+
+
+
+
 
 
 
@@ -32,11 +74,19 @@ public:
 
   virtual bool stateLoad(const clap_istream* stream) noexcept { return false; }
   // { return false; }
-  // rename to setState
 
 
+
+
+  /** Maps to clap_plugin_params.flush. [active ? audio-thread : main-thread]
+
+  Flushes a set of parameter changes. This method must not be called concurrently to 
+  clap_plugin->process(). If the plugin is processing, then the process() call will already achieve
+  the parameter update (bi-directional), so a call to flush isn't required, also be aware that the 
+  plugin may use the sample offset in process(), while this information would be lost within 
+  flush(). */
   virtual void paramsFlush(const clap_input_events *in, const clap_output_events *out) noexcept {}
-  // rename to setParameters
+
 
 
   //-----------------------------------------------------------------------------------------------
@@ -122,8 +172,6 @@ public:
   // ToDo: add implementsTail/tailGet
 
 
-  virtual const void *extension(const char *id) noexcept { return nullptr; }
-  // rename to getExtension
 
 
   /** Returns a pointer ot the underlying struct in th C-API. */
@@ -150,26 +198,7 @@ public:
   // \name Processing
 
 
-  virtual bool init() noexcept { return true; }
-  // Will be called on the main thread
 
-
-  virtual bool activate(double sampleRate, uint32_t minFrameCount, uint32_t maxFrameCount) noexcept
-  { return true; }
-
-  virtual void deactivate() noexcept {}
-
-  virtual bool startProcessing() noexcept { return true; }
-
-  virtual void stopProcessing() noexcept {}
-
-  virtual clap_process_status process(const clap_process *process) noexcept 
-  {
-    return CLAP_PROCESS_SLEEP;
-  }
-  // Maybe make purely virtual
-
-  virtual void reset() noexcept {}
 
 
   //-----------------------------------------------------------------------------------------------
@@ -311,16 +340,24 @@ private:
   //-----------------------------------------------------------------------------------------------
   // \name Internals
 
-  // Some internal functions:
+  /** A convenience function to cast an underlying C-struct representing a plugin into its C++ 
+  wrapper object. This method is used all throughout the glue code in an idiomatic pattern like:
+  
+    void ClapPlugin::clapDoStuff(const clap_plugin* plugin,  ...)
+    {
+      auto &self = from(plugin);
+      self.doStuff(...);
+    }
 
+  where clapDoStuff is some static member function that maps to a call to a non-static member
+  function .doStuff() on the C++ wrapper of the "plugin" object. The "self" represents the "this"
+  pointer of the wrapper object ...TBC... */
   static ClapPlugin& from(const clap_plugin *plugin, bool requireInitialized = true) noexcept;
-  // Why is this needed? Ah - I see - it wraps this casting business.
+  // ToDo: try to explain this better
 
 
+  /** Asserts that our "_wasInitialized" member is true. */
   void ensureInitialized(const char *method) const noexcept;
-
-
-
 
 
   // Make uncopyable and unmovable:
