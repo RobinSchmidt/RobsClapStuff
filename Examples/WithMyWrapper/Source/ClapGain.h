@@ -8,12 +8,13 @@ ClapPluginStereo32Bit. The purpose of this class is enable writing of common ste
 32 bit processing with as little boilerplate code as possible. To write a clap plugin based on 
 ClapPluginStereo32Bit, you need to do the following things:
 
-(1) Declare your parameters in the Params enum.
-(2) Implement the constructor. It should populate the inherited parameter array using addParameter.
-(3) Override parameterChanged to handle parameter changes.
-(4) Override processBlockStereo to process (sub) blocks of audio sample frames.
-(5) Fill the features array.
-(6) Fill the pluginDescriptor.
+(1) Derive your plugin class from RobsClapHelpers::ClapPluginStereo32Bit
+(2) Declare your parameters in some sort of "Params" enum.
+(3) Implement the constructor. It should populate the inherited parameter array using addParameter.
+(4) Override parameterChanged to handle parameter changes.
+(5) Override processBlockStereo to process (sub) blocks of audio sample frames.
+(6) Fill the features array.
+(7) Fill the pluginDescriptor.
 
 ...then you have to implement the factory and entry point...TBC...  */
 
@@ -21,20 +22,22 @@ class ClapGain : public RobsClapHelpers::ClapPluginStereo32Bit
 {
 
   using Base = ClapPluginStereo32Bit; // For conveniently calling baseclass methods
+  // try to get rid - i think, we don't call baseclass methods anymore
 
 public:
 
   /** Enumeration of the parameters. These values are used for the param_id and they are also the
   indices at which the parameters will be stored in our inherited parameters array. That means, 
-  the values must start at 0 and count continuously up and the order must be stable and new 
-  parameters can only be added at the end. That's pretty much the behavior we know from VST 1/2 
-  when not using the "chunks" mechanism for the state. That's why I also use the convention with
-  the k-prefix - if you know VST 1/2, that should all look rather familiar. */
+  the values must start at 0 and count continuously up. The order must be stable between plugin 
+  versions (or else, you'll break state recall) and new parameters can only be added at the end. 
+  That's pretty much the behavior we know from VST 1/2 when not using the "chunks" mechanism for 
+  the state. That's why I also use the convention with the k-prefix - if you know VST 1/2, that 
+  should all look rather familiar. */
   enum Params
   {
     kGain,
     kPan,
-    //kMono,     // Maybe add this as a boolean parameter
+    //kMono,     // Maybe add this as a boolean parameter for a mono switch
 
     numParams
   };
@@ -42,25 +45,27 @@ public:
   /** Constructor. It populates our inherited array of parameters using calls to addParameter. */
   ClapGain(const clap_plugin_descriptor *desc, const clap_host *host);
 
-  /** This is a overriden callback that gets called from inside the process method of our basclass.
-  This baseclass method is responsible for interleaving the calls to setParameter and calls to 
-  processBlockStereo. Here, we just have to override both methods and do the appropriate actions 
-  there and we get sample-accurate parameter automation for free. */
+  /** This is an overriden callback that gets called from inside the process method of our 
+  basclass. This baseclass method is responsible for interleaving the calls to setParameter and 
+  calls to processBlockStereo to achieve sample-accurate automation of parameters. The call to 
+  setParameter will, among other things, trigger a call to parameterChanged which our subclass 
+  needs to override to take appropriate actions like recalculating internal DSP coefficients. */
   void parameterChanged(clap_id id, double newValue) override;
 
-  /** Converts a parameter value to text for display on the GUI */
+  /** Converts a parameter value to text for display on the generic GUI that the host provides for
+  GUI-less plugins. */
   bool paramsValueToText(clap_id paramId, double value, char *display, 
     uint32_t size) noexcept override;
 
   /** Overrides the sub-block processing function to do the actual signal processing. */
   void processBlockStereo(const float* inL, const float* inR, float* outL, float* outR, 
     uint32_t numFrames) override;
-  // Maybe make this public to facilitate testing
 
 
   // This is needed for our plugin descriptor:
   static const char* const features[4];
-  static const clap_plugin_descriptor_t pluginDescriptor; 
+  static const clap_plugin_descriptor_t pluginDescriptor;  // rename to descriptor
+  // This is still somewhat unelegant - try to get rid!
 
 
 protected:
@@ -73,7 +78,7 @@ protected:
 
 //=================================================================================================
 
-/** A simple waveshape with various shapes to choose from. */
+/** A simple waveshaper with various shapes to choose from. */
 
 class ClapWaveShaper : public RobsClapHelpers::ClapPluginStereo32Bit
 {
@@ -111,9 +116,11 @@ public:
 
   void processBlockStereo(const float* inL, const float* inR, float* outL, float* outR, 
     uint32_t numFrames) override;
+  // ToDo: declare as noexcept...and maybe const, too? But nah! Generally, processing will change 
+  // the state of a DSP algo (like storing past inputs and outputs in filters)
 
   static const char* const features[3];
-  static const clap_plugin_descriptor_t pluginDescriptor; 
+  static const clap_plugin_descriptor_t pluginDescriptor;   // rename to descriptor
 
 
   //-----------------------------------------------------------------------------------------------
@@ -124,19 +131,22 @@ public:
     kClip,
     kTanh,
     kAtan,
-    kErf,
+    kErf,         // Error function. Antiderivative of Gaussian bell curve.
 
-    // ...more to come...
-    //kRatAbs,    // 1 / (1 + |x|)
-    //kRatSqrt,   // 1 / sqrt(1 + x*x)
-    //kRatSqr,    // 1 / (1 + x*x)
+    // More ideas:
+    //kRatAbs,    // 1 / (1 + |x|)      -> very cheap sigmoid but not smooth at 0 (I think)
+    //kRatSqrt,   // 1 / sqrt(1 + x*x)  -> see "Random cheap sigmoid" thread on KVR
+    //kRatSqr,    // 1 / (1 + x*x)      -> not a sigmoid, falls back to zero, some sort of fold
 
     numShapes
   };
+  // The functions are all normalized to produce outputs in -1..+1 and have unit slope at the 
+  // origin. This is achieved by scaling input and output appropriately.
 
   bool shapeToString(double val, char *display, uint32_t size);
 
   float applyDistortion(float x);
+  // ToDo: declare as noexcept
 
 
 protected:

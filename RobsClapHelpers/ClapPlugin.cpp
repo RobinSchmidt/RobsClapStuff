@@ -69,7 +69,7 @@ ClapPlugin::ClapPlugin(const clap_plugin_descriptor* desc, const clap_host* host
   // Nope! We are not supposed to fill out the descriptor here - it's const. So - what are we 
   // supposed to do with it? Just store it away and that's it? Or may we should check it - if the 
   // host requests the right kind of plugin tobe created? Maybe we can check the version number and
-  // dolater do state conversion, if necessary (if the version of the state corresponds to an older
+  // later do state conversion, if necessary (if the version of the state corresponds to an older
   // version of the plugin? But where should we fill out the descriptor then? Hmm....in 
   // create-an-actual-plugin.cc there is getDescription()
 }
@@ -113,7 +113,6 @@ void ClapPlugin::clapDestroy(const clap_plugin *plugin) noexcept
 }
 // Supposed to be called on the main thread after calling clapDeactivate. Maybe we should also 
 // include a virtual member function destroy and call self.destroy before calling delete &self?
-
 
 // Line 440
 const void* ClapPlugin::clapExtension(const clap_plugin *plugin, const char *id) noexcept 
@@ -186,7 +185,6 @@ bool ClapPlugin::clapActivate(const clap_plugin *plugin, double sample_rate,
   return true;
 }
 
-
 // Line 337:
 void ClapPlugin::clapDeactivate(const clap_plugin *plugin) noexcept 
 {
@@ -201,8 +199,7 @@ void ClapPlugin::clapDeactivate(const clap_plugin *plugin) noexcept
   self._sampleRate = 0;
 }
 
-
-// Line 355
+// Line 355. Supposed to be called after activate but before process.
 bool ClapPlugin::clapStartProcessing(const clap_plugin *plugin) noexcept 
 {
   auto &self = from(plugin);
@@ -218,8 +215,6 @@ bool ClapPlugin::clapStartProcessing(const clap_plugin *plugin) noexcept
   self._isProcessing = self.startProcessing();
   return self._isProcessing;
 }
-// Supposed to be called after activate but before process
-
 
 // Line 378
 void ClapPlugin::clapStopProcessing(const clap_plugin *plugin) noexcept 
@@ -236,7 +231,6 @@ void ClapPlugin::clapStopProcessing(const clap_plugin *plugin) noexcept
   self._isProcessing = false;
 }
 
-
 // Line 401
 void ClapPlugin::clapReset(const clap_plugin *plugin) noexcept 
 {
@@ -248,7 +242,6 @@ void ClapPlugin::clapReset(const clap_plugin *plugin) noexcept
 
   self.reset();
 }
-
 
 // Line 227
 void ClapPlugin::clapOnMainThread(const clap_plugin *plugin) noexcept 

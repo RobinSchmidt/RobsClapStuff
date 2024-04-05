@@ -52,6 +52,9 @@ ClapGain::ClapGain(const clap_plugin_descriptor *desc, const clap_host *host)
   //  equal the index at which it is stored in our inherited params array. Later, this restriction
   //  may (or may not) be lifted. Doing so will require more complex code in ClapPluginWithParams. 
   //  At the moment, we only have a simple impementation.
+  // -If the "automatable" flag is not set, Bitwig will not show a knob for the respective 
+  //  parameter on the generated GUI. Apparently, knobs are only provided for automatable 
+  //  parameters.
 }
 
 void ClapGain::processBlockStereo(const float* inL, const float* inR, float* outL, float* outR,
@@ -148,7 +151,7 @@ bool ClapWaveShaper::paramsValueToText(clap_id id, double val, char *buf, uint32
   case kDrive: { return toDisplay(val, buf, len, 2, " dB"); }
   case kGain:  { return toDisplay(val, buf, len, 2, " dB"); }
   }
-  return Base::paramsValueToText(id, val, buf, len);
+  return Base::paramsValueToText(id, val, buf, len);  // Fall back to default if not yet handled
 }
 
 void ClapWaveShaper::processBlockStereo(
@@ -171,7 +174,7 @@ bool ClapWaveShaper::shapeToString(double val, char *display, uint32_t size)
   case kTanh: return copyString("Tanh",  display, size) > 0;
   case kAtan: return copyString("Atan",  display, size) > 0;
   case kErf:  return copyString("Erf",   display, size) > 0;
-  default:    return copyString("ERROR", display, size) > 0;
+  default:    return copyString("ERROR", display, size) > 0;  // Unknown shape index
   }
   return false;    // Actually, this is unreachable
 }
@@ -184,14 +187,14 @@ float ClapWaveShaper::applyDistortion(float x)
   static const float pi2  = 1.5707963267948966192f;  // pi/2
   static const float pi2r = 1.f / pi2;
 
-  float y = inAmp * x + dc;        // Intermediate
+  float y = inAmp * x + dc;                          // Intermediate
   switch(shape)
   {
   case kClip: y = clip(y, -1.f, +1.f); break;
   case kTanh: y = tanh(y);             break;
   case kAtan: y = pi2r * atan(pi2*y);  break;
   case kErf:  y = erf(y);              break;
-  default:    y = 0.f;                 break;  // Error! Unknown shape. Return 0.
+  default:    y = 0.f;                 break;        // Error! Unknown shape. Return 0.
   }
 
   return outAmp * y;
@@ -247,12 +250,16 @@ ToDo
 
 -Maybe it's more convenient to apply DC before the drive? With quite high drive, modulating DC
  is like PWM. But the "good" range for DC depends on the amount of drive, if DC is applied 
- after the drive (higher drive allower for a higher DC range with making the signal disappear)
- That is not so nice. It would be better, if the good range for DC would be independent of 
- drive.
+ after the drive (higher drive allowe for a higher DC range without making the signal disappear, 
+ i.e. buried in the clipped DC). That is not so nice. It would be better, if the good range for DC
+ would be independent of drive. -> Experiment! But this here is just a demo anyway.
 
 -Rename files to ExampleClapPlugins.h/cpp or DemoClapPlugins and add some more plugins.
 
--A signal generator would be nice to demonstrate how to respond to midi events
+-Write a signal generator plugin to demonstrate how to respond to midi events. It should produce
+ a sinewave with the note-frequency of the most recently received midi note (as long as it is 
+ held). Maybe it could do some other waveforms or other signals as well (e.g. impulses, 
+ noise, etc.). Should not be too fancy DSP-wise, though (e.g. have anti-aliasing etc.). This is
+ just a demo, so let's keep it as simple as possible.
 
 */
