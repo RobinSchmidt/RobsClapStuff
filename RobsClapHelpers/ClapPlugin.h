@@ -1,7 +1,11 @@
 #pragma once
 
 
-/**
+/** A C++ wrapper class around the C-struct for a CLAP plugin. To implement a CLAP plugin using 
+this wrapper, you need to subclass it and then override certain member functions to implement the
+specific functionality of your plugin.
+
+...TBC...
 
 ToDo:
 -order the functions according to which extension they belong to
@@ -14,7 +18,7 @@ class ClapPlugin
 public:
 
   //-----------------------------------------------------------------------------------------------
-  // \name Core
+  // \name Lifetime and core functionality
 
   /** Constructor of the plugin C++ wrapper. It will assign all the function pointers in our 
   "_plugin" member variable (which is the underlying C-struct) to point to our static member 
@@ -25,21 +29,18 @@ public:
 
   virtual ~ClapPlugin() = default;
 
-  /** Maps to clap_plugin.init. [main-thread]
-
-  Must be called after creating the plugin. If init returns false, the host must destroy the plugin
-  instance. If init returns true, then the plugin is initialized and in the deactivated state. 
-  Unlike in `plugin-factory::create_plugin`, in init you have complete access to the host and host 
-  extensions, so clap related setup activities should be done here rather than in create_plugin. */
+  /** Must be called after creating the plugin. If init returns false, the host must destroy the 
+  plugin instance. If init returns true, then the plugin is initialized and in the deactivated 
+  state. Unlike in `plugin-factory::create_plugin`, in init you have complete access to the host 
+  and host extensions, so clap related setup activities should be done here rather than in 
+  create_plugin. C-API: clap_plugin.init [main-thread]  */
   virtual bool init() noexcept { return true; }
 
-  /**  Maps to clap_plugin.activate. [main-thread & !active]
-  
-  Activate and deactivate the plugin. In this call the plugin may allocate memory and prepare 
+  /** Activate and deactivate the plugin. In this call the plugin may allocate memory and prepare 
   everything needed for the process call. The process's sample rate will be constant and process's 
   frame count will included in the [min, max] range, which is bounded by [1, INT32_MAX]. Once 
   activated the latency and port configuration must remain constant, until deactivation. Returns 
-  true on success. */
+  true on success. C-API: clap_plugin.activate [main-thread & !active]  */
   virtual bool activate(double sampleRate, uint32_t minFrameCount, uint32_t maxFrameCount) noexcept
   { return true; }
 
@@ -58,50 +59,25 @@ public:
   }
 
   virtual const void *extension(const char *id) noexcept { return nullptr; }
+
+  bool isActive() const noexcept { return _isActive; }
+
+  bool isProcessing() const noexcept { return _isProcessing; }
+
+  double sampleRate() const noexcept 
+  {
+    //assert(_isActive && "sample rate is only known if the plugin is active");
+    //assert(_sampleRate > 0);
+    return _sampleRate;
+  }
+
+  bool isBeingDestroyed() const noexcept { return _isBeingDestroyed; }
  
 
 
-
-
-
-
-
-
-
   //-----------------------------------------------------------------------------------------------
-  // \name Setup
+  // \name Audio Ports
 
-
-  virtual bool stateLoad(const clap_istream* stream) noexcept { return false; }
-  // { return false; }
-
-
-
-
-  /** Maps to clap_plugin_params.flush. [active ? audio-thread : main-thread]
-
-  Flushes a set of parameter changes. This method must not be called concurrently to 
-  clap_plugin->process(). If the plugin is processing, then the process() call will already achieve
-  the parameter update (bi-directional), so a call to flush isn't required, also be aware that the 
-  plugin may use the sample offset in process(), while this information would be lost within 
-  flush(). */
-  virtual void paramsFlush(const clap_input_events *in, const clap_output_events *out) noexcept {}
-
-
-
-  //-----------------------------------------------------------------------------------------------
-  // \name Inquiry
-
-
-
-  virtual bool implementsState() const noexcept { return false; }
-  // rename to hasStateRecall
-
-
-  virtual bool stateSave(const clap_ostream *stream) noexcept { return false; }
-  // rename to getState
-  // Maybe provide a baseclass implementation that cycles through the parameters and stores them in
-  // a binary blob - like was done with .fxp when the "chunks" mechanism wasn't used
 
   virtual bool implementsAudioPorts() const noexcept { return false; }
   // rename to hasAudioPorts, return true by default
@@ -118,6 +94,10 @@ public:
   // You should fill out the info, I guess.
 
 
+
+  //-----------------------------------------------------------------------------------------------
+  // \name Note Ports
+
   virtual bool implementsNotePorts() const noexcept { return false; }
   // maybe rename to hasNotePorts (or maybe hasNoteIns?)
 
@@ -130,40 +110,86 @@ public:
   }
   // rename to getNotePortInfo
 
+
+
+
+
+  //-----------------------------------------------------------------------------------------------
+  // \name Parameters
+
+
   virtual bool implementsParams() const noexcept { return false; }
-  // rename to hasParameters
 
 
-
+  /** Returns the number of parameters. C-API: clap_plugin_params.count [main-thread] */
   virtual uint32_t paramsCount() const noexcept { return 0; }
-  // rename to getNumParameters
+  // ToDo: figure out and document how a plugin can inform the host when its number of parameters 
+  // has changed.
+
 
   virtual bool paramsInfo(uint32_t paramIndex, clap_param_info *info) const noexcept 
   { return false; }
 
 
   virtual bool paramsValue(clap_id paramId, double *value) const noexcept { return false; }
-  // rename to getParameterValue ...it meant to a getter, right?
-  // Why is this not const?
-  // ..OK - I changed it to const - maybe ask on github
+  // Was originally not declared as const in Alex's wrapper. Why? Maybe ask on GitHub. I changed it
+  // to const because I want to call it from other const functions.
+
   // ...also for the  paramsValueToText, paramsTextToValue functions
+
+
 
   virtual bool paramsValueToText(
     clap_id paramId, double value, char *display, uint32_t size) noexcept 
   {
     return false;
   }
-  // rename to parameterValueToText
+
 
   virtual bool paramsTextToValue(clap_id paramId, const char *display, double *value) noexcept 
   {
     return false;
   }
-  // rename to parameterTextToValue
 
-  virtual bool implementsGui() const noexcept { return false; }
-  // rename to hasGui. A subclass ClapPluginWithGui could add more gui related functions
 
+  /** Maps to clap_plugin_params.flush. [active ? audio-thread : main-thread]
+
+  Flushes a set of parameter changes. This method must not be called concurrently to 
+  clap_plugin->process(). If the plugin is processing, then the process() call will already achieve
+  the parameter update (bi-directional), so a call to flush isn't required, also be aware that the 
+  plugin may use the sample offset in process(), while this information would be lost within 
+  flush(). */
+  virtual void paramsFlush(const clap_input_events *in, const clap_output_events *out) noexcept {}
+
+
+
+
+
+
+
+
+  //-----------------------------------------------------------------------------------------------
+  // \name State
+
+  virtual bool implementsState() const noexcept { return false; }
+  // rename to hasStateRecall
+
+
+  virtual bool stateSave(const clap_ostream *stream) noexcept { return false; }
+  // rename to getState
+  // Maybe provide a baseclass implementation that cycles through the parameters and stores them in
+  // a binary blob - like was done with .fxp when the "chunks" mechanism wasn't used
+
+
+  virtual bool stateLoad(const clap_istream* stream) noexcept { return false; }
+  // { return false; }
+
+
+
+
+
+  //-----------------------------------------------------------------------------------------------
+  // \name Latency
 
   virtual bool implementsLatency() const noexcept { return false; }
 
@@ -173,29 +199,23 @@ public:
 
 
 
-
-  /** Returns a pointer ot the underlying struct in th C-API. */
-  const clap_plugin *clapPlugin() noexcept { return &_plugin; }
-  // rename to getPluginStructC
-
-
-  bool isActive() const noexcept { return _isActive; }
-
-  bool isProcessing() const noexcept { return _isProcessing; }
-
-  double sampleRate() const noexcept 
-  {
-    //assert(_isActive && "sample rate is only known if the plugin is active");
-    //assert(_sampleRate > 0);
-    return _sampleRate;
-  }
-
-  bool isBeingDestroyed() const noexcept { return _isBeingDestroyed; }
-
-
-
   //-----------------------------------------------------------------------------------------------
-  // \name Processing
+  // \name GUI
+
+
+  virtual bool implementsGui() const noexcept { return false; }
+  // rename to hasGui. A subclass ClapPluginWithGui could add more gui related functions
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -216,7 +236,15 @@ public:
   /** Returns a pointer to the underlying C-struct of the clap plugin. This is needed for the glue 
   code during instatiation. */
   const clap_plugin* getPluginStructC() const { return &_plugin; }
-  // make const
+  // get rid - is redundant with clapPlugin() - but that other one is not const. But maybe we can 
+  // make it const
+
+
+  /** Returns a pointer ot the underlying struct in th C-API. */
+  const clap_plugin *clapPlugin() noexcept { return &_plugin; }
+  // rename to getPluginStructC
+
+
 
   /** Returns a pointer to the plugin descriptor. This is needed for inquiries inside subclasses 
   for reflection purposes, e.g. when a plugin (sub)class wants to inquire its own plugin ID, 
