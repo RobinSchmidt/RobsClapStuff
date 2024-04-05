@@ -158,5 +158,3 @@ protected:
   float dc     = 0.f;
 
 };
-
-
