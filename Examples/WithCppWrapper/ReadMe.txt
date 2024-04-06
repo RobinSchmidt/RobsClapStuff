@@ -1,4 +1,4 @@
-An example project using the C++ wrapper class around the clpa C-API from here:
+An example project using the C++ wrapper class around the clap C-API from here:
 
   https://github.com/free-audio/clap-helpers/blob/main/include/clap/helpers/plugin.hh
   https://github.com/free-audio/clap-helpers/blob/main/include/clap/helpers/plugin.hxx
