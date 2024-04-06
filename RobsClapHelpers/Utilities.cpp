@@ -82,11 +82,12 @@ void IndexIdentifierMap::addIndexIdentifierPair(uint32_t index, clap_id id)
 
 bool IndexIdentifierMap::isConsistent() const
 {
+  // The indices and identifiers arrays must have the same size:
   if(indices.size() != identifiers.size())
     return false;
 
+  // Check the consistency conditions for defining a bijective map:
   int N = getNumEntries();
-
   for(int i = 0; i < N; i++)
   {
     // In both of our arrays, each number from 0 to N-1 must occur exactly once:
@@ -96,14 +97,14 @@ bool IndexIdentifierMap::isConsistent() const
       return false;
 
     // When mapping from index to id and back (or vice versa), we should get our original number
-    // back:
+    // back for every i in 0..N-1:
     int j = identifiers[indices[i]];
     int k = indices[identifiers[i]];
     if(j != i || j != i)
       return false;
   }
   
-  return true;
+  return true;  // All consistency checks passed
 }
 
 

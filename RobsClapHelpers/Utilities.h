@@ -96,6 +96,7 @@ public:
   /** Returns the index that corresponds to the given identifier. */
   uint32_t getIndex(clap_id identifier) const 
   {
+    //assert(isValidIdentifier(identifier));
     return indices[identifier];
   }
 
@@ -110,8 +111,15 @@ public:
     return index >= 0 && index < getNumEntries();
   }
 
+
+
+
+
+  /** Checks the map for internal consistency. This is useful for unit testing of the class and for
+  catching bugs on the client code side via assertions. After filling a map, you can add a line 
+  like  assert(myMap.isConsistent());  to make sure you didn't make any mistakes during filling the 
+  map. */
   bool isConsistent() const;
-  // Check for internal consistency
 
 protected:
 
@@ -121,6 +129,9 @@ protected:
 };
 
 // ToDo:
+// -Add a reserve function to pre-allocate the desired memory upfront
+// -Add a clear function and maybe a removeIndexIdentifierPair function...although, we currently
+//  don't need that
 // -Maybe templatize on IndexType (uint32_t), IdentifierType (clap_id)
 // -Include functions for checking internal consistency. This is useful for unit tests and finding
 //  bugs via assertions. The invariants to be maintained are:
