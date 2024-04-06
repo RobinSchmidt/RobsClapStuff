@@ -167,8 +167,8 @@ void ClapWaveShaper::processBlockStereo(
 bool ClapWaveShaper::shapeToString(double val, char *display, uint32_t size)
 {
   using namespace RobsClapHelpers;
-  int ival = (int) val;   //
-  switch(ival)
+  int shapeId = (int) val;
+  switch(shapeId)
   {
   case kClip: return copyString("Clip",  display, size) > 0;
   case kTanh: return copyString("Tanh",  display, size) > 0;
