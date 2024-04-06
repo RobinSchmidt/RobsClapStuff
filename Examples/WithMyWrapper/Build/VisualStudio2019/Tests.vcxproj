@@ -38,8 +38,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\Source\ClapGain.cpp" />
     <ClCompile Include="..\..\Source\ClapPluginTests.cpp" />
+    <ClCompile Include="..\..\Source\DemoPlugin.cpp" />
     <ClCompile Include="..\..\Source\Tests.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -47,8 +47,8 @@
     <ClInclude Include="..\..\..\..\RobsClapHelpers\ClapPluginClasses.h" />
     <ClInclude Include="..\..\..\..\RobsClapHelpers\RobsClapHelpers.h" />
     <ClInclude Include="..\..\..\..\RobsClapHelpers\Utilities.h" />
-    <ClInclude Include="..\..\Source\ClapGain.h" />
     <ClInclude Include="..\..\Source\ClapPluginTests.h" />
+    <ClInclude Include="..\..\Source\DemoPlugin.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

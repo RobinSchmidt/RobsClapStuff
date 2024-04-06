@@ -1,7 +1,6 @@
 #pragma once
 
-//#include "ClapPluginClasses.h"
-#include "ClapGain.h"
+#include "DemoPlugin.h"
 
 
 /** Runs all the tests and returns true when all pass, false otherwise */

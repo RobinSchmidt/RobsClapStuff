@@ -1,5 +1,5 @@
 
-#include "ClapGain.h"
+#include "DemoPlugin.h"
 
 // Some common strings for the plugin descriptors:
 const char urlRsMet[]    = "https://rs-met.com";
