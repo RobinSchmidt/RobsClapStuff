@@ -300,8 +300,10 @@ bool runIndexIdentifierMapTest()
   map.addIndexIdentifierPair(1, 2);  ok &= map.getNumEntries() == 3;
   map.addIndexIdentifierPair(3, 0);  ok &= map.getNumEntries() == 4;
   map.addIndexIdentifierPair(2, 4);  ok &= map.getNumEntries() == 5;
-
-
+  map.addIndexIdentifierPair(0, 3);  ok &= map.getNumEntries() == 5;
+  map.addIndexIdentifierPair(5, 5);  ok &= map.getNumEntries() == 6;
+  map.addIndexIdentifierPair(4, 6);  ok &= map.getNumEntries() == 7;
+  map.addIndexIdentifierPair(6, 1);  ok &= map.getNumEntries() == 7;
 
 
   return ok;
