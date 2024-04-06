@@ -70,6 +70,13 @@ int copyString(const char* src, char* dst, int dstSize)
 
 void IndexIdentifierMap::addIndexIdentifierPair(uint32_t index, clap_id id)
 {
+  size_t newSize = std::max(std::max(index+1, id+1), getNumEntries());
+
+  indices.resize(newSize);
+  identifiers.resize(newSize);
+
+  identifiers[index] = id;
+  indices[id]        = index;
 
   int dummy = 0;
 }

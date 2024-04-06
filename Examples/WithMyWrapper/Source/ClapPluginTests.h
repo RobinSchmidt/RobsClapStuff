@@ -17,6 +17,8 @@ bool runDescriptorReadTest();
 
 bool runNumberToStringTest();
 
+bool runIndexIdentifierMapTest();
+
 
 
 //bool runProcessingTest();

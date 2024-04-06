@@ -11,6 +11,7 @@ bool runAllClapTests(bool printResults)
   ok &= runStateRecallTest();
   ok &= runDescriptorReadTest();
   ok &= runNumberToStringTest();
+  ok &= runIndexIdentifierMapTest();
 
   return ok;
 }
@@ -278,6 +279,32 @@ bool runNumberToStringTest()
   // ToDo:
   // -Check if automatic switch to exponential notation works as intended
   // -Use an empty string as suffix
+}
+
+bool runIndexIdentifierMapTest()
+{
+  bool ok = true;
+
+  //
+  // index:  0 1 2 3 4 5 6
+  // ident:  3 2 4 0 6 5 1
+
+
+  using namespace RobsClapHelpers;
+
+
+  // We create the map and add the pairs in "random" ordee
+  IndexIdentifierMap map;
+
+
+  map.addIndexIdentifierPair(1, 2);  ok &= map.getNumEntries() == 3;
+  map.addIndexIdentifierPair(3, 0);  ok &= map.getNumEntries() == 4;
+  map.addIndexIdentifierPair(2, 4);  ok &= map.getNumEntries() == 5;
+
+
+
+
+  return ok;
 }
 
 
