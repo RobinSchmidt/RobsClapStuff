@@ -60,3 +60,58 @@ int toStringWithSuffix(double value, char* destination, int size, int numDigitsA
 int copyString(const char* src, char* dst, int dstSize);
 
 
+//=================================================================================================
+
+/** A class that allows for mapping back and forth between indices and corresponding identifiers in
+constant time. It's like a bidirectional key/value map where both, key and value, are some sort of 
+integer. ...TBC...  */
+
+class IndexIdentifierMap
+{
+
+public:
+
+  void addIndexIdentifierPair(uint32_t index, clap_id id);
+  // Maybe return a bool that reports success/failure
+
+  /** Returns the identifier that corresponds to the given index. */
+  clap_id getIdentifier(uint32_t index) const
+  {
+    assert(isValidIndex(index));
+    return identifiers[index];
+  }
+
+  /** Returns the index that corresponds to the given identifier. */
+  uint32_t getIndex(clap_id identifier) const 
+  {
+    return indices[identifier];
+  }
+
+  /** Returns the number of entries, i.e. the number of stored index/identifier pairs. */
+  uint32_t getNumEntries() const
+  {
+    return (uint32_t) indices.size(); // == identifiers.size() as well
+  }
+
+  bool isValidIndex(uint32_t index) const 
+  {
+    return index >= 0 && index < getNumEntries();
+  }
+
+  //bool isConsistent() const;
+  // Check for internal consistency
+
+protected:
+
+  std::vector<clap_id>  identifiers;
+  std::vector<uint32_t> indices;
+
+};
+
+// ToDo:
+// -Maybe templatize on IndexType (uint32_t), IdentifierType (clap_id)
+// -Include functions for checking internal consistency. This is useful for unit tests and finding
+//  bugs via assertions. The invariants to be maintained are:
+//  -indices and identifiers arrays must have the same length
+//  -indices and identifiers contain a permutation of 0...N-1  where N is the number of entries
+//  -for all i in 0...N-1: identifiers[indices[i]] == i  and  indices[identifiers[i]] == i

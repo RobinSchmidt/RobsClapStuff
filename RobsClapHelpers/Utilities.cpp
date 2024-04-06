@@ -68,6 +68,15 @@ int copyString(const char* src, char* dst, int dstSize)
 
 
 
+void IndexIdentifierMap::addIndexIdentifierPair(uint32_t index, clap_id id)
+{
+
+  int dummy = 0;
+}
+
+
+
+
 /*
 
 ToDo:
