@@ -77,8 +77,33 @@ void IndexIdentifierMap::addIndexIdentifierPair(uint32_t index, clap_id id)
 
   identifiers[index] = id;
   indices[id]        = index;
+}
 
-  int dummy = 0;
+
+bool IndexIdentifierMap::isConsistent() const
+{
+  if(indices.size() != identifiers.size())
+    return false;
+
+  int N = getNumEntries();
+
+  for(int i = 0; i < N; i++)
+  {
+    // In both of our arrays, each number from 0 to N-1 must occur exactly once:
+    int count1 = countOccurrences(&indices[0],     N, (uint32_t) i);
+    int count2 = countOccurrences(&identifiers[0], N, (clap_id)  i);
+    if(count1 != 1 || count2 != 1)
+      return false;
+
+    // When mapping from index to id and back (or vice versa), we should get our original number
+    // back:
+    int j = identifiers[indices[i]];
+    int k = indices[identifiers[i]];
+    if(j != i || j != i)
+      return false;
+  }
+  
+  return true;
 }
 
 

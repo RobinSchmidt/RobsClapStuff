@@ -306,7 +306,7 @@ bool runIndexIdentifierMapTest()
 
   // During the creaion process, the map may have been in an inconsisten state. But now that we are 
   // finished with filling it, the state should be consistent. Check that:
-  // ok &= map.isConsistent()
+  ok &= map.isConsistent();
 
   // Check the index-to-indentifier mapping:
   ok &= map.getIdentifier(0) == 3;

@@ -59,6 +59,18 @@ int toStringWithSuffix(double value, char* destination, int size, int numDigitsA
 
 int copyString(const char* src, char* dst, int dstSize);
 
+/** Counts the number of times by which the given "element" occurrs in the "buffer" with given 
+"length". */
+template<class T>
+inline int countOccurrences(const T* buffer, int length, const T& element)
+{
+  int count = 0;
+  for(int i = 0; i < length; i++)
+    if(buffer[i] == element)
+      count++;
+  return count;
+}
+
 
 //=================================================================================================
 
@@ -98,7 +110,7 @@ public:
     return index >= 0 && index < getNumEntries();
   }
 
-  //bool isConsistent() const;
+  bool isConsistent() const;
   // Check for internal consistency
 
 protected:
