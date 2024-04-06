@@ -21,10 +21,10 @@
     <ClCompile Include="..\..\..\..\RobsClapHelpers\RobsClapHelpers.cpp">
       <Filter>RobsClapHelpers</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\DemoPlugin.cpp">
+    <ClCompile Include="..\..\Source\DemoPlugins.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\DemoPluginEntryPoint.cpp">
+    <ClCompile Include="..\..\Source\DemoPluginsEntryPoint.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,7 +41,7 @@
     <ClInclude Include="..\..\..\..\RobsClapHelpers\RobsClapHelpers.h">
       <Filter>RobsClapHelpers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\DemoPlugin.h">
+    <ClInclude Include="..\..\Source\DemoPlugins.h">
       <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>

@@ -2,7 +2,7 @@
 // This file defines the entry point for the shared library (i.e. .dll, .so, etc.). But clap plugins
 // use the extension .clap. We just need to rename the .dll accordingly.
 
-#include "DemoPlugin.h"
+#include "DemoPlugins.h"
 
 
 // This is the plugin factory. It is responsible to inform the host about the number of plugins 

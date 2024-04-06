@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.28917.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tests", "Tests.vcxproj", "{00C2F09D-1FD3-4F29-B37B-C422D98A0B9F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Gain", "Gain.vcxproj", "{4CA7EA3A-9BE0-49D3-B110-60E5A1A131D2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DemoPlugins", "DemoPlugins.vcxproj", "{4CA7EA3A-9BE0-49D3-B110-60E5A1A131D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
