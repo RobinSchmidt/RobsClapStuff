@@ -25,7 +25,15 @@ Add the following stuff to Utilities.h/cpp:
     parameter 0 ('Shape') results in 'Erf' -> 0.0 -> 'Clip', which is not consistent.
 
  Apparently, we need to override paramsTextToValue() to convert back from stings like "Clip", 
- "Tanh", ... to the corresponding numeric value. I think, one good way to do it would be
+ "Tanh", ... to the corresponding numeric value. I think, one good way to do it would be to use a
+ std::vector<std::string> shapes; and in ClapWaveShaper::shapeToString() just return 
+ shape[shapeIndex]. But that requires the shapes to be stored in the correct order, i.e. in the same
+ order as they appear in the enum. But maybe we should implement some sort of index-to-id and back 
+ mapper that can then be used for the parameter list as well. That would also solve the problem of
+ having to keep the parameter list in the same order from version to version
+
+
+
 
 
 -Try to use a syntax for the features field like:

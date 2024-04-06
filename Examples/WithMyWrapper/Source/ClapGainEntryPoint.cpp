@@ -41,14 +41,14 @@ static const clap_plugin_factory_t pluginFactory =
   if(strcmp(pluginID, ClapGain::descriptor.id) == 0)
   {
     ClapGain* gain = new ClapGain(&ClapGain::descriptor, host);
-    return gain->getPluginStructC();
+    return gain->clapPlugin();
   }
 
   // WaveShaperDemo:
   if(strcmp(pluginID, ClapWaveShaper::descriptor.id) == 0)
   {
     ClapWaveShaper* shaper = new ClapWaveShaper(&ClapWaveShaper::descriptor, host);
-    return shaper->getPluginStructC();
+    return shaper->clapPlugin();
   }
 
   // The host has passed a pluginID that could not be matched to any of the plugins in this 

@@ -72,7 +72,7 @@ bool runStateRecallTest()
   bool ok = true;
 
   // Create a ClapGain object:
-  clap_plugin_descriptor_t desc = ClapGain::pluginDescriptor;
+  clap_plugin_descriptor_t desc = ClapGain::descriptor;
   ClapGain gain(&desc, nullptr);
 
   double p;  // Used for the parameter value
@@ -135,7 +135,7 @@ bool runDescriptorReadTest()
 
 
   // Create a ClapGain object:
-  clap_plugin_descriptor_t desc = ClapGain::pluginDescriptor;
+  clap_plugin_descriptor_t desc = ClapGain::descriptor;
   ClapGain gain(&desc, nullptr);
 
   // Read the feature list. We expect it to have "audio-effect", "utility", "mixing" set:

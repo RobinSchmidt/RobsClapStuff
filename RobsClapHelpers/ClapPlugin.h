@@ -116,6 +116,13 @@ public:
 
   //-----------------------------------------------------------------------------------------------
   // \name Parameters
+  // 
+  // I think, it works as follows:
+  // The paramIndex determines the order in which the knobs are shown on the generic GUI. To set or
+  // automate a parameter, however, the parameter's id is used which may or may not match the 
+  // index. That makes the system a bit more flexible when more parameters should be added or the
+  // order of parameters should be changed in a later version of the plugin. The id must remain 
+  // stable from version to version but the index may change.
 
 
   virtual bool implementsParams() const noexcept { return false; }
@@ -129,6 +136,7 @@ public:
 
   virtual bool paramsInfo(uint32_t paramIndex, clap_param_info *info) const noexcept 
   { return false; }
+ 
 
 
   virtual bool paramsValue(clap_id paramId, double *value) const noexcept { return false; }
@@ -235,31 +243,31 @@ public:
 
   /** Returns a pointer to the underlying C-struct of the clap plugin. This is needed for the glue 
   code during instatiation. */
-  const clap_plugin* getPluginStructC() const { return &_plugin; }
+  //const clap_plugin* getPluginStructC() const { return &_plugin; }
   // get rid - is redundant with clapPlugin() - but that other one is not const. But maybe we can 
   // make it const
 
 
-  /** Returns a pointer ot the underlying struct in th C-API. */
-  const clap_plugin *clapPlugin() noexcept { return &_plugin; }
-  // rename to getPluginStructC
-
-
+  /** Returns a pointer ot the underlying struct in th C-API. This is needed for the glue code 
+  during instatiation. */
+  const clap_plugin *clapPlugin() const noexcept { return &_plugin; }
 
   /** Returns a pointer to the plugin descriptor. This is needed for inquiries inside subclasses 
   for reflection purposes, e.g. when a plugin (sub)class wants to inquire its own plugin ID, 
   etc. */
-  const clap_plugin_descriptor* getPluginDescriptor() const
-  {
-    return getPluginStructC()->desc;
-  }
+  const clap_plugin_descriptor* getPluginDescriptor() const { return clapPlugin()->desc; }
 
+  /** Returns true, iff the "process" object wants the signals to be processed in double 
+  precision. */
   bool isDoublePrecision(const clap_process* process)
   { return process->audio_inputs[0].data64 != nullptr; }
   // ToDo:
+  // -Rename to wantsDoublePrecision
   // -Verify if this is the right way to figure it out
-  // -Maybe we should first ensure that process->audio_inputs is not a nullptr
+  // -Maybe we should first ensure that process->audio_inputs is not a nullptr?
 
+  /** Returns the plugin identifier. This is a string that uniquely identifies a plugin. Among 
+  other things, it is used by DAWs to recall the plugin chains on their tracks. */
   const char* getPluginIdentifier() const { return getPluginDescriptor()->id; }
 
   const char* getPluginVersion()    const { return getPluginDescriptor()->version; }
