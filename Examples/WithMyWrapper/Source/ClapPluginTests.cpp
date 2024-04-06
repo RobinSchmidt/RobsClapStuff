@@ -293,17 +293,40 @@ bool runIndexIdentifierMapTest()
   using namespace RobsClapHelpers;
 
 
-  // We create the map and add the pairs in "random" ordee
+  // We create the map and add the pairs in "random" order. Along the way, we check, if it has the
+  // expected size:
   IndexIdentifierMap map;
+  map.addIndexIdentifierPair(1, 2); ok &= map.getNumEntries() == 3;
+  map.addIndexIdentifierPair(3, 0); ok &= map.getNumEntries() == 4;
+  map.addIndexIdentifierPair(2, 4); ok &= map.getNumEntries() == 5;
+  map.addIndexIdentifierPair(0, 3); ok &= map.getNumEntries() == 5;
+  map.addIndexIdentifierPair(5, 5); ok &= map.getNumEntries() == 6;
+  map.addIndexIdentifierPair(4, 6); ok &= map.getNumEntries() == 7;
+  map.addIndexIdentifierPair(6, 1); ok &= map.getNumEntries() == 7;
+
+  // During the creaion process, the map may have been in an inconsisten state. But now that we are 
+  // finished with filling it, the state should be consistent. Check that:
+  // ok &= map.isConsistent()
+
+  // Check the index-to-indentifier mapping:
+  ok &= map.getIdentifier(0) == 3;
+  ok &= map.getIdentifier(1) == 2;
+  ok &= map.getIdentifier(2) == 4;
+  ok &= map.getIdentifier(3) == 0;
+  ok &= map.getIdentifier(4) == 6;
+  ok &= map.getIdentifier(5) == 5;
+  ok &= map.getIdentifier(6) == 1;
+
+  // check the identifier-to-index mapping:
+  ok &= map.getIndex(0) == 3;
+  ok &= map.getIndex(1) == 6;
+  ok &= map.getIndex(2) == 1;
+  ok &= map.getIndex(3) == 0;
+  ok &= map.getIndex(4) == 2;
+  ok &= map.getIndex(5) == 5;
+  ok &= map.getIndex(6) == 4;
 
 
-  map.addIndexIdentifierPair(1, 2);  ok &= map.getNumEntries() == 3;
-  map.addIndexIdentifierPair(3, 0);  ok &= map.getNumEntries() == 4;
-  map.addIndexIdentifierPair(2, 4);  ok &= map.getNumEntries() == 5;
-  map.addIndexIdentifierPair(0, 3);  ok &= map.getNumEntries() == 5;
-  map.addIndexIdentifierPair(5, 5);  ok &= map.getNumEntries() == 6;
-  map.addIndexIdentifierPair(4, 6);  ok &= map.getNumEntries() == 7;
-  map.addIndexIdentifierPair(6, 1);  ok &= map.getNumEntries() == 7;
 
 
   return ok;
