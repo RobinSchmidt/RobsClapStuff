@@ -149,13 +149,24 @@ void ClapWaveShaper::parameterChanged(clap_id id, double newValue)
 
 bool ClapWaveShaper::paramsValueToText(clap_id id, double val, char *buf, uint32_t len) noexcept
 {
+  using namespace RobsClapHelpers;
   switch(id)
   {
-  case kShape: { return shapeToString(val, buf, len);                 }
-  case kDrive: { return toDisplay(val, buf, len, 2, " dB"); }
-  case kGain:  { return toDisplay(val, buf, len, 2, " dB"); }
+  //case kShape: { return shapeToString(val, buf, len);                 }
+  case kShape: { return copyString(shapeNames, (int) val, buf, len);           }
+  case kDrive: { return toDisplay(                   val, buf, len, 2, " dB"); }
+  case kGain:  { return toDisplay(                   val, buf, len, 2, " dB"); }
   }
   return Base::paramsValueToText(id, val, buf, len);  // Fall back to default if not yet handled
+
+  // ToDo:
+  // 
+  // -Figure out if it is better to use some sort of roundToInt function instead of just doing
+  //  "(int) val" for the shape. This usage should be consistent with what we do in 
+  //  parameterChanged. Maybe test the behavior also when we don't set the flags
+  //  CLAP_PARAM_IS_STEPPED | CLAP_PARAM_IS_ENUM;  Maybe some hosts ignore these flags and maybe
+  //  in those, we may get better behavior when we round? I guess, when we do truncation, the last
+  //  option will be reached only in total hard-right position of the knob?
 }
 
 void ClapWaveShaper::processBlockStereo(
@@ -168,46 +179,15 @@ void ClapWaveShaper::processBlockStereo(
   }
 }
 
+/*
 bool ClapWaveShaper::shapeToString(double val, char *display, uint32_t size)
 {
-  using namespace RobsClapHelpers;
+  //using namespace RobsClapHelpers;
   int shapeId = (int) val;
-
-  /*
-  switch(shapeId)
-  {
-  case kClip: return copyString("Clip",  display, size) > 0;
-  case kTanh: return copyString("Tanh",  display, size) > 0;
-  case kAtan: return copyString("Atan",  display, size) > 0;
-  case kErf:  return copyString("Erf",   display, size) > 0;
-  default:    return copyString("ERROR", display, size) > 0;  // Unknown shape index
-  }
-  return false;    // Actually, this is unreachable
-  */
-
-  /*
-  if(shapeId >= 0 && shapeId < (int) shapeNames.size())
-    return copyString(shapeNames[shapeId].c_str(), display, size) > 0;
-  else
-    return false;
-    */
-  // ToDo: factor out this conditional into a function:
-  // copyString(shapeNames, shapeId, display, size);
-
-
-  return copyString(shapeNames, shapeId, display, size);
-
-
-
-  // ToDo:
-  //
-  // We want to get rid of the boilderplate and instead do something like:
-  //
-  //   return shapes.idToName(shapeId);
-  //
-  // where shapes is of type NamedIndexIdentifierMap. We also want the inverse mapping nameToId 
-  // which we want to use in paramsTextToValue
+  return RobsClapHelpers::copyString(shapeNames, shapeId, display, size);
 }
+*/
+// Get rid of this function!
 
 float ClapWaveShaper::applyDistortion(float x)
 {

@@ -144,7 +144,7 @@ public:
   // The functions are all normalized to produce outputs in -1..+1 and have unit slope at the 
   // origin. This is achieved by scaling input and output appropriately.
 
-  bool shapeToString(double val, char *display, uint32_t size);
+  //bool shapeToString(double val, char *display, uint32_t size);
 
   float applyDistortion(float x);
   // ToDo: declare as noexcept
