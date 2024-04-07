@@ -172,6 +172,8 @@ bool ClapWaveShaper::shapeToString(double val, char *display, uint32_t size)
 {
   using namespace RobsClapHelpers;
   int shapeId = (int) val;
+
+  /*
   switch(shapeId)
   {
   case kClip: return copyString("Clip",  display, size) > 0;
@@ -181,6 +183,15 @@ bool ClapWaveShaper::shapeToString(double val, char *display, uint32_t size)
   default:    return copyString("ERROR", display, size) > 0;  // Unknown shape index
   }
   return false;    // Actually, this is unreachable
+  */
+
+  if(shapeId >= 0 && shapeId < (int) shapeNames.size())
+    return copyString(shapeNames[shapeId].c_str(), display, size);
+  else
+    return false;
+  // ToDo: factor out this conditional into a function:
+  // copyString(shapeNames, shapeId, display, size);
+
 
   // ToDo:
   //
