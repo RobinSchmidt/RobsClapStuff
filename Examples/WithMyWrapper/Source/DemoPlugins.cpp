@@ -185,12 +185,18 @@ bool ClapWaveShaper::shapeToString(double val, char *display, uint32_t size)
   return false;    // Actually, this is unreachable
   */
 
+  /*
   if(shapeId >= 0 && shapeId < (int) shapeNames.size())
-    return copyString(shapeNames[shapeId].c_str(), display, size);
+    return copyString(shapeNames[shapeId].c_str(), display, size) > 0;
   else
     return false;
+    */
   // ToDo: factor out this conditional into a function:
   // copyString(shapeNames, shapeId, display, size);
+
+
+  return copyString(shapeNames, shapeId, display, size);
+
 
 
   // ToDo:

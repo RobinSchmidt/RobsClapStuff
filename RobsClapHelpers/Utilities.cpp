@@ -66,7 +66,15 @@ int copyString(const char* src, char* dst, int dstSize)
   return i;
 }
 
+bool copyString(const std::vector<std::string>& strings, int index, char* dst, int dstSize)
+{
+  if(index >= 0 && index < (int) strings.size())
+    return copyString(strings[index].c_str(), dst, dstSize) > 0;
+  else
+    return false;
+}
 
+//=================================================================================================
 
 void IndexIdentifierMap::addIndexIdentifierPair(uint32_t index, clap_id id)
 {

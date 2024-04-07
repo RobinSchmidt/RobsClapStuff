@@ -59,6 +59,12 @@ int toStringWithSuffix(double value, char* destination, int size, int numDigitsA
 
 int copyString(const char* src, char* dst, int dstSize);
 
+
+bool copyString(const std::vector<std::string>& strings, int index, char* dst, int dstSize);
+
+
+
+
 /** Counts the number of times by which the given "element" occurrs in the "buffer" with given 
 "length". */
 template<class T>

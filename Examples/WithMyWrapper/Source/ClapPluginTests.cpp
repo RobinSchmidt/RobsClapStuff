@@ -362,11 +362,6 @@ bool runWaveShaperTest()
   ok &= checkShapeToString(Shapes::kAtan, "Atan");
   ok &= checkShapeToString(Shapes::kErf,  "Erf");
 
-
-
-  //bool paramsValueToText(clap_id paramId, double value, char *display, 
-  //  uint32_t size) noexcept override;
-
   return ok;
 }
 
