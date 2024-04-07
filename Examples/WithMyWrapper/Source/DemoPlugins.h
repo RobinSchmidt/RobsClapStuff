@@ -106,6 +106,7 @@ public:
 
     numParams
   };
+  // rename to ParamIds or ParamId
 
   ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_host *host);
 
@@ -126,7 +127,7 @@ public:
   //-----------------------------------------------------------------------------------------------
   // \name WaveShaper specific stuff
 
-  enum Shapes
+  enum Shapes   // rename to ShapeId
   {
     kClip,
     kTanh,

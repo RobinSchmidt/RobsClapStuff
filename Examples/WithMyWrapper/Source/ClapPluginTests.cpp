@@ -13,6 +13,8 @@ bool runAllClapTests(bool printResults)
   ok &= runNumberToStringTest();
   ok &= runIndexIdentifierMapTest();
 
+  ok &= runWaveShaperTest();
+
   return ok;
 }
 
@@ -328,6 +330,42 @@ bool runIndexIdentifierMapTest()
 
 
 
+
+  return ok;
+}
+
+bool runWaveShaperTest()
+{
+  bool ok = true;
+
+  // Create the WaveShaper:
+  clap_plugin_descriptor_t desc = ClapWaveShaper::descriptor;
+  ClapWaveShaper ws(&desc, nullptr);
+
+  // Helper function to check, if the given shapeIndex is mapped to the given shapeString by the
+  // ClapWaveShaper object:
+  auto checkShapeToString = [&](int shapeIndex, const std::string& shapeString)
+  {
+    static const int bufSize = 32;
+    char buf[bufSize];
+    ws.paramsValueToText(ClapWaveShaper::Params::kShape, (double) shapeIndex, buf, bufSize);
+    std::string str(buf);
+    return str == shapeString;
+  };
+  // Maybe check also, if the reverse mapping also works. Maybe rename the function into 
+  // checkShapeIdStringMapping
+
+  // Check if the shape-id to string mapping works correctly:
+  using Shapes = ClapWaveShaper::Shapes;
+  ok &= checkShapeToString(Shapes::kClip, "Clip");
+  ok &= checkShapeToString(Shapes::kTanh, "Tanh");
+  ok &= checkShapeToString(Shapes::kAtan, "Atan");
+  ok &= checkShapeToString(Shapes::kErf,  "Erf");
+
+
+
+  //bool paramsValueToText(clap_id paramId, double value, char *display, 
+  //  uint32_t size) noexcept override;
 
   return ok;
 }
