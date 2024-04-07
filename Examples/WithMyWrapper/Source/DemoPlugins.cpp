@@ -115,7 +115,9 @@ ClapWaveShaper::ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_ho
   clap_param_info_flags automatable = CLAP_PARAM_IS_AUTOMATABLE;
   clap_param_info_flags choice      = automatable | CLAP_PARAM_IS_STEPPED | CLAP_PARAM_IS_ENUM;
 
-  addParameter(kShape, "Shape",   0.0, numShapes-1, 0.0, choice     );   // Clip, Tanh, etc.
+  addParameter(kShape, "Shape",   0.0, numShapes-1, 0.0, choice);        // Clip, Tanh, etc.
+  shapeNames = { "Clip", "Tanh", "Atan", "Erf" };
+
   addParameter(kDrive, "Drive", -20.0, +60.0,       0.0, automatable);   // In dB
   addParameter(kDC,    "DC",    -10.0, +10.0,       0.0, automatable);   // As raw offset
   addParameter(kGain,  "Gain",  -60.0, +20.0,       0.0, automatable);   // In dB
@@ -125,6 +127,8 @@ ClapWaveShaper::ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_ho
   // -I actually didn't want to to make the shape automatable but when not setting the flag, the
   //  parameter doesn't appear at all in generic GUI that Bitwig provides. Apparently, Bitwig shows
   //  only knobs for automatable parameters. ...why?
+  // -It is important that the order of the shape strings matches the order of the corresponding 
+  //  entries in the Shapes enum. This should be verified in a unit test.
 }
 
 void ClapWaveShaper::parameterChanged(clap_id id, double newValue)
@@ -177,6 +181,15 @@ bool ClapWaveShaper::shapeToString(double val, char *display, uint32_t size)
   default:    return copyString("ERROR", display, size) > 0;  // Unknown shape index
   }
   return false;    // Actually, this is unreachable
+
+  // ToDo:
+  //
+  // We want to get rid of the boilderplate and instead do something like:
+  //
+  //   return shapes.idToName(shapeId);
+  //
+  // where shapes is of type NamedIndexIdentifierMap. We also want the inverse mapping nameToId 
+  // which we want to use in paramsTextToValue
 }
 
 float ClapWaveShaper::applyDistortion(float x)

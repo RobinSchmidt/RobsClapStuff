@@ -84,7 +84,13 @@ class IndexIdentifierMap
 public:
 
   void addIndexIdentifierPair(uint32_t index, clap_id id);
-  // Maybe return a bool that reports success/failure
+  // ToDo:
+  // -Maybe return a bool that reports success/failure.
+  // -Document usage. Explain how during building the map, it may temporarily be in an inconsistent
+  //  state (depending on the order in which the entries are added) but at the evry end, when 
+  //  building it is finished, the state should be consistent - which should probably be checked by
+  //  something like  assert(myMap.isConsistent()).
+  // -Maybe rename to addEntry
 
   /** Returns the identifier that corresponds to the given index. */
   clap_id getIdentifier(uint32_t index) const
@@ -96,7 +102,7 @@ public:
   /** Returns the index that corresponds to the given identifier. */
   uint32_t getIndex(clap_id identifier) const 
   {
-    //assert(isValidIdentifier(identifier));
+    assert(isValidIdentifier(identifier));
     return indices[identifier];
   }
 
@@ -111,8 +117,10 @@ public:
     return index >= 0 && index < getNumEntries();
   }
 
-
-
+  bool isValidIdentifier(clap_id identifier) const 
+  {
+    return identifier >= 0 && identifier < (clap_id) getNumEntries();
+  }
 
 
   /** Checks the map for internal consistency. This is useful for unit testing of the class and for
@@ -138,3 +146,25 @@ protected:
 //  -indices and identifiers arrays must have the same length
 //  -indices and identifiers contain a permutation of 0...N-1  where N is the number of entries
 //  -for all i in 0...N-1: identifiers[indices[i]] == i  and  indices[identifiers[i]] == i
+
+
+/*
+class NamedIndexIdentifierMap : public IndexIdentifierMap
+{
+
+  using Base = IndexIdentifierMap;
+
+public:
+
+  
+private:
+
+
+  void addIndexIdentifierPair(uint32_t index, clap_id id) {}
+
+  //{ IndexIdentifierMap::addIndexIdentifierPair(index, id); }
+
+
+
+};
+*/

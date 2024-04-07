@@ -91,3 +91,29 @@ Add the following stuff to Utilities.h/cpp:
  noise, etc.). Should not be too fancy DSP-wise, though (e.g. have anti-aliasing etc.). This is
  just a demo, so let's keep it as simple as possible.
 
+
+
+In the constructor of ClapWaveShaper, instead of:
+
+  addParameter(kShape, "Shape",   0.0, numShapes-1, 0.0, choice     );   // Clip, Tanh, etc.
+  addParameter(kDrive, "Drive", -20.0, +60.0,       0.0, automatable);   // In dB
+  addParameter(kDC,    "DC",    -10.0, +10.0,       0.0, automatable);   // As raw offset
+  addParameter(kGain,  "Gain",  -60.0, +20.0,       0.0, automatable);   // In dB
+
+I want to be able to write:
+
+  addChoiceParameter(kShape, "Shape");     // Clip, Tanh, etc.
+  addChoiceOption(kShape, kClip, "Clip");
+  addChoiceOption(kShape, kTanh, "Tanh");
+
+  addFloatParameter(kDrive, "Drive", -20.0, +60.0, 0.0, dbToString2);   // In dB
+
+
+Or maybe:
+
+  using Opt = ChoiceOption;
+  addChoiceParameter(kShape, "Shape", { Opt(kClip, "Clip"), Opt(kTanh, "Tanh") } ); 
+
+Or just:
+
+  addChoiceParameter(kShape, "Shape", { { kClip, "Clip" }, { kTanh, "Tanh"} }, kClip ); 

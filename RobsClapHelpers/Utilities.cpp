@@ -77,6 +77,11 @@ void IndexIdentifierMap::addIndexIdentifierPair(uint32_t index, clap_id id)
 
   identifiers[index] = id;
   indices[id]        = index;
+
+  // ToDo:
+  //
+  // -Maybe include an assertion that ensures that the given pair does not try to mess something 
+  //  up by overwriting existing data.
 }
 
 
