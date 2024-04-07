@@ -115,6 +115,9 @@ public:
   bool paramsValueToText(clap_id paramId, double value, char *display, 
     uint32_t size) noexcept override;
 
+  bool paramsTextToValue(clap_id paramId, const char *display, double *value) noexcept override;
+
+
   void processBlockStereo(const float* inL, const float* inR, float* outL, float* outR, 
     uint32_t numFrames) override;
   // ToDo: declare as noexcept...and maybe const, too? But nah! Generally, processing will change 
@@ -144,11 +147,9 @@ public:
   // The functions are all normalized to produce outputs in -1..+1 and have unit slope at the 
   // origin. This is achieved by scaling input and output appropriately.
 
-  //bool shapeToString(double val, char *display, uint32_t size);
 
   float applyDistortion(float x);
   // ToDo: declare as noexcept
-
 
 protected:
 

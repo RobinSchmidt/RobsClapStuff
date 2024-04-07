@@ -128,7 +128,7 @@ ClapWaveShaper::ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_ho
   //  parameter doesn't appear at all in generic GUI that Bitwig provides. Apparently, Bitwig shows
   //  only knobs for automatable parameters. ...why?
   // -It is important that the order of the shape strings matches the order of the corresponding 
-  //  entries in the Shapes enum. This should be verified in a unit test.
+  //  entries in the Shapes enum. There is a unit test that verifies this.
 }
 
 void ClapWaveShaper::parameterChanged(clap_id id, double newValue)
@@ -152,7 +152,6 @@ bool ClapWaveShaper::paramsValueToText(clap_id id, double val, char *buf, uint32
   using namespace RobsClapHelpers;
   switch(id)
   {
-  //case kShape: { return shapeToString(val, buf, len);                 }
   case kShape: { return copyString(shapeNames, (int) val, buf, len);           }
   case kDrive: { return toDisplay(                   val, buf, len, 2, " dB"); }
   case kGain:  { return toDisplay(                   val, buf, len, 2, " dB"); }
@@ -167,6 +166,38 @@ bool ClapWaveShaper::paramsValueToText(clap_id id, double val, char *buf, uint32
   //  CLAP_PARAM_IS_STEPPED | CLAP_PARAM_IS_ENUM;  Maybe some hosts ignore these flags and maybe
   //  in those, we may get better behavior when we round? I guess, when we do truncation, the last
   //  option will be reached only in total hard-right position of the knob?
+  // -Maybe make an overload of the toDisplay function that we can call like:
+  //  toDisplay(val, buf, len, shapeNames)
+}
+
+bool ClapWaveShaper::paramsTextToValue(
+  clap_id id, const char* display, double* value) noexcept
+{
+  if(id == kShape)
+  {
+    // Factor this out into a function  bool toValue(display, value, shapeNames)
+    using namespace RobsClapHelpers;
+    int shapeIndex = findString(shapeNames, display);
+    if(shapeIndex == -1)
+    {
+      *value = 0.0;
+      return false;
+    }
+    else
+    {
+      *value = (double) shapeIndex;
+      return true;
+    }
+  }
+
+
+  return Base::paramsTextToValue(id, display, value);
+
+  // Notes:
+  //
+  // -The clap-validator app requires that we can also correctly map from a display-string back to
+  //  a value. I don't really know what the use-case for this mapping is in the case of choice 
+  //  parameters, but to satisfy the validator, we need to implement it.
 }
 
 void ClapWaveShaper::processBlockStereo(
@@ -179,23 +210,11 @@ void ClapWaveShaper::processBlockStereo(
   }
 }
 
-/*
-bool ClapWaveShaper::shapeToString(double val, char *display, uint32_t size)
-{
-  //using namespace RobsClapHelpers;
-  int shapeId = (int) val;
-  return RobsClapHelpers::copyString(shapeNames, shapeId, display, size);
-}
-*/
-// Get rid of this function!
-
 float ClapWaveShaper::applyDistortion(float x)
 {
-  using namespace RobsClapHelpers;
-
-  // Needed for atan-shaper
-  static const float pi2  = 1.5707963267948966192f;  // pi/2
-  static const float pi2r = 1.f / pi2;
+  using namespace RobsClapHelpers;                   // Needed for clip
+  static const float pi2  = 1.5707963267948966192f;  // pi/2, needed for atan
+  static const float pi2r = 1.f / pi2;               // Reciprocal of pi/2
 
   float y = inAmp * x + dc;                          // Intermediate
   switch(shape)
@@ -206,6 +225,5 @@ float ClapWaveShaper::applyDistortion(float x)
   case kErf:  y = erf(y);              break;
   default:    y = 0.f;                 break;        // Error! Unknown shape. Return 0.
   }
-
   return outAmp * y;
 }

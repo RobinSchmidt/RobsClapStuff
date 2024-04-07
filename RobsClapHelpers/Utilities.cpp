@@ -74,6 +74,17 @@ bool copyString(const std::vector<std::string>& strings, int index, char* dst, i
     return false;
 }
 
+int findString(const std::vector<std::string>& strings, const char* stringToFind)
+{
+  for(size_t i = 0; i < strings.size(); i++)
+  {
+    if(strcmp(strings[i].c_str(), stringToFind) == 0)
+      return (int) i;
+  }
+  return -1;  // -1 Encodes "not found".
+}
+
+
 //=================================================================================================
 
 void IndexIdentifierMap::addIndexIdentifierPair(uint32_t index, clap_id id)

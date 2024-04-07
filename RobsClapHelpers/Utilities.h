@@ -62,6 +62,8 @@ int copyString(const char* src, char* dst, int dstSize);
 
 bool copyString(const std::vector<std::string>& strings, int index, char* dst, int dstSize);
 
+int findString(const std::vector<std::string>& strings, const char* stringToFind);
+
 
 
 

@@ -66,7 +66,7 @@ bool ClapPluginWithParams::paramsTextToValue(
   // ToDo:
   //
   // -Figure out what happens in case of a parse-error. It would be nice to have a parser that 
-  //  returns a bool (true in case fo success, flase in case of failure).
+  //  returns a bool (true in case fo success, false in case of failure).
 }
 
 void ClapPluginWithParams::paramsFlush(

@@ -352,17 +352,44 @@ bool runWaveShaperTest()
     std::string str(buf);
     return str == shapeString;
   };
-  // Maybe check also, if the reverse mapping also works. Maybe rename the function into 
-  // checkShapeIdStringMapping
+
+  // This checks the reverse mapping, i.e. from string back to shape-index:
+  auto checkStringToShape = [&](const std::string& shapeString, int shapeIndex)
+  {
+    double value;
+    bool found = ws.paramsTextToValue(ClapWaveShaper::Params::kShape, shapeString.c_str(), &value);
+    if(!found)
+      return false;
+    return value == (double) shapeIndex;
+  };
+
+  // This checks both forward and backward mapping, i.e. shape index to and from string:
+  auto checkShapeString = [&](int shapeIndex, const std::string& shapeString)
+  {
+    bool toStringOK   = checkShapeToString(shapeIndex, shapeString);
+    bool fromStringOK = checkStringToShape(shapeString, shapeIndex);
+    return toStringOK && fromStringOK;
+  };
+
+
+
 
   // Check if the shape-id to string mapping works correctly:
   using Shapes = ClapWaveShaper::Shapes;
-  ok &= checkShapeToString(Shapes::kClip, "Clip");
-  ok &= checkShapeToString(Shapes::kTanh, "Tanh");
-  ok &= checkShapeToString(Shapes::kAtan, "Atan");
-  ok &= checkShapeToString(Shapes::kErf,  "Erf");
+  ok &= checkShapeString(Shapes::kClip, "Clip");
+  ok &= checkShapeString(Shapes::kTanh, "Tanh");
+  ok &= checkShapeString(Shapes::kAtan, "Atan");
+  ok &= checkShapeString(Shapes::kErf,  "Erf");
+
 
   return ok;
+
+  // ToDo:
+  //
+  // -Check also what happens when we use double inputs for 
+  //    ws.paramsValueToText(ClapWaveShaper::Params::kShape, ...
+  //  The desired behavior is that it behaves like rounding, i.e. 0..0.5 should give the same 
+  //  result as the integer 0, 0.5..1.5 the same result as 2, etc.
 }
 
 
