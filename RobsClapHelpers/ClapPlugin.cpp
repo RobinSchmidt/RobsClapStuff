@@ -403,10 +403,8 @@ bool ClapPlugin::clapNotePortsInfo(const clap_plugin *plugin, uint32_t index, bo
   return self.notePortsInfo(index, is_input, info);
 }
 
-
 //-------------------------------------------------------------------------------------------------
 // Misc:
-
 
 // Line 1749 in clap/helpers/plugin.hxx
 ClapPlugin& ClapPlugin::from(const clap_plugin *plugin, bool requireInitialized) noexcept 
@@ -460,6 +458,19 @@ void ClapPlugin::ensureParamThread(const char *method) const noexcept
 }
 
 
+
+std::vector<std::string> ClapPlugin::getFeatures()
+{
+  const clap_plugin_descriptor* desc = getPluginDescriptor();
+  std::vector<std::string> features;
+  int i = 0;
+  while(desc->features[i] != nullptr)
+  {
+    features.push_back(std::string(desc->features[i]));
+    i++;
+  }
+  return features;
+}
 
 
 

@@ -43,7 +43,7 @@ public:
 
 
   //-----------------------------------------------------------------------------------------------
-  // \name Parameter handling overrides
+  // \name Parameter handling
 
   bool implementsParams() const noexcept override { return true;  }
 
@@ -60,40 +60,29 @@ public:
 
   bool paramsTextToValue(clap_id paramId, const char *display, double *value) noexcept override;
 
+  /** Overrides the paramsFlush method to call processEvent for all the passed input events. */
   void paramsFlush(const clap_input_events *in, const clap_output_events *out) noexcept override;
 
-
-
-  //-----------------------------------------------------------------------------------------------
-  // \name State handling overrides
-
-
-  bool implementsState() const noexcept override { return true; }
-
-  bool stateSave(const clap_ostream *stream) noexcept override;
-
-  bool stateLoad(const clap_istream* stream) noexcept override;
-
-
-  //-----------------------------------------------------------------------------------------------
-  // \name Add/Remove parameters
-
-  void addParameter(clap_id id, const std::string& name, double minValue, double maxValue, 
+  /** Adds a parameter with given identifier, name, etc. to the plugin. This is supposed to be 
+  called in the constructor of your subclass to create and set up all the parameters that you want
+  to expose to the host. */
+  void addParameter(clap_id identifier, const std::string& name, double minValue, double maxValue, 
     double defaultValue, clap_param_info_flags flags);
-  // todo: maybe include a path/module string
-  // rename to addParameter
+  // ToDo: maybe include a path/module string (e.g. Osc2/WaveTable/Spectrum/ )
 
   /** Tries to find a parameter with given id in our params array and returns its index when the id
   was found or -1 when the id is not found. */
   int findParameter(clap_id id) const;
 
-
+  /** Sets all the parameters to their default values by calling setParameter for each. */
   void setAllParametersToDefault();
 
   /** Sets the parameter with the given id to the new value. After storing the new value in our 
   params array, this will invoke a call to parameterChanged which your subclass should override, if
   it needs to respond to parameter change events. */
   void setParameter(clap_id id, double newValue);
+  // Why ot virtual? Ah - because it's not supposed to be overriden. If a plugin wants to respond
+  // to paremeter changes, it needs to override parameterChanged. Maybe decaler it final.
 
   /** Returns the current value of the parameter with the given id. If the id doesn't exist, it 
   will return zero. */
@@ -105,31 +94,6 @@ public:
   mistake not to. If you have one of those rare an atypical special cases where you don't need to 
   respond to parameter changes, you can just override it with an empty implementation. */
   virtual void parameterChanged(clap_id id, double newValue) = 0;
-
-
-
-
-  //-----------------------------------------------------------------------------------------------
-  // \name State handling
-
-  /** This creates a string that represents the state which given by the values of all of our 
-  parameters. */
-  virtual std::string getStateAsString() const;
-  // ToDo: document the format of the string
-
-  /** Restores the state, i.e. the values of all parameter, from the given string which was 
-  presumably created by calling getStateAsString at some time before. */
-  virtual bool setStateFromString(const std::string& stateString);
-
-
-  //-----------------------------------------------------------------------------------------------
-  // \name Misc
-
-  std::vector<std::string> getFeatures();
-  // This might actually go into the baseclass. Functionality-wise, it belongs there. But then the 
-  // baseclass already gets coupled to std::string which might be undesirable ...we'll see....
-  // ...but now that we have a unity build system, it doesn't really matter anymore. <string> is
-  // available already in the baseclass.
 
   /** Function to produce a string from a parameter value for display on the host-generated GUI. 
   You may pass a desired "precision", i.e. number of decimal digits after the dot and an optional
@@ -166,6 +130,45 @@ public:
   }
 
 
+  //-----------------------------------------------------------------------------------------------
+  // \name State handling
+
+  /** Overrides the implementsStae function to inform the host that we indeed implement the state 
+  extension. */
+  bool implementsState() const noexcept override { return true; }
+
+  /** Overrides stateSave to write the values of all our parameters in a simple textual format into
+  the stream. It also stores information about the plugin and version which may be used on recall
+  to do some checks and facilitate conversions when the format has changed between plugin 
+  versions. */
+  bool stateSave(const clap_ostream *stream) noexcept override;
+
+  /** Restores the values of all of our parameters from a stream that was supposedly created 
+  previously via the stateSave function. If the stream does not have values for all of our 
+  parameters stored (perhaps because the state was saved with an older version of the plugin which
+  had less parameters), then the missing ones will be assigned to their default values. */
+  bool stateLoad(const clap_istream* stream) noexcept override;
+
+  /** This creates a string that represents the state which given by the values of all of our 
+  parameters. */
+  virtual std::string getStateAsString() const;
+  // ToDo: document the format of the string
+
+  /** Restores the state, i.e. the values of all parameter, from the given string which was 
+  presumably created by calling getStateAsString at some time before. */
+  virtual bool setStateFromString(const std::string& stateString);
+
+
+
+  //-----------------------------------------------------------------------------------------------
+  // \name Misc
+
+  //std::vector<std::string> getFeatures();
+  // This might actually go into the baseclass. Functionality-wise, it belongs there. But then the 
+  // baseclass already gets coupled to std::string which might be undesirable ...we'll see....
+  // ...but now that we have a unity build system, it doesn't really matter anymore. <string> is
+  // available already in the baseclass.
+
 
 protected:
 
@@ -177,7 +180,6 @@ protected:
 
 
 private:
-
 
   std::vector<ClapPluginParameter> params;
   std::vector<clap_param_info>     infos;

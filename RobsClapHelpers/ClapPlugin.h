@@ -274,6 +274,8 @@ public:
 
   const char* getPluginVendor()     const { return getPluginDescriptor()->vendor; }
 
+  std::vector<std::string> getFeatures();
+
 
 
 protected:

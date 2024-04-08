@@ -5,7 +5,7 @@
 
 /** A very simple gain plugin whose purpose is to demonstrate the usage of class 
 ClapPluginStereo32Bit. The purpose of this class is enable writing of common stereo plugins with
-32 bit processing with as little boilerplate code as possible. To write a clap plugin based on 
+32 bit processing with only a small amount of boilerplate code. To write a clap plugin based on 
 ClapPluginStereo32Bit, you need to do the following things:
 
 (1) Derive your plugin class from RobsClapHelpers::ClapPluginStereo32Bit
@@ -16,13 +16,15 @@ ClapPluginStereo32Bit, you need to do the following things:
 (6) Fill the features array.
 (7) Fill the pluginDescriptor.
 
-...then you have to implement the factory and entry point...TBC...  */
+...then you have to implement the factory and entry point...TBC...  
+
+
+*/
 
 class ClapGain : public RobsClapHelpers::ClapPluginStereo32Bit
 {
 
   using Base = ClapPluginStereo32Bit; // For conveniently calling baseclass methods
-  // try to get rid - i think, we don't call baseclass methods anymore
 
 public:
 
@@ -98,10 +100,7 @@ public:
     kDC,        // A DC offset as raw value (added after the drive)
     kGain,      // Output gain for distorted signal in dB
 
-    //kInvert,    // Invert distorted signal (before mixing with original)
-    //kMix,
-
-    // alternative:
+    // Maybe add later:
     //kDry,  // +-100%
     //kWet,  // dito
 
@@ -133,9 +132,9 @@ public:
 
   enum Shapes   // rename to ShapeId
   {
-    kClip,
-    kTanh,
-    kAtan,
+    kClip,        // Hard clipper at -1, +1.
+    kTanh,        // Hyperbolic tangent.
+    kAtan,        // Arctangent, normalized to range -1..+1 and unit slope at origin.
     kErf,         // Error function. Antiderivative of Gaussian bell curve.
 
     // More ideas:

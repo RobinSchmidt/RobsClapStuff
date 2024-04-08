@@ -78,6 +78,13 @@ void ClapPluginWithParams::paramsFlush(
     const clap_event_header_t *hdr = in->get(in, i);
     processEvent(hdr);
   }
+
+  // Notes:
+  //
+  // -I'm not sure if we should perhaps apply a sort of event filter here, i.e. call processEvent 
+  //  only when the event is a parameter change and ignore other kinds of events (like note-events,
+  //  etc.). I guess we will not receive any other kind of event here anyway and if we do, it 
+  //  probably counts as host misbehavior? Figure out!
 }
 
 bool ClapPluginWithParams::stateSave(const clap_ostream *stream) noexcept
@@ -297,7 +304,7 @@ bool ClapPluginWithParams::setStateFromString(const std::string& stateStr)
   // -Detect parse errors and return false in such cases
 }
 
-
+/*
 std::vector<std::string> ClapPluginWithParams::getFeatures()
 {
   const clap_plugin_descriptor* desc = getPluginDescriptor();
@@ -310,6 +317,7 @@ std::vector<std::string> ClapPluginWithParams::getFeatures()
   }
   return features;
 }
+*/
 
 void ClapPluginWithParams::processEvent(const clap_event_header_t* hdr)
 {

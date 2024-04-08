@@ -136,7 +136,6 @@ void ClapWaveShaper::parameterChanged(clap_id id, double newValue)
   using namespace RobsClapHelpers;
   switch(id)
   {
-  //case kShape: { shape  = (int)           newValue;  } break;  // use roundToInt(newValue)
   case kShape: { shape  = (int)     round(newValue); } break;  // use roundToInt(newValue)
   case kDrive: { inAmp  = (float) dbToAmp(newValue); } break;
   case kDC:    { dc     = (float)         newValue;  } break;
@@ -150,27 +149,13 @@ void ClapWaveShaper::parameterChanged(clap_id id, double newValue)
 
 bool ClapWaveShaper::paramsValueToText(clap_id id, double val, char *buf, uint32_t len) noexcept
 {
-  using namespace RobsClapHelpers;
   switch(id)
   {
-  //case kShape: { return copyString(shapeNames, (int) val, buf, len);           }
-
   case kShape: { return toDisplay(val, buf, len, shapeNames); }
   case kDrive: { return toDisplay(val, buf, len, 2, " dB");   }
   case kGain:  { return toDisplay(val, buf, len, 2, " dB");   }
   }
   return Base::paramsValueToText(id, val, buf, len);  // Fall back to default if not yet handled
-
-  // ToDo:
-  // 
-  // -Figure out if it is better to use some sort of roundToInt function instead of just doing
-  //  "(int) val" for the shape. This usage should be consistent with what we do in 
-  //  parameterChanged. Maybe test the behavior also when we don't set the flags
-  //  CLAP_PARAM_IS_STEPPED | CLAP_PARAM_IS_ENUM;  Maybe some hosts ignore these flags and maybe
-  //  in those, we may get better behavior when we round? I guess, when we do truncation, the last
-  //  option will be reached only in total hard-right position of the knob?
-  // -Maybe make an overload of the toDisplay function that we can call like:
-  //  toDisplay(val, buf, len, shapeNames)
 }
 
 bool ClapWaveShaper::paramsTextToValue(
