@@ -131,16 +131,25 @@ public:
   // ...but now that we have a unity build system, it doesn't really matter anymore. <string> is
   // available already in the baseclass.
 
+  /** Function to produce a string from a parameter value for display on the host-generated GUI. 
+  You may pass a desired "precision", i.e. number of decimal digits after the dot and an optional
+  suffix which can be used for displaying a physical unit such as " Hz" or " dB". If you want a 
+  space between the number and the unit, you need to explcitly include that space in the suffix. It
+  returns a bool to report success or failure. */
   bool toDisplay(double value, char* destination, int size, int precision,
     const char* suffix = nullptr)
   {
     return toStringWithSuffix(value, destination, size, precision, suffix) > 0;
   }
 
+  /** This function can be used for converting a choice/enum parameter to a display string, 
+  assuming that you keep a string-array with the textual representations of the choices around. The
+  convention to convert the value into a strings is as follows: the "value" will be rounded to an
+  integer and the result is used as index into the "strings" array. */
   bool toDisplay(double value, char* destination, int size,
     const std::vector<std::string>& strings)
   {
-    return copyString(strings, (int) round(value), destination, size) > 0;
+    return copyString(strings, (int) round(value), destination, size);
   }
 
   //int findString(const std::vector<std::string>& strings, const char* stringToFind);
