@@ -177,23 +177,7 @@ bool ClapWaveShaper::paramsTextToValue(
   clap_id id, const char* display, double* value) noexcept
 {
   if(id == kShape)
-  {
-    // Factor this out into a function  bool toValue(display, value, shapeNames)
-    using namespace RobsClapHelpers;
-    int shapeIndex = findString(shapeNames, display);
-    if(shapeIndex == -1)
-    {
-      *value = 0.0;
-      return false;
-    }
-    else
-    {
-      *value = (double) shapeIndex;
-      return true;
-    }
-  }
-
-
+    return toValue(display, value, shapeNames);
   return Base::paramsTextToValue(id, display, value);
 
   // Notes:

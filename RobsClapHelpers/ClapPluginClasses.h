@@ -152,12 +152,18 @@ public:
     return copyString(strings, (int) round(value), destination, size);
   }
 
-  //int findString(const std::vector<std::string>& strings, const char* stringToFind);
-
-
-
-
-  //toValue(display, value, shapeNames);
+  /** Tries to find the "displayString" in the array of "strings". If it was found, the index where
+  it was found will be assigned to the "value" and "true" will be returned. If it was not found,
+  "value" will be assigned to zero and "false" will be returned. The purpose of the this function 
+  is to facilitate conversion of display-strings to numeric parameter values. That means, it 
+  implements the reverse mapping to the toDisplay() function for the choice/enum/string 
+  parameters. */
+  bool toValue(const char* displayString, double* value, const std::vector<std::string>& strings)
+  {
+    int i = findString(strings, displayString);
+    if(i == -1) { *value = 0.0;        return false; }
+    else        { *value = (double) i; return true;  }
+  }
 
 
 
