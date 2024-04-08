@@ -136,7 +136,8 @@ void ClapWaveShaper::parameterChanged(clap_id id, double newValue)
   using namespace RobsClapHelpers;
   switch(id)
   {
-  case kShape: { shape  = (int)           newValue;  } break;
+  //case kShape: { shape  = (int)           newValue;  } break;  // use roundToInt(newValue)
+  case kShape: { shape  = (int)     round(newValue); } break;  // use roundToInt(newValue)
   case kDrive: { inAmp  = (float) dbToAmp(newValue); } break;
   case kDC:    { dc     = (float)         newValue;  } break;
   case kGain:  { outAmp = (float) dbToAmp(newValue); } break;
@@ -152,9 +153,11 @@ bool ClapWaveShaper::paramsValueToText(clap_id id, double val, char *buf, uint32
   using namespace RobsClapHelpers;
   switch(id)
   {
-  case kShape: { return copyString(shapeNames, (int) val, buf, len);           }
-  case kDrive: { return toDisplay(                   val, buf, len, 2, " dB"); }
-  case kGain:  { return toDisplay(                   val, buf, len, 2, " dB"); }
+  //case kShape: { return copyString(shapeNames, (int) val, buf, len);           }
+
+  case kShape: { return toDisplay(val, buf, len, shapeNames); }
+  case kDrive: { return toDisplay(val, buf, len, 2, " dB");   }
+  case kGain:  { return toDisplay(val, buf, len, 2, " dB");   }
   }
   return Base::paramsValueToText(id, val, buf, len);  // Fall back to default if not yet handled
 

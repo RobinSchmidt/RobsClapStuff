@@ -137,6 +137,18 @@ public:
     return toStringWithSuffix(value, destination, size, precision, suffix) > 0;
   }
 
+  bool toDisplay(double value, char* destination, int size,
+    const std::vector<std::string>& strings)
+  {
+    return copyString(strings, (int) round(value), destination, size) > 0;
+  }
+
+  //int findString(const std::vector<std::string>& strings, const char* stringToFind);
+
+
+
+
+  //toValue(display, value, shapeNames);
 
 
 
