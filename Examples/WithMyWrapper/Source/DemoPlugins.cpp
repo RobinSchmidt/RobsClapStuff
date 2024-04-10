@@ -20,6 +20,7 @@ const char* const ClapGain::features[4] =
   // update the unit test, too - or else it will fail. It's in runDescriptorReadTest in 
   // ClapPluginTests.cpp.
 };
+// maybe add feature CLAP_PLUGIN_FEATURE_STEREO
 
 const clap_plugin_descriptor_t ClapGain::descriptor = 
 {

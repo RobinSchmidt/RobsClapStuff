@@ -43,7 +43,6 @@ public:
 
     numParams
   };
-  // Rename to ParamId
 
   /** Constructor. It populates our inherited array of parameters using calls to addParameter. */
   ClapGain(const clap_plugin_descriptor *desc, const clap_host *host);
@@ -106,7 +105,6 @@ public:
 
     numParams
   };
-  // rename to ParamIds or ParamId
 
   ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_host *host);
 
