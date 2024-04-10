@@ -80,7 +80,7 @@ bool ClapGain::paramsValueToText(clap_id id, double val, char *buf, uint32_t len
   switch(id)
   {
   case kGain: { return toDisplay(val, buf, len, 2, " dB"); }
-  case kPan:  { return toDisplay(val, buf, len, 3       ); } 
+  case kPan:  { return toDisplay(val, buf, len, 3       ); }
   }
   return Base::paramsValueToText(id, val, buf, len);
 }

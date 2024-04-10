@@ -1,10 +1,10 @@
 #pragma once
 
 // This file contains some subclasses of ClapPlugin with certain common features. The intention is 
-// that these common features can be factored out into this intermediate class such that you actual
-// plugin class does not need to derive ffrom the general purpose clapPlugin class but from one
-// the classes here. Then you will need to have write less boilerplate code in your actual plugin 
-// class.
+// that these common features can be factored out into this intermediate class such that your 
+// actual plugin class does not need to derive directly from the general purpose clapPlugin class 
+// but from one of the more specialized classes here. Then you will need to have write less 
+// boilerplate code in your actual plugin class.
 
 
 
@@ -17,15 +17,18 @@ struct ClapPluginParameter
   double  value = 0.0;
   clap_id id    = 0;
 };
-// ToDo: maybe have a function pointer parameter for converting to string
+// ToDo: 
+// -Maybe have a function pointer parameter for converting to string
+// -Maybe move it into teh class ClapPluginWithParams
 
 
 
 //=================================================================================================
 
-/** A subclass of ClapPlugin that implements handling of parameters and state. The state handling 
-will simply store and recall all the values the parameters. Subclasses should use addParameter
-in their constructor.
+/** A subclass of ClapPlugin that implements handling of parameters including saving and recalling
+them via the state extension. Subclasses should use addParameter() in their constructor to set up 
+their parameters and override parameterChanged() to respond to parameter changes.
+
 
 ToDo:
 -Hmm...I think, we need to bring back the processSubBlock32/64 functions and implement process
@@ -41,23 +44,46 @@ public:
     : ClapPlugin(desc, host) { }
 
 
-
   //-----------------------------------------------------------------------------------------------
   // \name Parameter handling
 
+  /** Informs the host that we do implement the parameters extension. */
   bool implementsParams() const noexcept override { return true;  }
 
+  /** Returns the number of parameters that this plugin has. */
   uint32_t paramsCount() const noexcept override { return (uint32_t) params.size(); }  
 
-
+  /** Fills out the passed clap_param_info struct with the data for the parameter with the given 
+  index. Note that the "index" is not the same thing as the "identifier" or "id", for short. The 
+  index is a number that runs from 0 to n numParams-1 and determines the order in which the 
+  parameters will be presented on the host-generated GUI. The id is a number that the plugin itself
+  may assign to its parameters. The id is actually a field in the info struct. When the host want 
+  to set a parameter, it will use this id to identify the parameter. The index is just used here to 
+  inquire the info (I guess, once, when the plugin is loaded (VERIFY!)). The id is used whenever a 
+  parameter is set.
+  
+  I currently actually use the convention that the index is indeed equal to the id - but that not 
+  be assumed to be a general rule and it will likely change when for some reason I want to re-order
+  parameters of existing plugins or insert new parameters. */
   bool paramsInfo(uint32_t index, clap_param_info* info) const noexcept override;
 
-
+  /** Assigns the output variable "value" to the value of the parameter with the given parameter 
+  id and reports success or failure in the return value. In case of failure (i.e. when the id 
+  doesn't exist), the "value" will be assigned to zero. */
   bool paramsValue(clap_id paramId, double *value) const noexcept override;
 
+  /** Provides a default implementation of mapping parameter values to strings. The default 
+  implementation will show the value with 2 decimal digits after the dot. */
   bool paramsValueToText(clap_id paramId, double value, char *display, 
     uint32_t size) noexcept override;
 
+  /** This override implements a default implementation for mapping a parameter string to a value
+  using strtod(). If you want more a customized string-to-value mapping for (some of) your 
+  parameters, you may override this. Note that the clap-validator application requires a plugin to
+  be able to correctly map back-and-forth between values and strings in both directions. So in 
+  particular in the case of choice/enum parameters, you really will need to override this if you 
+  want these tests to pass (for continuous numeric parameters, you may get away with using the 
+  default implementation). */
   bool paramsTextToValue(clap_id paramId, const char *display, double *value) noexcept override;
 
   /** Overrides the paramsFlush method to call processEvent for all the passed input events. */
@@ -79,10 +105,10 @@ public:
 
   /** Sets the parameter with the given id to the new value. After storing the new value in our 
   params array, this will invoke a call to parameterChanged which your subclass should override, if
-  it needs to respond to parameter change events. */
+  it needs to respond to parameter change events. The method is not virtual because it is not 
+  intended to be overriden - responses to parameter changes should be handled by overriding
+  parameterChanged. */
   void setParameter(clap_id id, double newValue);
-  // Why ot virtual? Ah - because it's not supposed to be overriden. If a plugin wants to respond
-  // to paremeter changes, it needs to override parameterChanged. Maybe decaler it final.
 
   /** Returns the current value of the parameter with the given id. If the id doesn't exist, it 
   will return zero. */
@@ -159,18 +185,8 @@ public:
   virtual bool setStateFromString(const std::string& stateString);
 
 
-
   //-----------------------------------------------------------------------------------------------
   // \name Misc
-
-  //std::vector<std::string> getFeatures();
-  // This might actually go into the baseclass. Functionality-wise, it belongs there. But then the 
-  // baseclass already gets coupled to std::string which might be undesirable ...we'll see....
-  // ...but now that we have a unity build system, it doesn't really matter anymore. <string> is
-  // available already in the baseclass.
-
-
-protected:
 
   /** This is called from within our implementation of process to handle one event at a time. In 
   our implementation here, we currently handle only parameter change events (by calling 
@@ -226,8 +242,6 @@ public:
   // baseclass needs also an implementation of this
 
 
-
-
   //-----------------------------------------------------------------------------------------------
   // \name Callbacks to override by your subclass
 
@@ -235,13 +249,5 @@ public:
   length numFrames. */
   virtual void processBlockStereo(const float* inL, const float* inR, float* outL, float* outR, 
     uint32_t numFrames) = 0;
-
-
-
-protected:
-
-
-
-
 
 };

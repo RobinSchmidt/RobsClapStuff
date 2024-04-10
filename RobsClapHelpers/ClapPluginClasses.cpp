@@ -47,7 +47,7 @@ bool ClapPluginWithParams::paramsValue(clap_id id, double* value) const noexcept
 bool ClapPluginWithParams::paramsValueToText(
   clap_id paramId, double value, char* display, uint32_t size) noexcept
 {
-  return toDisplay(value, display, size, 3);
+  return toDisplay(value, display, size, 2);
 
   // ToDo: 
   //
@@ -303,21 +303,6 @@ bool ClapPluginWithParams::setStateFromString(const std::string& stateStr)
   //  plugin identifier between save and recall - which we probably should never do)
   // -Detect parse errors and return false in such cases
 }
-
-/*
-std::vector<std::string> ClapPluginWithParams::getFeatures()
-{
-  const clap_plugin_descriptor* desc = getPluginDescriptor();
-  std::vector<std::string> features;
-  int i = 0;
-  while(desc->features[i] != nullptr)
-  {
-    features.push_back(std::string(desc->features[i]));
-    i++;
-  }
-  return features;
-}
-*/
 
 void ClapPluginWithParams::processEvent(const clap_event_header_t* hdr)
 {
