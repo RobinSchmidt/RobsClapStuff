@@ -218,6 +218,10 @@ bool ClapPluginWithParams::areParamsConsistent()
   }
 
   return true;
+
+  // ToDo:
+  //
+  // -Check, if this is the right capture mode for the lambda
 }
 
 std::string ClapPluginWithParams::getStateAsString() const
