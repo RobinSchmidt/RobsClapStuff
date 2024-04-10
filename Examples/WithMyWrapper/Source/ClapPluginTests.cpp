@@ -70,6 +70,20 @@ int64_t clapStreamRead(const struct clap_istream* stream, void* buffer, uint64_t
   return numToRead;
 }
 
+
+/** A dummy class to simulate addition and re-ordering of parameters in an updated version of a 
+plugin. We want to check, that state-recall still works with the new version. This "Gain 2" plugin
+mocks an updated "StereoGain" plugin that has one parameter more and the old parameters in a 
+different order ...TBC... */
+/*
+class ClapGain2 : public RobsClapHelpers::ClapPluginStereo32Bit
+{
+
+};
+*/
+
+
+
 bool runStateRecallTest()
 {
   bool ok = true;
@@ -342,13 +356,17 @@ bool runWaveShaperTest()
   clap_plugin_descriptor_t desc = ClapWaveShaper::descriptor;
   ClapWaveShaper ws(&desc, nullptr);
 
+
+  using ID = ClapWaveShaper::ParamId;
+
+
   // Helper function to check, if the given shapeIndex is mapped to the given shapeString by the
   // ClapWaveShaper object:
   auto checkShapeToString = [&](int shapeIndex, const std::string& shapeString)
   {
     static const int bufSize = 32;
     char buf[bufSize];
-    ws.paramsValueToText(ClapWaveShaper::Params::kShape, (double) shapeIndex, buf, bufSize);
+    ws.paramsValueToText(ID::kShape, (double) shapeIndex, buf, bufSize);
     std::string str(buf);
     return str == shapeString;
   };
@@ -357,7 +375,7 @@ bool runWaveShaperTest()
   auto checkStringToShape = [&](const std::string& shapeString, int shapeIndex)
   {
     double value;
-    bool found = ws.paramsTextToValue(ClapWaveShaper::Params::kShape, shapeString.c_str(), &value);
+    bool found = ws.paramsTextToValue(ID::kShape, shapeString.c_str(), &value);
     if(!found)
       return false;
     return value == (double) shapeIndex;

@@ -14,7 +14,6 @@ bool runStateRecallTest();
 bool runDescriptorReadTest();
 bool runNumberToStringTest();
 bool runIndexIdentifierMapTest();
-
 bool runWaveShaperTest();
 
 

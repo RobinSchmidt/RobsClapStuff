@@ -35,7 +35,7 @@ public:
   That's pretty much the behavior we know from VST 1/2 when not using the "chunks" mechanism for 
   the state. That's why I also use the convention with the k-prefix - if you know VST 1/2, that 
   should all look rather familiar. */
-  enum Params
+  enum ParamId
   {
     kGain,
     kPan,
@@ -93,7 +93,7 @@ public:
   //-----------------------------------------------------------------------------------------------
   // \name Boilerplate
 
-  enum Params
+  enum ParamId
   {
     kShape,     // Selects the waveshaping function
     kDrive,     // Input gain in dB
