@@ -202,6 +202,24 @@ void ClapPluginWithParams::setAllParametersToDefault()
     setParameter(infos[i].id, infos[i].default_value);
 }
 
+bool ClapPluginWithParams::areParamsConsistent()
+{
+  if(infos.size() != values.size())
+    return false;
+
+  // Check, if each id in 0...numParams-1 occurs exactly once in our infos array:
+  for(size_t i = 0; i < infos.size(); i++)
+  {
+    clap_id id = (clap_id) i;
+    size_t cnt = std::count_if(infos.begin(), infos.end(),
+                               [&](const clap_param_info& info){ return info.id == id; });
+    if(cnt != 1)
+      return false;
+  }
+
+  return true;
+}
+
 std::string ClapPluginWithParams::getStateAsString() const
 {
   std::string s;

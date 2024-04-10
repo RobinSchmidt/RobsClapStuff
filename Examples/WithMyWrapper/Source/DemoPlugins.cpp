@@ -45,6 +45,7 @@ ClapGain::ClapGain(const clap_plugin_descriptor *desc, const clap_host *host)
   // Add the parameters:
   addParameter(kGain, "Gain", -40.0, +40.0, 0.0, automatable);  // in dB
   addParameter(kPan,  "Pan",   -1.0,  +1.0, 0.0, automatable);  // -1: left, 0: center, +1: right
+  assert(areParamsConsistent());
 
   // Notes:
   //
@@ -122,6 +123,8 @@ ClapWaveShaper::ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_ho
   addParameter(kDrive, "Drive", -20.0, +60.0,       0.0, automatable);   // In dB
   addParameter(kDC,    "DC",    -10.0, +10.0,       0.0, automatable);   // As raw offset
   addParameter(kGain,  "Gain",  -60.0, +20.0,       0.0, automatable);   // In dB
+
+  assert(areParamsConsistent());
 
   // Notes:
   //

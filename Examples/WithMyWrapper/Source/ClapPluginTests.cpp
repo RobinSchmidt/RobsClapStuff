@@ -88,7 +88,7 @@ public:
     // Up to here, this matches the ParamId enum of the ClapGain class, i.e. the "old version" of
     // the plugin. This is important. If it doesn't match, trying to set up a new version with a 
     // state stored by the old version will mix up the parameters, i.e. break the state recall and 
-    // put the plugin into a garbage state.
+    // put the plugin into a garbage state after an attempted recall.
 
     // From here, new parameters are introduced that were not present in the old version:
     kMidSide,

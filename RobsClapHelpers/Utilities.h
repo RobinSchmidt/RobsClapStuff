@@ -95,7 +95,7 @@ public:
   // ToDo:
   // -Maybe return a bool that reports success/failure.
   // -Document usage. Explain how during building the map, it may temporarily be in an inconsistent
-  //  state (depending on the order in which the entries are added) but at the evry end, when 
+  //  state (depending on the order in which the entries are added) but at the very end, when 
   //  building it is finished, the state should be consistent - which should probably be checked by
   //  something like  assert(myMap.isConsistent()).
   // -Maybe rename to addEntry
@@ -149,30 +149,3 @@ protected:
 // -Add a clear function and maybe a removeIndexIdentifierPair function...although, we currently
 //  don't need that
 // -Maybe templatize on IndexType (uint32_t), IdentifierType (clap_id)
-// -Include functions for checking internal consistency. This is useful for unit tests and finding
-//  bugs via assertions. The invariants to be maintained are:
-//  -indices and identifiers arrays must have the same length
-//  -indices and identifiers contain a permutation of 0...N-1  where N is the number of entries
-//  -for all i in 0...N-1: identifiers[indices[i]] == i  and  indices[identifiers[i]] == i
-
-
-/*
-class NamedIndexIdentifierMap : public IndexIdentifierMap
-{
-
-  using Base = IndexIdentifierMap;
-
-public:
-
-  
-private:
-
-
-  void addIndexIdentifierPair(uint32_t index, clap_id id) {}
-
-  //{ IndexIdentifierMap::addIndexIdentifierPair(index, id); }
-
-
-
-};
-*/

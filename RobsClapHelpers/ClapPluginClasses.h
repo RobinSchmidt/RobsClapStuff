@@ -13,6 +13,18 @@
 them via the state extension. Subclasses should use addParameter() in their constructor to set up 
 their parameters and override parameterChanged() to respond to parameter changes.
 
+When adding a parameter, you need to assign an identifier (short id) to it. When the host later 
+wants to set or get the value of the parameter or convert it to a string or whatever, it will refer
+to the parameter by this id. The way the id-system is handled by this class here assumes that the
+ids are determined by an enum (that is supposedly defined somewhere inside you plugin subclass) and
+that the ids run continuously from 0 to numParams-1. An id, once assigned to a parameter, must 
+remain stable from one plugin version to the next. That means, after a plugin is published, you 
+cannot reorder the enum or delete entries from it. You can, however, append new entries for more
+parameters. You also *can* reorder the parameter-knobs presented by the host on the generic GUI 
+because that ordering is not determined by the id but rather by the index. When you use this class,
+the index will be determined by the order in which you add the parameters in your constructor - 
+which may or may not match the order in the enum. @see paramsInfo
+
 
 ToDo:
 -Document how the index-vs-id stuff is handled
@@ -37,13 +49,13 @@ public:
 
   /** Returns the number of parameters that this plugin has. */
   uint32_t paramsCount() const noexcept override { return (uint32_t) infos.size(); }   
-  // values.isze() == infos.size() unless soemthing is wrong
+  // values.size() == infos.size() unless soemthing is wrong
 
   /** Fills out the passed clap_param_info struct with the data for the parameter with the given 
   index. Note that the "index" is not the same thing as the "identifier" or "id", for short. The 
   index is a number that runs from 0 to n numParams-1 and determines the order in which the 
   parameters will be presented on the host-generated GUI. The id is a number that the plugin itself
-  may assign to its parameters. The id is actually a field in the info struct. When the host want 
+  may assign to its parameters. The id is actually a field in the info struct. When the host wants 
   to set a parameter, it will use this id to identify the parameter. The index is just used here to 
   inquire the info (I guess, once, when the plugin is loaded (VERIFY!)). The id is used whenever a 
   parameter is set.
@@ -137,6 +149,11 @@ public:
     else        { *value = (double) i; return true;  }
   }
 
+  /** This is a self-check for internal consistency. It is recommended to verify this after all 
+  your addParameter calls in some sort of assertion in debug builds to catch bugs in your parameter
+  setup code. */
+  bool areParamsConsistent();
+  // Maybe rename to something more descriptive..."consistent" is a bit too general and vague
 
   //-----------------------------------------------------------------------------------------------
   // \name State handling
