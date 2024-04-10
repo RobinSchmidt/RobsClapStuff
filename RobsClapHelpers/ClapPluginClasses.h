@@ -51,7 +51,11 @@ public:
   bool implementsParams() const noexcept override { return true;  }
 
   /** Returns the number of parameters that this plugin has. */
-  uint32_t paramsCount() const noexcept override { return (uint32_t) params.size(); }  
+  uint32_t paramsCount() const noexcept override 
+  { 
+    return (uint32_t) values.size(); // == infos.size()
+    //return (uint32_t) params.size(); 
+  }  
 
   /** Fills out the passed clap_param_info struct with the data for the parameter with the given 
   index. Note that the "index" is not the same thing as the "identifier" or "id", for short. The 
@@ -98,7 +102,7 @@ public:
 
   /** Tries to find a parameter with given id in our params array and returns its index when the id
   was found or -1 when the id is not found. */
-  int findParameter(clap_id id) const;
+  //int findParameter(clap_id id) const;
 
   /** Sets all the parameters to their default values by calling setParameter for each. */
   void setAllParametersToDefault();
@@ -197,8 +201,9 @@ public:
 
 private:
 
-  std::vector<ClapPluginParameter> params;
-  std::vector<clap_param_info>     infos;
+  //std::vector<ClapPluginParameter> params;
+  std::vector<double>          values;
+  std::vector<clap_param_info> infos;
 
   // ToDo:
   // -Replace params array with a std::vector<double> values.

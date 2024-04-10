@@ -30,6 +30,19 @@ bool ClapPluginWithParams::paramsInfo(uint32_t index, clap_param_info* info) con
 
 bool ClapPluginWithParams::paramsValue(clap_id id, double* value) const noexcept
 {
+  if(id < values.size())
+  {
+    *value = values[id];
+    return true; 
+  }
+  else
+  {
+    *value = 0.0;
+    return false; 
+  }
+
+
+  /*
   int index = findParameter(id);
   //assert(index != -1);
   if(index != -1) 
@@ -42,6 +55,7 @@ bool ClapPluginWithParams::paramsValue(clap_id id, double* value) const noexcept
     *value = 0.0;
     return false; 
   }
+  */
 }
 
 bool ClapPluginWithParams::paramsValueToText(
@@ -138,12 +152,13 @@ bool ClapPluginWithParams::stateLoad(const clap_istream* stream) noexcept
 void ClapPluginWithParams::addParameter(clap_id id, const std::string& name, double minValue, 
   double maxValue, double defaultValue, clap_param_info_flags flags)
 {
-  assert(id == (clap_id) params.size());
+  //assert(id == (clap_id) params.size());
   // It is currently not supported to add the parameters in arbitrary order. You must add them in 
   // the order of their ids and the ids must start at 0 and use contiguous numbers
 
-  params.push_back(ClapPluginParameter(id, defaultValue));
+  //params.push_back(ClapPluginParameter(id, defaultValue));
 
+  // Add a new clap_param_info to the end of our infos array:
   clap_param_info info;
   info.min_value     = minValue;
   info.max_value     = maxValue;
@@ -156,12 +171,22 @@ void ClapPluginWithParams::addParameter(clap_id id, const std::string& name, dou
   strcpy_s(info.module, CLAP_PATH_SIZE, "");
   infos.push_back(info);
 
-  // ToDo: 
+  // Adjust the size of values array if needed and initialize the new parameter with its default
+  // value:
+  size_t newSize = std::max((size_t) id+1, values.size());
+  values.resize(newSize);
+  values[id] = defaultValue;
+
+
+
+
+  // ToDo (old): 
   //
   // -Make sure that no param with given id exists already
   // -Also, no info with given id should exist already (write a findParamInfo function)
 }
 
+/*
 int ClapPluginWithParams::findParameter(clap_id id) const
 {
   for(int i = 0; i < (int)params.size(); i++) 
@@ -171,33 +196,61 @@ int ClapPluginWithParams::findParameter(clap_id id) const
   }
   return -1;
 }
+*/
 
 void ClapPluginWithParams::setParameter(clap_id id, double newValue)
 {
+  /*
   int index = findParameter(id);
   if(index != -1)
     params[index].value = newValue;
+    */
 
-  parameterChanged(id, newValue);
+  if((size_t) id < values.size())
+  {
+    values[id] = newValue;
+    parameterChanged(id, newValue);
+  }
+  else
+  {
+    //assert(false);  // Host tries to set a parameter with invalid id.
+  }
 
   // ToDo:
   //
-  // -Maybe get rid of that search - just assume that the id matches the index. I guess, if we have
-  //  a lot of automation going on, that simplification can be of great benefit
+  // -[old ]Maybe get rid of that search - just assume that the id matches the index. I guess, if 
+  //  we have a lot of automation going on, that simplification can be of great benefit
+  // -Maybe add assertions that the newValue is within the allowed range. And/or maybe clip it to
+  //  the allowed range. But that would require to figure out the range which would require to look
+  //  up where the corresponding parameter info is stored in our infos array which would currently
+  //  be O(numParams) - we want setParameter to be O(1). We could make that lookup O(1) though by
+  //  bringing in the IndexIdentifierMap. ...but that doesn't seem justified for the purpose of 
+  //  clipping.
 }
 
 double ClapPluginWithParams::getParameter(clap_id id) const
 {
+
+  if((size_t) id < values.size())
+    return values[id];
+  else
+  {
+    //assert(false);  // Host tries to retrieve a parameter with invalid id.
+    return 0.0;
+  }
+
+  /*
   int index = findParameter(id);
   if(index != -1)
     return params[index].value;
   return 0.0;
+  */
 }
 
 void ClapPluginWithParams::setAllParametersToDefault()
 {
-  for(size_t i = 0; i < params.size(); ++i)
-    setParameter(params[i].id, infos[i].default_value);
+  for(size_t i = 0; i < infos.size(); ++i)
+    setParameter(infos[i].id, infos[i].default_value);
 }
 
 std::string ClapPluginWithParams::getStateAsString() const
