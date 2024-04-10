@@ -200,6 +200,18 @@ private:
   std::vector<ClapPluginParameter> params;
   std::vector<clap_param_info>     infos;
 
+  // ToDo:
+  // -Replace params array with a std::vector<double> values.
+  // -As *index* into the values array, we will use the *identifier* of the parameter - which may 
+  //  or may not match its index in the "infos" array
+  // -I think, we may even get away without using the IndexIdentifierMap. Mapping from an index to
+  //  an identifier is O(1) anyway - we just do infos[index].id to get it. Mapping from an id to
+  //  an index would be O(numParams) - we'd have to (linearly) search for the id in the 
+  //  infos-array. However - looking up an index for a given id is not really needed, when we use
+  //  the convention to store the values in an array that is directly indexed by the id. If it 
+  //  turns out later that we need such a mapping (and need it fast), we can still pull in this
+  //  map.
+
 };
 
 
