@@ -7,22 +7,6 @@
 // boilerplate code in your actual plugin class.
 
 
-
-/** A class to represent the current state (i.e. the value) of a parameter for a clap plugin. */
-
-struct ClapPluginParameter
-{
-  ClapPluginParameter(clap_id newID, double newValue) : id(newID), value(newValue) {}
-
-  double  value = 0.0;
-  clap_id id    = 0;
-};
-// ToDo: 
-// -Maybe have a function pointer parameter for converting to string
-// -Maybe move it into teh class ClapPluginWithParams
-
-
-
 //=================================================================================================
 
 /** A subclass of ClapPlugin that implements handling of parameters including saving and recalling
@@ -31,6 +15,7 @@ their parameters and override parameterChanged() to respond to parameter changes
 
 
 ToDo:
+-Document how the index-vs-id stuff is handled
 -Hmm...I think, we need to bring back the processSubBlock32/64 functions and implement process
 
 */
@@ -51,11 +36,8 @@ public:
   bool implementsParams() const noexcept override { return true;  }
 
   /** Returns the number of parameters that this plugin has. */
-  uint32_t paramsCount() const noexcept override 
-  { 
-    return (uint32_t) values.size(); // == infos.size()
-    //return (uint32_t) params.size(); 
-  }  
+  uint32_t paramsCount() const noexcept override { return (uint32_t) infos.size(); }   
+  // values.isze() == infos.size() unless soemthing is wrong
 
   /** Fills out the passed clap_param_info struct with the data for the parameter with the given 
   index. Note that the "index" is not the same thing as the "identifier" or "id", for short. The 
@@ -99,10 +81,6 @@ public:
   void addParameter(clap_id identifier, const std::string& name, double minValue, double maxValue, 
     double defaultValue, clap_param_info_flags flags);
   // ToDo: maybe include a path/module string (e.g. Osc2/WaveTable/Spectrum/ )
-
-  /** Tries to find a parameter with given id in our params array and returns its index when the id
-  was found or -1 when the id is not found. */
-  //int findParameter(clap_id id) const;
 
   /** Sets all the parameters to their default values by calling setParameter for each. */
   void setAllParametersToDefault();
@@ -196,16 +174,14 @@ public:
   our implementation here, we currently handle only parameter change events (by calling 
   setParameter which you may override, if you want to respond to parameter changes). */
   virtual void processEvent(const clap_event_header_t* hdr);
-  // Maybe make public
 
 
 private:
 
-  //std::vector<ClapPluginParameter> params;
-  std::vector<double>          values;
-  std::vector<clap_param_info> infos;
+  std::vector<double>          values;  // Current values, indexed by id
+  std::vector<clap_param_info> infos;   // Parameter informations, indexed by index
 
-  // ToDo:
+  // ToDo [DONE]:
   // -Replace params array with a std::vector<double> values.
   // -As *index* into the values array, we will use the *identifier* of the parameter - which may 
   //  or may not match its index in the "infos" array
@@ -268,3 +244,17 @@ public:
     uint32_t numFrames) = 0;
 
 };
+
+
+//=================================================================================================
+
+/** UNDER CONSTRUCTION. */
+/*
+class ClapSynthStereo32Bit : public ClapPluginStereo32Bit
+{
+
+
+};
+*/
+
+

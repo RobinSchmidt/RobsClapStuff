@@ -40,22 +40,6 @@ bool ClapPluginWithParams::paramsValue(clap_id id, double* value) const noexcept
     *value = 0.0;
     return false; 
   }
-
-
-  /*
-  int index = findParameter(id);
-  //assert(index != -1);
-  if(index != -1) 
-  {
-    *value = params[index].value;
-    return true; 
-  }
-  else 
-  {
-    *value = 0.0;
-    return false; 
-  }
-  */
 }
 
 bool ClapPluginWithParams::paramsValueToText(
@@ -152,12 +136,6 @@ bool ClapPluginWithParams::stateLoad(const clap_istream* stream) noexcept
 void ClapPluginWithParams::addParameter(clap_id id, const std::string& name, double minValue, 
   double maxValue, double defaultValue, clap_param_info_flags flags)
 {
-  //assert(id == (clap_id) params.size());
-  // It is currently not supported to add the parameters in arbitrary order. You must add them in 
-  // the order of their ids and the ids must start at 0 and use contiguous numbers
-
-  //params.push_back(ClapPluginParameter(id, defaultValue));
-
   // Add a new clap_param_info to the end of our infos array:
   clap_param_info info;
   info.min_value     = minValue;
@@ -177,35 +155,14 @@ void ClapPluginWithParams::addParameter(clap_id id, const std::string& name, dou
   values.resize(newSize);
   values[id] = defaultValue;
 
-
-
-
-  // ToDo (old): 
+  // ToDo: 
   //
   // -Make sure that no param with given id exists already
   // -Also, no info with given id should exist already (write a findParamInfo function)
 }
 
-/*
-int ClapPluginWithParams::findParameter(clap_id id) const
-{
-  for(int i = 0; i < (int)params.size(); i++) 
-  {
-    if(params[i].id == id)
-      return i; 
-  }
-  return -1;
-}
-*/
-
 void ClapPluginWithParams::setParameter(clap_id id, double newValue)
 {
-  /*
-  int index = findParameter(id);
-  if(index != -1)
-    params[index].value = newValue;
-    */
-
   if((size_t) id < values.size())
   {
     values[id] = newValue;
@@ -230,7 +187,6 @@ void ClapPluginWithParams::setParameter(clap_id id, double newValue)
 
 double ClapPluginWithParams::getParameter(clap_id id) const
 {
-
   if((size_t) id < values.size())
     return values[id];
   else
@@ -238,13 +194,6 @@ double ClapPluginWithParams::getParameter(clap_id id) const
     //assert(false);  // Host tries to retrieve a parameter with invalid id.
     return 0.0;
   }
-
-  /*
-  int index = findParameter(id);
-  if(index != -1)
-    return params[index].value;
-  return 0.0;
-  */
 }
 
 void ClapPluginWithParams::setAllParametersToDefault()
@@ -387,8 +336,6 @@ void ClapPluginWithParams::processEvent(const clap_event_header_t* hdr)
   // -When we handle more types of events, we should use a switch statement. See the 
   //  plugin-template.c. The nakst example also uses an if statement, though.
 }
-
-
 
 //=================================================================================================
 // class ClapPluginStereo32Bit
