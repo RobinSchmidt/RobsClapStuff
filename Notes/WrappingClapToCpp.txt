@@ -60,7 +60,7 @@ leaving out any fields that are not relevant for this analysis:
 
 
 This struct is the core of the VST-API. When a plugin is instantiated, the host calls VSTPluginMain
-and expects it to return a pointer to such a struct. The struct contais some variable fields that
+and expects it to return a pointer to such a struct. The struct contains some variable fields that
 contain some information about the plugin like the number of inputs and outputs and, importantly, a
 couple of function pointers that the host will call later to do the actual audio processing and 
 parameter setup. It is worth to mention that there is no such thing as an AEffectX struct for VST 2
@@ -75,7 +75,7 @@ It has the following signature:
 
 This is one of the functions, a plugin must implement and assign the function pointer in the 
 returned AEffect to that implementation. It receives as parameters a pointer to the AEffect struct 
-and and opcode that encodes the type of request. Thes opcodes can optionally have an index and a 
+and an opcode that encodes the type of request. These opcodes can optionally have an index and a 
 value. If the result of the request needs more data than can fit into the return value, it is 
 returned in the *ptr output variable. For example, when a string needs to be returned, it will be
 sprintf'ed or strcpy'ed into the ptr. I don't know what the float opt is used for. 

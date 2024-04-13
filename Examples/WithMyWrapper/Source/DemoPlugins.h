@@ -4,7 +4,7 @@
 
 
 /** A very simple gain plugin whose purpose is to demonstrate the usage of class 
-ClapPluginStereo32Bit. The purpose of this class is enable writing of common stereo plugins with
+ClapPluginStereo32Bit. The purpose of this class is to enable writing of common stereo plugins with
 32 bit processing with only a small amount of boilerplate code. To write a clap plugin based on 
 ClapPluginStereo32Bit, you need to do the following things:
 
