@@ -39,7 +39,7 @@ public:
   constructor. Generally, each pameter has an index and an id. The index determines the order in
   host-generated GUI. In CLAP, the id can be any (unique) number. Here in this framework we use the
   convention that the ids must be a permutation of the indices. This makes the back-and-forth 
-  mapping between indices and ids easy and effcient. */
+  mapping between indices and ids easy and efficient. */
   enum ParamId
   {
     kGain,
