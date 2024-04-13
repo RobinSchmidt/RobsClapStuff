@@ -48,12 +48,12 @@ The main features from Steinberg's "AGain" example that I wanted to replicate ar
   - Automation and state-recall should "just work" without any further ado, i.e. without any code in
     the plugin class.
  
-Additonal desiderata:
+Additional desiderata:
 
   - Automation should be sample-accurate out of the box.
   - The amount of boilerplate code in the actual plugins should be minimal
   - The amount of framework code to make all of that happen should be smallish
-  - The framework code should introduce only minimal computational overhead
+  - The framework code should introduce only minimal computational overhead and size bloat
 
 I have used the term "framework" here and it sounds like rather big word for the humble stuff that 
 is going on here. I tend to use the term framework whenever I deal with some re-usable library code 
@@ -71,8 +71,8 @@ functions. This is the case here - therefore, I guess one could call my set of w
 there is a class called ClapPluginStereo32Bit. If all you want to do is to write a plugin that 
 processes 32-bit floating point audio data in stereo, then you can just create a subclass of this
 class and with a very small amount of boilerplate, the usually expected functionality of a 
-GUI-less plugin (i.e. audio I/O, parameters and state-recall) will just work. To see how this can be 
-done, just take a look at:
+GUI-less plugin (i.e. audio I/O, parameter-handling and state-recall) will just work. To see how 
+this can be done, just take a look at:
 
 > Examples/WithMyWrapper/Source/DemoPlugins.h  
 > Examples/WithMyWrapper/Source/DemoPlugins.cpp  
@@ -96,7 +96,8 @@ always be most suitable. I tend to think that the reduction of boilerplate is mo
 though - so we'll see...
 
 Some of the other things on the ToDo list are to move the build system to CMake, to implement a 
-baseclass for instrument plugins and to show how to implement GUIs and maybe to show how to use some
-of the more advanced features of CLAP such as polyphonic parameter modulation. I also want to make a 
-suite of small, GUI-less plugins which should include Open303. But that will probably happen in my 
-main repo where I have access to my full DSP library.
+baseclass for instrument plugins with convenient hooks for handling noteOn/Off events and to show 
+how to implement GUIs and maybe to show how to use some of the more advanced features of CLAP such 
+as polyphonic parameter modulation. I also want to make a suite of small, GUI-less plugins which 
+should include Open303. But that will probably happen in my main repo where I have access to my full
+DSP library.
