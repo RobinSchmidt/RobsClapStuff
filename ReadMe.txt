@@ -27,10 +27,11 @@ build products in subfolders of the project folder. Among them, you should find:
 
   Examples/WithMyWrapper/Build/VisualStudio2019/x64/Debug/DemoPlugins.clap
 
-This is a library containing my first demo clap plugins. Currently, there's a gain and waveshaper
-plugin. If you are coming from VST and think "AGain", then you are exactly on the right track. I 
-wanted to figure out the easiest way to create some first, GUI-less CLAP plugins similar in spirit 
-to Steinberg's "Hello World" example to the VST-SDK.
+This is a library containing my first demo clap plugins. Yes - plugins in plural. The project also 
+demonstrates how to put several plugins into a single library (i.e. .dll or .so or whatever). 
+Currently, there's a gain and waveshaper plugin. If you are coming from VST and think "AGain", then 
+you are exactly on the right track. I wanted to figure out the easiest way to create some first, 
+GUI-less CLAP plugins similar in spirit to Steinberg's "Hello World" example to the VST-SDK.
 
 
 
