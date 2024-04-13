@@ -11,7 +11,7 @@ that even someone like me (i.e. someone with not so much experience with all the
 stuff) can understand it. At the moment, there are only project files for Visual Studio. As starting
 point, I recommend to load
 
-  Examples/WithMyWrapper/Build/VisualStudio2019/ClapStuff.sln
+    Examples/WithMyWrapper/Build/VisualStudio2019/ClapStuff.sln
 
 into Visual Studio and have a look around. Try to Build-and-Run the "Tests" project. If all goes 
 well, it should create a command-line application that runs some unit tests and reports success or 
