@@ -78,8 +78,6 @@ done, just take a look at:
 > Examples/WithMyWrapper/Source/DemoPlugins.cpp  
 > Examples/WithMyWrapper/Source/DemoPluginsEntryPoint.cpp
 
-> https://github.com/RobinSchmidt/RobsClapStuff/blob/main/Examples/WithMyWrapper/Source/DemoPlugins.h
-
 These 3 files are all you need to get a basic working "AGain"-style example for the CLAP format. 
 It's actually already more than just an "AGain" because it has two plugins (inside a single 
 library) and also demonstrates how choice parameters could be handled.
