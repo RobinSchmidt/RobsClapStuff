@@ -98,6 +98,6 @@ though - so we'll see...
 Some of the other things on the ToDo list are to move the build system to CMake, to implement a 
 baseclass for instrument plugins with convenient hooks for handling noteOn/Off events and to show 
 how to implement GUIs and maybe to show how to use some of the more advanced features of CLAP such 
-as polyphonic parameter modulation. I also want to make a suite of small, GUI-less plugins which 
-should include Open303. But that will probably happen in my main repo where I have access to my full
-DSP library.
+as polyphonic parameter modulation. I also want to make a suite of small, GUI-less plugins (like 
+the MDA or Airwindows suites) which should, among other things, include Open303. But that will 
+probably happen in my main repo where I have access to my full DSP library.
