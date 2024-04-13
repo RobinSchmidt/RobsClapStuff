@@ -50,7 +50,7 @@ At the moment, we can get away without such a functionality, though.
 
 At the moment, it is not recommended to derive your plugin class *directly* from the class
 ClapPluginWithParams but if you do, you will need to implement process() and there you will need to
-implement the interleaving of event-hanlding and audio-processing yourself - which really is 
+implement the interleaving of event-handling and audio-processing yourself - which really is 
 tedious boilerplate stuff that should some day be handled by the baseclass. To avoid that, you 
 should derive your plugin class from ClapPluginStereo32Bit where the interleaving is already 
 handled and you only need to override processBlockStereo() which gets called for all the sub-blocks
@@ -93,7 +93,8 @@ public:
   bool paramsValue(clap_id paramId, double *value) const noexcept override;
 
   /** Provides a default implementation of mapping parameter values to strings. The default 
-  implementation will show the value with 2 decimal digits after the dot. */
+  implementation will show the value with 2 decimal digits after the dot. If you want a different
+  formatting, you will need to override this function in your subclass. */
   bool paramsValueToText(clap_id paramId, double value, char *display, 
     uint32_t size) noexcept override;
 
@@ -132,21 +133,24 @@ public:
 
   /** Subclasses should override this to respond to parameter changes. For example, they may want 
   to recalculate some coefficients for the DSP algorithm when a parameter was changed. It has been 
-  made purely virtual because in most cases, you will really want to override this and would be a 
-  mistake not to. If you have one of those rare an atypical special cases where you don't need to 
-  respond to parameter changes, you can just override it with an empty implementation. */
+  made purely virtual because in most cases, you will really want to override this and it would be 
+  a bug if you don't. If you have one of those rare and atypical special cases where you don't need
+  to respond to parameter changes, you can just override it with an empty implementation. */
   virtual void parameterChanged(clap_id id, double newValue) = 0;
 
   /** Function to produce a string from a parameter value for display on the host-generated GUI. 
   You may pass a desired "precision", i.e. number of decimal digits after the dot and an optional
   suffix which can be used for displaying a physical unit such as " Hz" or " dB". If you want a 
-  space between the number and the unit, you need to explcitly include that space in the suffix. It
-  returns a bool to report success or failure. */
+  space between the number and the unit, you need to explicitly include that space in the suffix. 
+  It returns a bool to report success or failure. */
   bool toDisplay(double value, char* destination, int size, int precision,
     const char* suffix = nullptr)
   {
     return toStringWithSuffix(value, destination, size, precision, suffix) > 0;
   }
+  // ToDo: Explain how it could fail and why the CLAP-API cares and what is supposed to happen in
+  // case of a failure. I think, it fails when the "size" is insufficient to hold the formatted 
+  // string, etc.
 
   /** This function can be used for converting a choice/enum parameter to a display string, 
   assuming that you keep a string-array with the textual representations of the choices around. The
@@ -163,7 +167,10 @@ public:
   "value" will be assigned to zero and "false" will be returned. The purpose of the this function 
   is to facilitate conversion of display-strings to numeric parameter values. That means, it 
   implements the reverse mapping to the toDisplay() function for the choice/enum/string 
-  parameters. */
+  parameters. The CLAP-API requires that plugins can correctly convert back-and-forth between 
+  numeric values and their display strings. It's not enough to go one way, i.e. from value to 
+  string. The clap-validator app will also check roundtrips. For enum/choice parameters, that 
+  requires finding an index of a string. */
   bool toValue(const char* displayString, double* value, const std::vector<std::string>& strings)
   {
     int i = findString(strings, displayString);
@@ -183,7 +190,7 @@ public:
   //-----------------------------------------------------------------------------------------------
   // \name State handling
 
-  /** Overrides the implementsStae function to inform the host that we indeed implement the state 
+  /** Overrides the implementsState function to inform the host that we indeed implement the state 
   extension. */
   bool implementsState() const noexcept override { return true; }
 

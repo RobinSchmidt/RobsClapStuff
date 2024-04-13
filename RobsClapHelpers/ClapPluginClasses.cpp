@@ -94,11 +94,6 @@ bool ClapPluginWithParams::stateSave(const clap_ostream *stream) noexcept
     written += stream->write(stream, &stateString[written], size-written);
   return true;
 
-  // Notes:
-  //
-  // -I have no idea, if what I'm doing here is even remotely as intended. It's just guesswork. 
-  //  Needs thorough tests. OK - the clap-validator passes all tests successfully.
-  //
   // ToDo:
   //
   // -Maybe factor out the string-to-stream writing into a function 
@@ -144,7 +139,6 @@ void ClapPluginWithParams::addParameter(clap_id id, const std::string& name, dou
   info.flags         = flags;
   info.id            = id;
   info.cookie        = nullptr;                   // We currently don't use the cookie facility.
-  //info.cookie      = &params[params.size()-1];  // ...maybe use that later...
   strcpy_s(info.name,   CLAP_NAME_SIZE, name.c_str());
   strcpy_s(info.module, CLAP_PATH_SIZE, "");
   infos.push_back(info);
@@ -154,11 +148,6 @@ void ClapPluginWithParams::addParameter(clap_id id, const std::string& name, dou
   size_t newSize = std::max((size_t) id+1, values.size());
   values.resize(newSize);
   values[id] = defaultValue;
-
-  // ToDo: 
-  //
-  // -Make sure that no param with given id exists already
-  // -Also, no info with given id should exist already (write a findParamInfo function)
 }
 
 void ClapPluginWithParams::setParameter(clap_id id, double newValue)
@@ -175,8 +164,6 @@ void ClapPluginWithParams::setParameter(clap_id id, double newValue)
 
   // ToDo:
   //
-  // -[old ]Maybe get rid of that search - just assume that the id matches the index. I guess, if 
-  //  we have a lot of automation going on, that simplification can be of great benefit
   // -Maybe add assertions that the newValue is within the allowed range. And/or maybe clip it to
   //  the allowed range. But that would require to figure out the range which would require to look
   //  up where the corresponding parameter info is stored in our infos array which would currently
@@ -355,6 +342,7 @@ void ClapPluginWithParams::processEvent(const clap_event_header_t* hdr)
   //  "core event space" exist? -> Figure out and document!
   //
   // ToDo:
+  //
   // -When we handle more types of events, we should use a switch statement. See the 
   //  plugin-template.c. The nakst example also uses an if statement, though.
 }
@@ -443,9 +431,8 @@ clap_process_status ClapPluginStereo32Bit::process(const clap_process *p) noexce
     frameIndex += nextEventFrame;
   }
   // This code needs verification. I copy/pasted it from  plugin-template.c  and made some edits
-  // which I think, are appropriate. But it needs to be verified. Maybe create a test project
-  // That does some unit tests. Also compare the code to the nakst example. It gives reasonable
-  // results in Bitwig though - but that doesn't replace unit testing.
+  // which I think, are appropriate. It gives reasonable results in Bitwig though - but that 
+  // doesn't replace unit testing.
 
   return CLAP_PROCESS_CONTINUE;
 
@@ -456,38 +443,3 @@ clap_process_status ClapPluginStereo32Bit::process(const clap_process *p) noexce
   //  call this baseclass method here and return whatever other return value you want to return to 
   //  the host
 }
-
-
-
-//=================================================================================================
-
-/*
-
-ToDo:
-
--To lift the restriction in ClapPluginParameter that the ids must match the array indices, maybe
- introduce a bool member variable "idMatchesIndex" that swaps between those two modes. When id and
- index match, parameter lookup is greatly simplified because we do not need to search for the id.
- On the other hand, allowing a mismatch allows us to change the order of the parameters later 
- without breaking state recall.
-
--Maybe rename ClapPluginStereo32Bit to ClapEffectStereo32Bit. Have also a ClapInstrumentStereo32Bit
- class. This should provide hooks like noteOn/noteOff that subclasses can override. Maybe also
- setMidiController - but that could actually be useful for effects as well. Maybe it should be a 
- subclass of ClapEffectStereo32Bit ...but then we should perhaps not rename it to "Effect". Yeah - 
- actually that baseclass can also be useful for analyzers and instruments, so renaming it into 
- "Effect" may not be appropriate after all.
-
--Maybe add a self-check function to ClapPluginWithParams that verifies that:
-  -The ids match in the "params" and "infos" array
-  -The values are within the allowed range
-  -all ids are unique
-  -the ids range from 0 to numParameters-1
-  -the ids match the array index (this restriction may later be lifted such that we can freely 
-   reorder parameters from version to version and/or insert new parameters in the middle
- But maybe such a function should only appear in the unit tests and not litter the production code.
-
--Add a string conversion function to the parameter class. ...and maybe a callback that sets a 
- parameter in the actual DSP algorithm
-
-*/
