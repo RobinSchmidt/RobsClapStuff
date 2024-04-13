@@ -25,7 +25,7 @@ Making Plugins
 When you try to build the "DemoPlugins" project, you will probably initially get an error message 
 because there is a post-build step that tries to copy the resulting plugin library into the folder:
  
-  C:/Temp/CLAP  
+> C:/Temp/CLAP  
 
 which will not work unless that folder exists. The reason for this post-build step is to make the 
 Edit-Build-Test cycle with a DAW more convenient. I use the Temp/CLAP folder on my machine for 
@@ -74,8 +74,8 @@ class and with a very small amount of boilerplate, the usually expected function
 GUI-less plugin (i.e. audio I/O, parameters and state-recall) will just work. To see how this can be 
 done, just take a look at:
 
-> Examples/WithMyWrapper/Source/DemoPlugins.h
-> Examples/WithMyWrapper/Source/DemoPlugins.cpp
+> Examples/WithMyWrapper/Source/DemoPlugins.h  
+> Examples/WithMyWrapper/Source/DemoPlugins.cpp  
 > Examples/WithMyWrapper/Source/DemoPluginsEntryPoint.cpp
 
 These 3 files are all you need to get a basic working "AGain"-style example for the CLAP format. 
