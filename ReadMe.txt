@@ -45,7 +45,7 @@ Additonal desiderata:
   - Automation should be sample-accurate out of the box.
   - The amount of boilerplate code in the actual plugins should be minimal
   - The amount of framework code to make all of that happen should be smallish
-  - The framework code should not introduce too much computational overhead
+  - The framework code should introduce only minimal computational overhead
 
 I have used the term "framework" here and it sounds like rather big word for the humble stuff that 
 is going on here. I tend to use the term framework whenever I deal with some re-usable library code 
@@ -55,7 +55,8 @@ or uses classes from the library. Frameworks invert this: "Don't call us - we wi
 is sometimes called the "Hollywood principle" and, in my opinion, the hallmark of frameworks. In 
 object oriented frameworks, the way this works is usually that the client code derives a subclass 
 from some library-provided baseclass and overrides one or more virtual functions. This is the case 
-here. In particular, in the file:
+here - therefore, I guess one could call my set of wrapper classes a "mini-framework". In 
+particular, in the file:
 
   RobsClapHelpers/ClapPluginClasses.h
 
