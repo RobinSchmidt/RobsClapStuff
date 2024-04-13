@@ -9,6 +9,13 @@ Make one .clap with several plugins
  midi, i.e. be of the instrument category
 
 
+-Use CMake for the build system. Maybe try a .sln to cmake converter like this:
+ https://cmakeconverter.readthedocs.io/en/latest/use.html
+-For doing it manually, see:
+ https://cmake.org/cmake/help/book/mastering-cmake/chapter/Converting%20Existing%20Systems%20To%20CMake.html
+-For managing CMake build-systems directly in Visual Studio, see:
+ https://learn.microsoft.com/en-us/cpp/build/cmake-projects-in-visual-studio?view=msvc-170
+
 Add the following stuff to Utilities.h/cpp:
 -assertions that trigger debug breaks - then replace all occurrences of "assert" with this
 -memory leak checks
@@ -16,7 +23,9 @@ Add the following stuff to Utilities.h/cpp:
 -string conversion functions for the parameters
 
 
--Currently the plugin-validator  has one failing test:
+
+
+-[DONE] Currently the plugin-validator  has one failing test:
 
    -param-conversions: Asserts that value to string and string to value conversions are supported 
     for ether all or none of the plugin's parameters, and that conversions between values and 
