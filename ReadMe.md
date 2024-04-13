@@ -11,7 +11,7 @@ that even someone like me (i.e. someone with not so much experience with all the
 stuff) can understand it. At the moment, there are only project files for Visual Studio. As starting
 point, I recommend to load
 
-    Examples/WithMyWrapper/Build/VisualStudio2019/ClapStuff.sln
+> Examples/WithMyWrapper/Build/VisualStudio2019/ClapStuff.sln
 
 into Visual Studio and have a look around. Try to Build-and-Run the "Tests" project. If all goes 
 well, it should create a command-line application that runs some unit tests and reports success or 
@@ -32,7 +32,7 @@ Edit-Build-Test cycle with a DAW more convenient. I use the Temp/CLAP folder on 
 plugins that are under construction. Aside from the failing post-build step, you should get some 
 build products in subfolders of the project folder. Among them, you should find:
 
->  Examples/WithMyWrapper/Build/VisualStudio2019/x64/Debug/DemoPlugins.clap
+> Examples/WithMyWrapper/Build/VisualStudio2019/x64/Debug/DemoPlugins.clap
 
 This is a library containing my first demo clap plugins. Yes - plugins in plural. The project also 
 demonstrates how to put several plugins into a single library (i.e. .dll or .so or whatever). 
@@ -66,7 +66,7 @@ derives a subclass from some library-provided baseclass and overrides one or mor
 functions. This is the case here - therefore, I guess one could call my set of wrapper classes a 
 "mini-framework". In particular, in the file:
 
-  RobsClapHelpers/ClapPluginClasses.h
+> RobsClapHelpers/ClapPluginClasses.h
 
 there is a class called ClapPluginStereo32Bit. If all you want to do is to write a plugin that 
 processes 32-bit floating point audio data in stereo, then you can just create a subclass of this
@@ -74,9 +74,9 @@ class and with a very small amount of boilerplate, the usually expected function
 GUI-less plugin (i.e. audio I/O, parameters and state-recall) will just work. To see how this can be 
 done, just take a look at:
 
-  Examples/WithMyWrapper/Source/DemoPlugins.h
-  Examples/WithMyWrapper/Source/DemoPlugins.cpp
-  Examples/WithMyWrapper/Source/DemoPluginsEntryPoint.cpp
+> Examples/WithMyWrapper/Source/DemoPlugins.h
+> Examples/WithMyWrapper/Source/DemoPlugins.cpp
+> Examples/WithMyWrapper/Source/DemoPluginsEntryPoint.cpp
 
 These 3 files are all you need to get a basic working "AGain"-style example for the CLAP format. 
 It's actually already more than just an "AGain" because it has two plugins (inside a single 
