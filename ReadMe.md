@@ -32,7 +32,7 @@ Edit-Build-Test cycle with a DAW more convenient. I use the Temp/CLAP folder on 
 plugins that are under construction. Aside from the failing post-build step, you should get some 
 build products in subfolders of the project folder. Among them, you should find:
 
-  Examples/WithMyWrapper/Build/VisualStudio2019/x64/Debug/DemoPlugins.clap
+>  Examples/WithMyWrapper/Build/VisualStudio2019/x64/Debug/DemoPlugins.clap
 
 This is a library containing my first demo clap plugins. Yes - plugins in plural. The project also 
 demonstrates how to put several plugins into a single library (i.e. .dll or .so or whatever). 
