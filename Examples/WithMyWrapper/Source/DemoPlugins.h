@@ -33,7 +33,13 @@ public:
   break state recall) and new parameters can only be added at the end. That's pretty much the 
   behavior we know from VST 1/2 when not using the "chunks" mechanism for the state. That's why I 
   also use the convention with the k-prefix - if you know VST 1/2, that should all look rather 
-  familiar. */
+  familiar. The difference to the VST way of handling it is that here the order of the identifiers 
+  does not necessarily correspond to the order of the knobs/sliders that the host-generated GUI 
+  will present. That order is determined by the order of our addParameter() calls in our 
+  constructor. Generally, each pameter has an index and an id. The index determines the order in
+  host-generated GUI. In CLAP, the id can be any (unique) number. Here in this framework we use the
+  convention that the ids must be a permutation of the indices. This makes the back-and-forth 
+  mapping between indices and ids easy and effcient. */
   enum ParamId
   {
     kGain,
