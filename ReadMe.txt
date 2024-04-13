@@ -63,5 +63,21 @@ particular, in the file:
 there is a class called ClapPluginStereo32Bit. If all you want to do is to write a plugin that 
 processes 32-bit floating point audio data in stereo, then you can just create a subclass of this
 class and with a very small amount of boilerplate, the usually expected functionality of a 
-GUI-less plugin (i.e. audio I/O, parameters and state-recall) will just work.
+GUI-less plugin (i.e. audio I/O, parameters and state-recall) will just work. To see how this can be 
+done, just take a look at:
 
+  Examples/WithMyWrapper/Source/DemoPlugins.h
+  Examples/WithMyWrapper/Source/DemoPlugins.cpp
+  Examples/WithMyWrapper/Source/DemoPluginsEntryPoint.cpp
+
+These 3 files are all you need to get a basic working "AGain"-style example for the CLAP format. 
+It's actually already more than just an "AGain" because it has two plugins (inside a single 
+library) and also demonstrates how choice parameters could be handled.
+
+I do have some idess to further reduce the amount of boilerplate inside the plugin code. In 
+particular, I have some ideas how to get rid of the current necessity to override the value/text
+conversion functions by implementing a system for handling that in the baseclass. I'm not yet sure,
+if should really do that, though. On the pro-side, it would reduce the boilderplate in the plugin 
+code. On the con side, it would introduce a bit of overhead and impose certain ways of handling the 
+conversions which may not always be most suitable. I tend to think that the reduction of boilerplate
+is more important, though - so we'll see...
