@@ -31,11 +31,36 @@ This is a library containing my first demo clap plugins. Yes - plugins in plural
 demonstrates how to put several plugins into a single library (i.e. .dll or .so or whatever). 
 Currently, there's a gain and waveshaper plugin. If you are coming from VST and think "AGain", then 
 you are exactly on the right track. I wanted to figure out the easiest way to create some first, 
-GUI-less CLAP plugins similar in spirit to Steinberg's "Hello World" example to the VST-SDK.
+GUI-less CLAP plugins similar in spirit to Steinberg's "Hello World" example in the VST-SDK. The 
+main features from Steinberg's "AGain" example that I wanted to replicate are:
 
+  - The plugin should be a subclass of some baseclass provided by the SDK/framework.
+  - The host should be able to provide a resonable generic GUI where parameter names and nicely 
+    formatted values are shown.
+  - Automation and state-recall should "just work" without any further ado, i.e. without any code in
+    the plugin class.
+ 
+Additonal desiderata:
 
+  - Automation should be sample-accurate out of the box.
+  - The amount of boilerplate code in the actual plugins should be minimal
+  - The amount of framework code to make all of that happen should be smallish
+  - The framework code should not introduce too much computational overhead
 
+I have used the term "framework" here and it sounds like rather big word for the humble stuff that 
+is going on here. I tend to use the term framework whenever I deal with some re-usable library code 
+where the client code needs to implement functionality that the library code calls. In a "toolkit",
+on the other hand, the flow of control is usually the other way around: client code calls functions 
+or uses classes from the library. Frameworks invert this: "Don't call us - we will call you" - this 
+is sometimes called the "Hollywood principle" and, in my opinion, the hallmark of frameworks. In 
+object oriented frameworks, the way this works is usually that the client code derives a subclass 
+from some library-provided baseclass and overrides one or more virtual functions. This is the case 
+here. In particular, in the file:
 
-* meaning: someone who is not so savvy with all the infrastructural stuff - APIs, ABIs, entry 
-points, exported symbols, wrappers, yadda yadday yah. I've just been using JUCE for so many years 
-which allowed me to remain blissfully ignorant of all these "details".
+  RobsClapHelpers/ClapPluginClasses.h
+
+there is a class called ClapPluginStereo32Bit. If all you want to do is to write a plugin that 
+processes 32-bit floating point audio data in stereo, then you can just create a subclass of this
+class and with a very small amount of boilerplate, the usually expected functionality of a 
+GUI-less plugin (i.e. audio I/O, parameters and state-recall) will just work.
+
