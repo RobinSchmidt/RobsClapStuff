@@ -117,3 +117,14 @@ Or maybe:
 Or just:
 
   addChoiceParameter(kShape, "Shape", { { kClip, "Clip" }, { kTanh, "Tanh"} }, kClip ); 
+
+
+
+There is potential for optimization in the waveshaper: 
+-The branching could be done per block rather than per sample
+-We could also do way with the branching completely by using a function pointer to a waveshaping
+ function.
+
+-Make a plugin that uses parameters that need some nonlinear mapping function like lin-to-exp for
+ a frequency. Maybe we should use a normalized 0..1 range for host/plugin communication just like 
+ with VST

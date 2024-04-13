@@ -13,24 +13,50 @@
 them via the state extension. Subclasses should use addParameter() in their constructor to set up 
 their parameters and override parameterChanged() to respond to parameter changes.
 
-When adding a parameter, you need to assign an identifier (short id) to it. When the host later 
+When adding a parameter, you need to assign an identifier (short: id) to it. When the host later 
 wants to set or get the value of the parameter or convert it to a string or whatever, it will refer
 to the parameter by this id. The way the id-system is handled by this class here assumes that the
 ids are determined by an enum (that is supposedly defined somewhere inside you plugin subclass) and
-that the ids run continuously from 0 to numParams-1. An id, once assigned to a parameter, must 
-remain stable from one plugin version to the next. That means, after a plugin is published, you 
-cannot reorder the enum or delete entries from it. You can, however, append new entries for more
-parameters. You also *can* reorder the parameter-knobs presented by the host on the generic GUI 
-because that ordering is not determined by the id but rather by the index. When you use this class,
-the index will be determined by the order in which you add the parameters in your constructor - 
-which may or may not match the order in the enum. @see paramsInfo
+that the ids run continuously from 0 to N-1 where N is the number of parameters. An id, once 
+assigned to a parameter, must remain stable from one plugin version to the next. That means, after 
+a plugin is published, you cannot reorder the enum or delete entries from it or insert entries at 
+arbitrary positions. You can, however, append new entries at the end for more parameters. You also 
+*can* reorder the parameter-knobs presented by the host on the generic GUI because that ordering is
+not determined by the id but rather by the index. When you use this class, the index will be 
+determined by the order in which you add the parameters in your constructor. This may or may not 
+match the order in the enum. But one invariant must always hold true: Let N be the number of 
+parameters such that the index naturally runs from 0 to N-1. Then, the list of the identifiers must
+be some permutation of the list of their corresponding indices. It is easy to mess this up which is
+why I recommend to use some sort debug-assertion like:
 
+  assert(areParamsConsistent());
 
-ToDo:
--Document how the index-vs-id stuff is handled
--Hmm...I think, we need to bring back the processSubBlock32/64 functions and implement process
+after adding your parameters in your constructor. Look at the examples ClapGain, ClapWaveShaper for
+how this could look like. @see paramsInfo(). Messing this up could happen, for example, by 
+forgetting to use one of your enum entries or to use one of your enum entries twice in your 
+sequence of addParameter() calls. The consistency check basically checks, if each of your ids 
+(== enum-entries) is used exactly once. This consistency may be violated in the middle of your 
+sequence of addParameter() calls but after the last call, it should be established.
 
-*/
+The reason why I have opted for this particular convention for mapping between parameter index and 
+identifier is that it allows for a very simple O(1) access to all parameters without needing a 
+complicated data-structure (like a std::map, say). Our mapping is basically a bijective function of 
+the set { 0, ..., N-1 } to itself(!) which can be implemented by a simple pair of std::vector<int>. 
+One vector for the forward mapping and one for the inverse mapping. I have actually written the 
+class IndexIdentifierMap in Utilities.h for precisely that purpose but it turned out that at the 
+moment, we don't even need that (yet). We may need it later when we need a O(1) mapping from id to 
+index for some more functionality like retrieving the clap_param_info by id rather than by index. 
+At the moment, we can get away without such a functionality, though.
+
+At the moment, it is not recommended to derive your plugin class *directly* from the class
+ClapPluginWithParams but if you do, you will need to implement process() and there you will need to
+implement the interleaving of event-hanlding and audio-processing yourself - which really is 
+tedious boilerplate stuff that should some day be handled by the baseclass. To avoid that, you 
+should derive your plugin class from ClapPluginStereo32Bit where the interleaving is already 
+handled and you only need to override processBlockStereo() which gets called for all the sub-blocks
+between the events. As the name suggests, this class is restricted to 32-bit-stereo plugins, 
+though. I'm still working on it... (ToDo: implement process and bring back the processSubBlock32/64
+functions from the private repo). */
 
 class ClapPluginWithParams : public ClapPlugin
 {
@@ -58,11 +84,7 @@ public:
   may assign to its parameters. The id is actually a field in the info struct. When the host wants 
   to set a parameter, it will use this id to identify the parameter. The index is just used here to 
   inquire the info (I guess, once, when the plugin is loaded (VERIFY!)). The id is used whenever a 
-  parameter is set.
-  
-  I currently actually use the convention that the index is indeed equal to the id - but that not 
-  be assumed to be a general rule and it will likely change when for some reason I want to re-order
-  parameters of existing plugins or insert new parameters. */
+  parameter is set. */
   bool paramsInfo(uint32_t index, clap_param_info* info) const noexcept override;
 
   /** Assigns the output variable "value" to the value of the parameter with the given parameter 
@@ -153,7 +175,10 @@ public:
   your addParameter calls in some sort of assertion in debug builds to catch bugs in your parameter
   setup code. */
   bool areParamsConsistent();
-  // Maybe rename to something more descriptive..."consistent" is a bit too general and vague
+  // Maybe try to find a more descriptive name - "consistent" is a bit too general and vague. On 
+  // the other hand, client code should probably not really have to care about what exactly 
+  // "consistency" means. 
+
 
   //-----------------------------------------------------------------------------------------------
   // \name State handling
@@ -188,27 +213,18 @@ public:
   // \name Misc
 
   /** This is called from within our implementation of process to handle one event at a time. In 
-  our implementation here, we currently handle only parameter change events (by calling 
-  setParameter which you may override, if you want to respond to parameter changes). */
+  our implementation here, we currently handle only parameter change events by calling 
+  setParameter which in turn will trigger a call to the purely virtual parameterChanged() callback
+  which you need to override, to implement your responses to parameter changes. */
   virtual void processEvent(const clap_event_header_t* hdr);
+  // ...well...actually, we do not yet have an implementation of process() here in this class. We 
+  // have one in ClapPluginStereo32Bit, though.
 
 
 private:
 
   std::vector<double>          values;  // Current values, indexed by id
   std::vector<clap_param_info> infos;   // Parameter informations, indexed by index
-
-  // ToDo [DONE]:
-  // -Replace params array with a std::vector<double> values.
-  // -As *index* into the values array, we will use the *identifier* of the parameter - which may 
-  //  or may not match its index in the "infos" array
-  // -I think, we may even get away without using the IndexIdentifierMap. Mapping from an index to
-  //  an identifier is O(1) anyway - we just do infos[index].id to get it. Mapping from an id to
-  //  an index would be O(numParams) - we'd have to (linearly) search for the id in the 
-  //  infos-array. However - looking up an index for a given id is not really needed, when we use
-  //  the convention to store the values in an array that is directly indexed by the id. If it 
-  //  turns out later that we need such a mapping (and need it fast), we can still pull in this
-  //  map.
 
 };
 
@@ -218,7 +234,10 @@ private:
 /** This class can be used as baseclass for clap plugins that have stereo in/out and want to do 
 their processing in 32 bit. That's the most common case (for me, at least) which is why it makes 
 sense for me to factor out a baseclass for this case to reduce the amount of boilerplate for this
-sort of plugin. */
+sort of plugin. 
+
+At the moment, it is recommended to derive your plugin class from this class and not from its 
+baseclass ClapPluginWithParams because the baseclass does not yet implement the event-handling. */
 
 class ClapPluginStereo32Bit : public ClapPluginWithParams
 {
@@ -256,7 +275,7 @@ public:
   // \name Callbacks to override by your subclass
 
   /** Your subclass must override this function to process one stereo block of in/out samples of
-  length numFrames. */
+  length "numFrames". */
   virtual void processBlockStereo(const float* inL, const float* inR, float* outL, float* outR, 
     uint32_t numFrames) = 0;
 

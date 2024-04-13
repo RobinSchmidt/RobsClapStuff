@@ -35,6 +35,22 @@ https://nakst.gitlab.io/tutorial/clap-part-1.html
 https://raw.githubusercontent.com/nakst/cdn/main/clap-tutorial-part-1-plugin.cpp
 
 
+
+
+A simple synth using VSTGUI:
+https://github.com/surge-synthesizer/clap-saw-demo/blob/main/src/clap-saw-demo.h
+
+
+
+A dummy "repo" whose purpose is to use its issue-tracker for tracking bugs/misbehaviors when using
+CLAP plugins in certain hosts:
+https://github.com/free-audio/interop-tracker/issues
+
+
+
+https://github.com/robbert-vdh/nih-plug
+-Audio plugin framework written in Rust, as well as a small collection of plugins
+
 ----------------------------------------------------------------------------------------------------
 About using the C example:
 
