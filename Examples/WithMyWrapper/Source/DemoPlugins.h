@@ -28,13 +28,12 @@ class ClapGain : public RobsClapHelpers::ClapPluginStereo32Bit
 
 public:
 
-  /** Enumeration of the parameters. These values are used for the param_id and they are also the
-  indices at which the parameters will be stored in our inherited parameters array. That means, 
-  the values must start at 0 and count continuously up. The order must be stable between plugin 
-  versions (or else, you'll break state recall) and new parameters can only be added at the end. 
-  That's pretty much the behavior we know from VST 1/2 when not using the "chunks" mechanism for 
-  the state. That's why I also use the convention with the k-prefix - if you know VST 1/2, that 
-  should all look rather familiar. */
+  /** Enumeration of the parameters. These values are used for the param_id. The values must start 
+  at 0 and count continuously up. The order must be stable between plugin versions (or else, you'll
+  break state recall) and new parameters can only be added at the end. That's pretty much the 
+  behavior we know from VST 1/2 when not using the "chunks" mechanism for the state. That's why I 
+  also use the convention with the k-prefix - if you know VST 1/2, that should all look rather 
+  familiar. */
   enum ParamId
   {
     kGain,
