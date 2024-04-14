@@ -150,7 +150,7 @@ public:
 
 
   float applyDistortion(float x);
-  // ToDo: declare as noexcept
+  // ToDo: declare as noexcept, maybe inline
 
 protected:
 
@@ -177,16 +177,60 @@ class ClapToneGenerator : public RobsClapHelpers::ClapSynthStereo32Bit
 public:
 
 
+  bool activate(double sampleRate, uint32_t minFrameCount, uint32_t maxFrameCount) 
+    noexcept override;
+
+  void deactivate() noexcept override;
+
+  void reset() noexcept override;
+
+  void processBlockStereo(const float* inL, const float* inR, float* outL, float* outR, 
+    uint32_t numFrames) override;
+
   void noteOn( int16_t key, double velocity) override;
 
   void noteOff(int16_t key) override;
 
 
 
+  inline float getSample()
+  {
+    // Compute output:
+    static const double pi2 = 6.2831853071795864769;  // 2*pi
+    float out = sin((float) (pi2 * phasor));          // Phasor is in 0..1
+
+    // Update state:
+    phasor += increment;
+    if(phasor > 1.0)
+      phasor -= 1.0;
+
+    // Return output:
+    return out;
+
+    // ToDo:
+    //
+    // -Check, if it is safe to use "if" rather than "while" for the wrap-around. With extremely 
+    //  high frequencies, we may need a "while". But that happens only above (twice?) the Nyquist 
+    //  limit. Can we get such high frequencies? That should probably be made impossible anyway.
+    // -Check, if we need also a wrap around for phasor < 0.0. This may happen only when the 
+    //  increment is negative. Make sure that this doesn't occur.
+    // -If we don't need any of that, document, why not i.e. explain why the situations mentioned 
+    //  above cannot occur. There must be a safety net on a higher level (like clipping frequencies
+    //  to 0..sampleRate/2 in noteOn, for example - I think that corresponds to clipping the 
+    //  increment to 0..0.5).
+  }
+
+
 
 protected:
 
-  double sampleRate = 44100;  // ...or maybe init to some code for "unknown"?
-  int8_t currentKey = -1;     // -1 means: none.
+  // Parameters:
+  double sampleRate = 0.0;   // 0.0 is code for "unknown" (or should we use -1?)
+  double increment  = 0.0;   // Per sample increment for our phasor
+
+  // State:
+  double phasor     = 0.0;
+  int8_t currentKey = -1;    // -1 means: none.
+
 
 };

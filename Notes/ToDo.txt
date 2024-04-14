@@ -151,3 +151,7 @@ There is potential for optimization in the waveshaper:
   would add to the CPU load of the plugin just to work around a bug in the host.
  -Naming ports. Should there be spaces in the names or not, etc.
  -Giving ids to ports. Should we start counting from 0 or 1?
+ -How is latency handled? The documentation of clap_plugin.activate says that after activation, the
+  latency must remain constant. But when I change a "BlockSize" or "LookAhead" parameter in some 
+  plugin, the latency will change. How am I supposed to deal with that situation? Can I request a
+  de/re-activation from the host?

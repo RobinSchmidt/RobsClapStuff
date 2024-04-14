@@ -226,6 +226,44 @@ float ClapWaveShaper::applyDistortion(float x)
 
 //=================================================================================================
 
+bool ClapToneGenerator::activate(
+  double newSampleRate, uint32_t minFrameCount, uint32_t maxFrameCount) noexcept
+{
+  sampleRate = newSampleRate;
+  reset();
+  return true;
+
+  // ToDo:
+  //
+  // -Maybe we should check, if the passed sampleRate is valid (i.e. > 0) and return false if not?
+  //  A sampleRate < 0 is clearly a bug in the host though.
+}
+
+void ClapToneGenerator::deactivate() noexcept
+{
+  sampleRate = 0.0;
+  reset();
+
+  // Notes:
+  //
+  // -It may be a bit redundant to call reset() in activate() and deactivate() but it doesn't hurt
+  //  and is a bit cleaner to be in a well defined state after every activation and deactivation.
+  //  But if only one of the calls shall remain, I think, it should be the one in deactivate. 
+  //  Before the very first activation, the plugin will be in its initial state anyway
+}
+
+void ClapToneGenerator::reset() noexcept
+{
+  phasor = 0.0;
+  currentKey = -1;
+}
+
+void ClapToneGenerator::processBlockStereo(
+  const float* inL, const float* inR, float* outL, float* outR, uint32_t numFrames)
+{
+
+
+}
 
 void ClapToneGenerator::noteOn(int16_t key, double vel)
 {
