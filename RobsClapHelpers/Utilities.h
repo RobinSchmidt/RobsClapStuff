@@ -84,7 +84,16 @@ inline int countOccurrences(const T* buffer, int length, const T& element)
 
 /** A class that allows for mapping back and forth between indices and corresponding identifiers in
 constant time. It's like a bidirectional key/value map where both, key and value, are some sort of 
-integer. ...TBC...  */
+integer. It's meant for mapping back and forth between parameter indices and corresponding 
+identifiers (ids, for short). In CLAP, the id for a parameter is a unique number that the plugin 
+itself can choose. If we choose the list of identifiers to be a permutation of the list of indices,
+we get all the relevant benefits of the additional flexibility of such an id-system (mostly, the 
+ability to re-order the knobs in the host-generated GUI in updated versions of the plugin) while at
+the same time not introducing as much overhead as we would have to when using "random" numbers for
+the ids. So, that's the route we chose here: the mapping between index and id is a bijective 
+mapping (i.e. a permutation) of the set { 0, ..., N-1 } to itself. This can easily be implemented
+by a piar of std::vector<int> of length N. No need for (moderately) complex data structures like
+a std::map or something similar. ...TBC...  */
 
 class IndexIdentifierMap
 {
