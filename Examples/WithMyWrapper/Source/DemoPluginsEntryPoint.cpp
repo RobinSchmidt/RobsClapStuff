@@ -63,7 +63,6 @@ static const clap_plugin_factory_t pluginFactory =
   //  This has the line  delete &self;  at the bottom which explicitly calls the destructor of the 
   //  ClapPlugin class. If the subclass has its own destructor, that one gets called before
   //  the baseclass destructor.
-  //
   // -Document why we need to pass a descriptor to the constructor. The plugin itself surely 
   //  already knows what kind of plugin it is. It feels a bit like writing code like: 
   //    Dog* dog = new Dog("Dog");  // Why do we need to tell the Dog() constructor that we are 
@@ -71,6 +70,8 @@ static const clap_plugin_factory_t pluginFactory =
   //  Maybe it's for a sanity check inside the constructor? It would make sense in a context like:
   //    Animal* dog = new Animal("Dog");
   //  but I can't see, how a situation like this could occur. -> Figure out!
+  // -Explain what the plugin can do with the host pointer. I guess, it can use it to call some
+  //  callback functions on the host?
 },
 };
 
