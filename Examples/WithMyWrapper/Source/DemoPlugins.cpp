@@ -293,6 +293,11 @@ void ClapToneGenerator::processBlockStereo(
 {
   for(uint32_t n = 0; n < numFrames; ++n)
     outL[n] = outR[n] = getSample();
+
+
+  //// Test:
+  //for(uint32_t n = 0; n < numFrames; ++n)
+  //  outL[n] = outR[n] = 0.0;
 }
 
 void ClapToneGenerator::parameterChanged(clap_id id, double newValue)
@@ -325,3 +330,14 @@ void ClapToneGenerator::noteOff(int key)
     increment  =  0.0;  // Not really relevant but for tidiness
   }
 }
+
+/*
+
+ToDo:
+-The ClapToneGenerator currently has 3 failing tests in the clap-validator. It crashes in those 
+ tests(!).
+-It also crashes in Bitwig when playing clusters of notes.
+-To find it, replace all the assert statements with some "clapAssert" which triggers a debug
+ breakpoint and then attach to the BitwigHost process.
+
+*/

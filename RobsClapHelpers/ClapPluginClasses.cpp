@@ -538,6 +538,8 @@ void ClapSynthStereo32Bit::handleMidiEvent(const uint8_t data[3])
 
 void ClapSynthStereo32Bit::processEvent(const clap_event_header_t* hdr)
 {
+  //return;  // test - doesn't help fixing the crashes in clap-validator
+
   if(hdr->space_id != CLAP_CORE_EVENT_SPACE_ID)
     return;
 
