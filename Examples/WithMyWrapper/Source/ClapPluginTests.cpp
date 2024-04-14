@@ -410,11 +410,11 @@ bool runIndexIdentifierMapTest()
   map.addIndexIdentifierPair(4, 6); ok &= map.getNumEntries() == 7;
   map.addIndexIdentifierPair(6, 1); ok &= map.getNumEntries() == 7;
 
-  // During the creaion process, the map may have been in an inconsisten state. But now that we are 
-  // finished with filling it, the state should be consistent. Check that:
+  // During the creation process, the map may have been in an inconsisten state. But now that we 
+  // are finished with filling it, the state should be consistent. Check that:
   ok &= map.isConsistent();
 
-  // Check the index-to-indentifier mapping:
+  // Check the index-to-identifier mapping:
   ok &= map.getIdentifier(0) == 3;
   ok &= map.getIdentifier(1) == 2;
   ok &= map.getIdentifier(2) == 4;
@@ -423,7 +423,7 @@ bool runIndexIdentifierMapTest()
   ok &= map.getIdentifier(5) == 5;
   ok &= map.getIdentifier(6) == 1;
 
-  // check the identifier-to-index mapping:
+  // Check the identifier-to-index mapping:
   ok &= map.getIndex(0) == 3;
   ok &= map.getIndex(1) == 6;
   ok &= map.getIndex(2) == 1;

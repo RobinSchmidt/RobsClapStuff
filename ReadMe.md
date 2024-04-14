@@ -99,5 +99,6 @@ Some of the other things on the ToDo list are to move the build system to CMake,
 baseclass for instrument plugins with convenient hooks for handling noteOn/Off events and to show 
 how to implement GUIs and maybe to show how to use some of the more advanced features of CLAP such 
 as polyphonic parameter modulation. I also want to make a suite of small, GUI-less plugins (like 
-the MDA or Airwindows suites) which should, among other things, include Open303. But that will 
-probably happen in my main repo where I have access to my full DSP library.
+the MDA or Airwindows suites) which should, among other things, include Open303. The plugins should
+all live in a single library such that their common code is shared. That will be very space 
+efficient. But that will probably happen in my main repo where I have access to my full DSP library.
