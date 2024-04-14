@@ -139,9 +139,9 @@ public:
     kErf,         // Error function. Antiderivative of Gaussian bell curve.
 
     // More ideas:
-    //kRatAbs,    // 1 / (1 + |x|)      -> very cheap sigmoid but not smooth at 0 (I think)
-    //kRatSqrt,   // 1 / sqrt(1 + x*x)  -> see "Random cheap sigmoid" thread on KVR
-    //kRatSqr,    // 1 / (1 + x*x)      -> not a sigmoid, falls back to zero, some sort of fold
+    //kRatAbs,    // x / (1 + |x|)      -> very cheap sigmoid but not smooth at 0 (I think)
+    //kRatSqrt,   // x / sqrt(1 + x*x)  -> see "Random cheap sigmoid" thread on KVR
+    //kRatSqr,    // x / (1 + x*x)      -> not a sigmoid, falls back to zero, some sort of fold
 
     numShapes
   };
