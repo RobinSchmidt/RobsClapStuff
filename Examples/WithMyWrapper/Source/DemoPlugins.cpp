@@ -20,6 +20,9 @@ const char* const ClapGain::features[4] =
   //
   // -One of the unit tests checks this feature list. So if you change it, you need to  update the
   //  unit test, too - or else it will fail. It's in runDescriptorReadTest in ClapPluginTests.cpp.
+  // -It is important to have at least one of the main categories CLAP_PLUGIN_FEATURE_INSTRUMENT, 
+  //  ..._AUDIO_EFFECT, ..._NOTE_EFFECT, ..._NOTE_DETECTOR, ..._ANALYZER set. Otherwise the clap 
+  //  validator will complain. The other ones are optional and for further, finer specification.
   //
   // ToDo:
   //
@@ -140,7 +143,7 @@ ClapWaveShaper::ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_ho
   //  of the corresponding entries in the Shapes enum. There is a unit test that verifies this. If 
   //  we make the choices for enum parameters automatable, then the order of the initial section of 
   //  the enum must remain stable from version to version, i.e. we cannot insert new options at 
-  //  arbitrary positions in later vesrions. New options can only be added at the end. That's why I
+  //  arbitrary positions in later versions. New options can only be added at the end. That's why I
   //  actually didn't want to make the shape automatable, btw.
 }
 

@@ -16,10 +16,8 @@ ClapPluginStereo32Bit, you need to do the following things:
 (6) Fill the features array.
 (7) Fill the pluginDescriptor.
 
-...then you have to implement the factory and entry point...TBC...  
-
-
-*/
+To make one or more plugins visible to the host, you also have to implement the factory and entry 
+point. This is shown in DemoPluginsEntryPoint.cpp. */
 
 class ClapGain : public RobsClapHelpers::ClapPluginStereo32Bit
 {

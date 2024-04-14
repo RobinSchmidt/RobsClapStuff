@@ -26,6 +26,9 @@ bool ClapPluginWithParams::paramsInfo(uint32_t index, clap_param_info* info) con
   //
   // -If we end up in the first branch where we return false, the plugin will crash due to an 
   //  assert in the outlying wrapper code that asserts that we return true here.
+  // -Bitwig seems to call this function twice for each parameter when the plugin is plugged in 
+  //  and also once for each parameter when the plugin is plugged out. I would have expected it to
+  //  get called once for each parameter when the plugin is plugged in.
 }
 
 bool ClapPluginWithParams::paramsValue(clap_id id, double* value) const noexcept

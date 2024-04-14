@@ -4,7 +4,7 @@
 
 
 /** Runs all the tests and returns true when all pass, false otherwise */
-bool runAllClapTests(bool printResults);
+bool runAllClapTests(/*bool printResults*/);
 
 /** Tests the state recall functionality implemented in class ClapPluginWithParams. */
 bool runStateRecallTest();

@@ -2,7 +2,7 @@
 
 // This file contains some subclasses of ClapPlugin with certain common features. The intention is 
 // that these common features can be factored out into this intermediate class such that your 
-// actual plugin class does not need to derive directly from the general purpose clapPlugin class 
+// actual plugin class does not need to derive directly from the general purpose ClapPlugin class 
 // but from one of the more specialized classes here. Then you will need to have write less 
 // boilerplate code in your actual plugin class.
 
@@ -36,17 +36,17 @@ how this could look like. @see paramsInfo(). Messing this up could happen, for e
 forgetting to use one of your enum entries or to use one of your enum entries twice in your 
 sequence of addParameter() calls. The consistency check basically checks, if each of your ids 
 (== enum-entries) is used exactly once. This consistency may be violated in the middle of your 
-sequence of addParameter() calls but after the last call, it should be established.
+sequence of addParameter() calls but after the last call, consistency should be established.
 
 The reason why I have opted for this particular convention for mapping between parameter index and 
 identifier is that it allows for a very simple O(1) access to all parameters without needing a 
 complicated data-structure (like a std::map, say). Our mapping is basically a bijective function of 
-the set { 0, ..., N-1 } to itself(!) which can be implemented by a simple pair of std::vector<int>. 
-One vector for the forward mapping and one for the inverse mapping. I have actually written the 
-class IndexIdentifierMap in Utilities.h for precisely that purpose but it turned out that at the 
-moment, we don't even need that (yet). We may need it later when we need a O(1) mapping from id to 
-index for some more functionality like retrieving the clap_param_info by id rather than by index. 
-At the moment, we can get away without such a functionality, though.
+the set { 0, ..., N-1 } to itself(!) which can be implemented by a simple pair of std::vector<int>
+of length N. One vector for the forward mapping and one for the inverse mapping. I have actually 
+written the class IndexIdentifierMap in Utilities.h for precisely that purpose but it turned out 
+that at the moment, we don't even need that (yet). We may need it later when we need a O(1) mapping 
+from id to index for some more functionality like retrieving the clap_param_info by id rather than 
+by index. At the moment, we can get away without such a functionality, though.
 
 At the moment, it is not recommended to derive your plugin class *directly* from the class
 ClapPluginWithParams but if you do, you will need to implement process() and there you will need to

@@ -1,10 +1,7 @@
 
-#include <algorithm>                // for min
-
 #include "ClapPluginTests.h"
 
-
-bool runAllClapTests(bool printResults)
+bool runAllClapTests(/*bool printResults*/)
 {
   bool ok = true;
 
@@ -12,7 +9,6 @@ bool runAllClapTests(bool printResults)
   ok &= runDescriptorReadTest();
   ok &= runNumberToStringTest();
   ok &= runIndexIdentifierMapTest();
-
   ok &= runWaveShaperTest();
 
   return ok;
@@ -94,7 +90,6 @@ public:
     kMidSide,
     kMono,
 
-
     numParams
   };
 
@@ -133,7 +128,6 @@ public:
   // the time being. The test is just concerned with state recall after a version update with 
   // parameter extension and reordering.
 
-
 };
 
 const char* const ClapGain2::features[5] = 
@@ -160,19 +154,16 @@ const clap_plugin_descriptor_t ClapGain2::descriptor =
 };
 
 
-
-
 bool runStateRecallTest()
 {
   bool ok = true;
 
+  using ID = ClapGain::ParamId;  // For convenience
+  double p;                      // Used for the parameter value
+
   // Create a ClapGain object:
   clap_plugin_descriptor_t desc = ClapGain::descriptor;
   ClapGain gain(&desc, nullptr);
-  using ID = ClapGain::ParamId;
-
-
-  double p;  // Used for the parameter value
 
   // Set up gain and pan (along the way, check if this works) and then retrieve the state:
   gain.setParameter(ID::kGain,  6.02); ok &= gain.paramsValue(0, &p); ok &= p == 6.02;
@@ -272,10 +263,6 @@ bool runDescriptorReadTest()
     ok &= features[1] == "utility";
     ok &= features[2] == "mixing";
   }
-  // Note that it is important to have at least one of the main categories (audio-effect, 
-  // instrument, note-effect, analyzer - I think) set. Otherwise the clap validator will complain.
-  // The other ones are optional and for further, finer specification.
-
 
   return ok;
 }
@@ -406,16 +393,14 @@ bool runIndexIdentifierMapTest()
 {
   bool ok = true;
 
+  // For this test, we use the following mapping between 7 indices and identifiers:
   //
-  // index:  0 1 2 3 4 5 6
-  // ident:  3 2 4 0 6 5 1
-
-
-  using namespace RobsClapHelpers;
-
+  //   index:  0 1 2 3 4 5 6
+  //   ident:  3 2 4 0 6 5 1
 
   // We create the map and add the pairs in "random" order. Along the way, we check, if it has the
   // expected size:
+  using namespace RobsClapHelpers;
   IndexIdentifierMap map;
   map.addIndexIdentifierPair(1, 2); ok &= map.getNumEntries() == 3;
   map.addIndexIdentifierPair(3, 0); ok &= map.getNumEntries() == 4;
@@ -447,9 +432,6 @@ bool runIndexIdentifierMapTest()
   ok &= map.getIndex(5) == 5;
   ok &= map.getIndex(6) == 4;
 
-
-
-
   return ok;
 }
 
@@ -461,12 +443,9 @@ bool runWaveShaperTest()
   clap_plugin_descriptor_t desc = ClapWaveShaper::descriptor;
   ClapWaveShaper ws(&desc, nullptr);
 
-
-  using ID = ClapWaveShaper::ParamId;
-
-
   // Helper function to check, if the given shapeIndex is mapped to the given shapeString by the
   // ClapWaveShaper object:
+  using ID = ClapWaveShaper::ParamId;
   auto checkShapeToString = [&](int shapeIndex, const std::string& shapeString)
   {
     static const int bufSize = 32;
@@ -494,16 +473,12 @@ bool runWaveShaperTest()
     return toStringOK && fromStringOK;
   };
 
-
-
-
   // Check if the shape-id to string mapping works correctly:
   using Shapes = ClapWaveShaper::Shapes;
   ok &= checkShapeString(Shapes::kClip, "Clip");
   ok &= checkShapeString(Shapes::kTanh, "Tanh");
   ok &= checkShapeString(Shapes::kAtan, "Atan");
   ok &= checkShapeString(Shapes::kErf,  "Erf");
-
 
   return ok;
 
