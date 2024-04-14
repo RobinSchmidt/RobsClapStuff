@@ -11,7 +11,7 @@ inline T clip(T val, T min, T max)
   if(val > max) return max;
   return val;
 
-  // ToDo: Maybe use std::min/max
+  // ToDo: Maybe use std::min/max or std::clamp
 }
 
 

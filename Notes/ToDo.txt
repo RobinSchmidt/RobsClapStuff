@@ -136,4 +136,7 @@ There is potential for optimization in the waveshaper:
 
 -Make a plugin that uses parameters that need some nonlinear mapping function like lin-to-exp for
  a frequency. Maybe we should use a normalized 0..1 range for host/plugin communication just like 
- with VST
+ with VST. See how this example synth handles the "Cutoff" parameter:
+ https://github.com/free-audio/clap-saw-demo-imgui/blob/main/src/clap-saw-demo.cpp
+ it gives the host the range of 1...127 in ClapSawDemo::paramsInfo and does the lin-to-exp mapping 
+ in ClapSawDemo::paramsValueToText
