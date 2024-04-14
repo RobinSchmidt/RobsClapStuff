@@ -288,10 +288,26 @@ void ClapToneGenerator::processBlockStereo(
 
 void ClapToneGenerator::noteOn(int key, double vel)
 {
+  currentKey = key;
+  double freq = RobsClapHelpers::pitchToFreq((double) currentKey);
+  increment = freq / sampleRate;                     // VERIFY!
 
+  // ToDo:
+  //
+  // -Use vel and ampByVel to compute an amplitude scaler.
+  // -Maybe factor out an calcIncrement function that takes into account more variables like a 
+  //  detune parameter and pitch-bend
+  // -Maybe clip the increment to the range 0..0.5. That should translate to frequencies in
+  //  0..sampleRate/2
+  // -What if sampleRate == 0? That should be the case only in deactivated state in which we 
+  //  probably should not receive calls to noteOn anyway, but still...
 }
 
 void ClapToneGenerator::noteOff(int key)
 {
-
+  if(key == currentKey)
+  {
+    reset();            // Sets currentKey = 0 and phasor = 0.0
+    increment  =  0.0;  // Not really relevant but for tidiness
+  }
 }
