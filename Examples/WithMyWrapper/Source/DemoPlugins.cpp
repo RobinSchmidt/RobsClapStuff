@@ -259,7 +259,6 @@ ClapToneGenerator::ClapToneGenerator(const clap_plugin_descriptor *desc, const c
 bool ClapToneGenerator::activate(
   double newSampleRate, uint32_t minFrameCount, uint32_t maxFrameCount) noexcept
 {
-  //sampleRate = newSampleRate;
   reset();
   return true;
 
@@ -271,7 +270,6 @@ bool ClapToneGenerator::activate(
 
 void ClapToneGenerator::deactivate() noexcept
 {
-  //sampleRate = 0.0;
   reset();
 
   // Notes:

@@ -430,9 +430,9 @@ clap_process_status ClapPluginStereo32Bit::process(const clap_process *p) noexce
     // Process the sub-block until the next event. This is a call to the overriden implementation
     // in the subclass in a sort of "template method" pattern:
     processBlockStereo(
-      &p->audio_inputs[0].data32[0][frameIndex],   
+      &p->audio_inputs[0].data32[0][frameIndex],
       &p->audio_inputs[0].data32[1][frameIndex],
-      &p->audio_outputs[0].data32[0][frameIndex],  
+      &p->audio_outputs[0].data32[0][frameIndex],
       &p->audio_outputs[0].data32[1][frameIndex],
       nextEventFrame - frameIndex);
     frameIndex += nextEventFrame;
@@ -549,7 +549,9 @@ void ClapSynthStereo32Bit::handleMidiEvent(const uint8_t data[3])
 
 void ClapSynthStereo32Bit::processEvent(const clap_event_header_t* hdr)
 {
-  //return;  // test - doesn't help fixing the crashes in clap-validator
+  //return;  
+  // Test - doesn't help fixing the crashes in clap-validator - this is really weird. It crashes 
+  // even when we don't do anything here.
 
   if(hdr->space_id != CLAP_CORE_EVENT_SPACE_ID)
     return;

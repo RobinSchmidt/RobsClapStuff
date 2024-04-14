@@ -304,6 +304,10 @@ public:
 
   bool implementsNotePorts() const noexcept override { return true; }
 
+  //bool implementsNotePorts() const noexcept override { return false; }
+  // Test - OK - this fixes the crash - but that doesn't really help much
+
+
   uint32_t notePortsCount(bool isInput) const noexcept override { return isInput ? 1 : 0; }
   // One input note port, no output note ports. Do we need an output port when we want to send
   // NOTE_END events to the host? Figure out!
