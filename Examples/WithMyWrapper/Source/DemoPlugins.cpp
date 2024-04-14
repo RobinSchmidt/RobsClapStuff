@@ -286,12 +286,12 @@ void ClapToneGenerator::processBlockStereo(
     outL[n] = outR[n] = getSample();
 }
 
-void ClapToneGenerator::noteOn(int16_t key, double vel)
+void ClapToneGenerator::noteOn(int key, double vel)
 {
 
 }
 
-void ClapToneGenerator::noteOff(int16_t key)
+void ClapToneGenerator::noteOff(int key)
 {
 
 }

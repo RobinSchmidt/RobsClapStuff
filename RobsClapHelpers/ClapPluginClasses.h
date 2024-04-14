@@ -311,11 +311,22 @@ public:
     clap_note_port_info *info) const noexcept override;
 
   /**  key is in 0..127, velocity in 0..1 */
-  virtual void noteOn( int16_t key, double velocity) = 0;
+  virtual void noteOn(int key, double velocity) = 0;
   // Maybe have also optional parameters for channel, port_index, note_id (defaulting to -1 
   // indicating "unspecified" or "all")
+  // The data type int16_t is taken from the clap-saw-example. I think it might be for 
+  // compatibility with MIDI 2.0= See:
+  // https://www.kvraudio.com/forum/viewtopic.php?t=567879
+  // https://midi.org/midi-2-0-scope-a-development-and-test-tool-for-midi-2-0-messages
+  //
+  // ..but no - the clap-saw-demo uses int:
+  // https://github.com/free-audio/clap-saw-demo-imgui/blob/main/src/clap-saw-demo.cpp#L771
+  //
+  // ...so maybe I should also use int. I already do in most of my other midi handling code anyway
+  // so for easy compatibility, this would be the best type anyway.
 
-  virtual void noteOff(int16_t key) = 0;
+
+  virtual void noteOff(int key) = 0;
   // Maybe let noteOff also have an (optional) off-velocity
 
 

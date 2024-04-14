@@ -501,15 +501,15 @@ void ClapSynthStereo32Bit::handleMidiEvent(const uint8_t data[3])
 
     // Call noteOn or noteOff which subclasses will override:
     if(status == 0x80 || vel == 0)    // 0x80: "proper" note-off, vel=0: "running status" note-off
-      noteOff(key);
+      noteOff((int)key);
     else
-      noteOn(key, (double)vel / 127.0);
+      noteOn((int)key, (double)vel / 127.0);
   }
   else if( (status) == 0xb0 && (data[1] == 0x7b) )
   {
     // Respond to "all notes off" event:
     // (status=0xb0: controller on ch 1, midiData[1]=0x7b: control 123: all notes off):
-    for(uint16_t i = 0; i <= 127; i++)
+    for(int i = 0; i <= 127; i++)
       noteOff(i);
   }
 

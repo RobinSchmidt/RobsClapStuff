@@ -193,9 +193,9 @@ public:
   void processBlockStereo(const float* inL, const float* inR, float* outL, float* outR, 
     uint32_t numFrames) override;
 
-  void noteOn( int16_t key, double velocity) override;
+  void noteOn( int key, double velocity) override;
 
-  void noteOff(int16_t key) override;
+  void noteOff(int key) override;
 
   static const char* const features[3];
   static const clap_plugin_descriptor_t descriptor;
@@ -255,6 +255,6 @@ protected:
 
   // State:
   double phasor     = 0.0;   // Current sine phase in 0..1
-  int8_t currentKey = -1;    // Currently held note. -1 means "none".
+  int    currentKey = -1;    // Currently held note. -1 means "none".
 
 };
