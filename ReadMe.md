@@ -36,9 +36,9 @@ build products in subfolders of the project folder. Among them, you should find:
 
 This is a library containing my first demo clap plugins. Yes - plugins in plural. The project also 
 demonstrates how to put several plugins into a single library (i.e. .dll or .so or whatever). 
-Currently, there's a gain and waveshaper plugin. If you are coming from VST and think "AGain", then 
+Currently, there's a gain and waveshaper plugin. If you are coming from VST2 and think "AGain", then 
 you are exactly on the right track. I wanted to figure out the easiest way to create some first, 
-GUI-less CLAP plugins similar in spirit to Steinberg's "AGain" example in the VST-SDK. Such simple 
+GUI-less CLAP plugins similar in spirit to Steinberg's "AGain" example in the VST2-SDK. Such simple 
 gain plugins are the audio-plugin equivalent to "Hello World" examples for programming in general.
 The main features from Steinberg's "AGain" example that I wanted to replicate are:
 
