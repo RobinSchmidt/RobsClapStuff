@@ -226,6 +226,27 @@ float ClapWaveShaper::applyDistortion(float x)
 
 //=================================================================================================
 
+const char* const ClapToneGenerator::features[3] = 
+{ 
+  CLAP_PLUGIN_FEATURE_INSTRUMENT,
+  CLAP_PLUGIN_FEATURE_SYNTHESIZER, 
+  NULL 
+};
+
+const clap_plugin_descriptor_t ClapToneGenerator::descriptor = 
+{
+  .clap_version = CLAP_VERSION_INIT,
+  .id           = "RS-MET.ToneGeneratorDemo",
+  .name         = "ToneGeneratorDemo",
+  .vendor       = vendorRsMet,
+  .url          = urlRsMet,
+  .manual_url   = urlRsMet,
+  .support_url  = urlRsMet,
+  .version      = version,
+  .description  = "MIDI-controlled sinusoidal tone generator",
+  .features     = ClapToneGenerator::features,
+};
+
 bool ClapToneGenerator::activate(
   double newSampleRate, uint32_t minFrameCount, uint32_t maxFrameCount) noexcept
 {
@@ -261,8 +282,8 @@ void ClapToneGenerator::reset() noexcept
 void ClapToneGenerator::processBlockStereo(
   const float* inL, const float* inR, float* outL, float* outR, uint32_t numFrames)
 {
-
-
+  for(uint32_t n = 0; n < numFrames; ++n)
+    outL[n] = outR[n] = getSample();
 }
 
 void ClapToneGenerator::noteOn(int16_t key, double vel)

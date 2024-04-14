@@ -40,6 +40,10 @@ https://raw.githubusercontent.com/nakst/cdn/main/clap-tutorial-part-1-plugin.cpp
 A simple synth using VSTGUI:
 https://github.com/surge-synthesizer/clap-saw-demo/blob/main/src/clap-saw-demo.h
 
+The same synth ported to Dear ImGUI:
+https://github.com/free-audio/clap-saw-demo-imgui
+
+
 
 
 A dummy "repo" whose purpose is to use its issue-tracker for tracking bugs/misbehaviors when using

@@ -141,12 +141,27 @@ There is potential for optimization in the waveshaper:
  it gives the host the range of 1...127 in ClapSawDemo::paramsInfo and does the lin-to-exp mapping 
  in ClapSawDemo::paramsValueToText
 
+-Maybe design the framework in a way that allows to mix and match required functionality. Maybe the 
+ functionalities like parameter/state-handling, midi-handling, gui-handling, etc. should all be 
+ implemented as mix-in classes and derived classes can derive from multiple such classes without 
+ using the (messy, evil, to-be-avoided-at-all-costs) virtual inheritance. I think, the mix-in 
+ classes should *not* be subclasses of the basic ClapPlugin class. Maybe then we could do things 
+ like:  
+ ClapGain : public ClapPlugin, public ClapWithParameters, public ClapWithStereoInOut {...}
+ ClapToneGenerator : public ClapPlugin, public ClapWithParameters, public ClapWithStereoInOut, 
+                     public ClapWithMidi {...}
+ see: https://en.wikipedia.org/wiki/Mixin
+
 -Figure out best practices for:
  -Handling nonlinear parameter mapping functions. The clap-saw-example uses 1..127 for an 
   exponentially mapped filter cutoff. I guess, I'd use 0..1 by default like in VST.
  -Handling parameter ids - some examples use "random" numbers and std::unordered_map. I use a 
   permutation of the indices.
- -How to sync GUI and audio thread (lock-free queues?). I currently don't have a GUI.
+ -How to sync GUI and audio thread (lock-free queues?). I currently don't have a GUI. Check the
+  clap-saw-demo. But maybe it could also be possible to send a message from the GUI to the host that
+  the host should send a parameter-change event to the audio engine? Check out the API for issuing
+  requests from the plugin to the host. If that is possible, it would make writing plugins much 
+  easier, I think. 
  -How to handle out-of-range values for the parameters. Should the plugin sanitize (clip) them? That 
   would add to the CPU load of the plugin just to work around a bug in the host.
  -Naming ports. Should there be spaces in the names or not, etc.
@@ -154,4 +169,5 @@ There is potential for optimization in the waveshaper:
  -How is latency handled? The documentation of clap_plugin.activate says that after activation, the
   latency must remain constant. But when I change a "BlockSize" or "LookAhead" parameter in some 
   plugin, the latency will change. How am I supposed to deal with that situation? Can I request a
-  de/re-activation from the host?
+  de/re-activation from the host? ...YES! In host.h, the clap_host struct has a request_restart 
+  field (of type "function-pointer").

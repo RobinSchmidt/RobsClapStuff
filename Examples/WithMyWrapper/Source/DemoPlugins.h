@@ -167,7 +167,10 @@ protected:
 
 //=================================================================================================
 
-/** A simple tone generator to demonstrate usage of class ClapSynthStereo32Bit. */
+/** A simple tone generator to demonstrate usage of class ClapSynthStereo32Bit. It demonstrates how
+to respond to midi note events and how to deal with a sample-rate dependent and stateful DSP 
+algorithm. To handle all this correctly, we need to override a few more methods like de/activate, 
+reset, noteOn/Off, etc. */
 
 class ClapToneGenerator : public RobsClapHelpers::ClapSynthStereo32Bit
 {
@@ -175,6 +178,9 @@ class ClapToneGenerator : public RobsClapHelpers::ClapSynthStereo32Bit
   using Base = ClapSynthStereo32Bit;
 
 public:
+
+  //-----------------------------------------------------------------------------------------------
+  // \name Boilerplate
 
 
   bool activate(double sampleRate, uint32_t minFrameCount, uint32_t maxFrameCount) 
@@ -191,13 +197,22 @@ public:
 
   void noteOff(int16_t key) override;
 
+  static const char* const features[3];
+  static const clap_plugin_descriptor_t descriptor;
 
+
+  //-----------------------------------------------------------------------------------------------
+  // \name ToneGenerator specific stuff
 
   inline float getSample()
   {
+    // Produce silence when no note is being held:
+    if(currentKey == -1)
+      return 0.f;
+
     // Compute output:
     static const double pi2 = 6.2831853071795864769;  // 2*pi
-    float out = sin((float) (pi2 * phasor));          // Phasor is in 0..1
+    float out = sin((float) (pi2 * phasor));          // Our phasor is in 0..1, sin wants 0..2pi
 
     // Update state:
     phasor += increment;
@@ -218,6 +233,7 @@ public:
     //  above cannot occur. There must be a safety net on a higher level (like clipping frequencies
     //  to 0..sampleRate/2 in noteOn, for example - I think that corresponds to clipping the 
     //  increment to 0..0.5).
+    // -Maybe make the thing stereo by giving the user a stereo phase parameter
   }
 
 
@@ -225,12 +241,20 @@ public:
 protected:
 
   // Parameters:
-  double sampleRate = 0.0;   // 0.0 is code for "unknown" (or should we use -1?)
+  double sampleRate = 0.0;   // 0.0 is code for "unknown" (Or should we use -1.0? Hmm...nah.)
   double increment  = 0.0;   // Per sample increment for our phasor
 
-  // State:
-  double phasor     = 0.0;
-  int8_t currentKey = -1;    // -1 means: none.
+  // ToDo:
+  //float amplitude   = 1.0;
+  //float stereoPhase = 0.0;
+  //float detune      = 0.0;
+  //float startPhase  = 0.0;
+  //float ampByKey    = 0.0;
+  //float ampByVel    = 0.0;
 
+
+  // State:
+  double phasor     = 0.0;   // Current sine phase in 0..1
+  int8_t currentKey = -1;    // Currently held note. -1 means "none".
 
 };
