@@ -324,6 +324,7 @@ public:
   //
   // ...so maybe I should also use int. I already do in most of my other midi handling code anyway
   // so for easy compatibility, this would be the best type anyway.
+  // ...maybe use int32_t instead of int to make it the same on all platforms?
 
 
   virtual void noteOff(int key) = 0;

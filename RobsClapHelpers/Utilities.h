@@ -17,14 +17,26 @@ inline T clip(T val, T min, T max)
 
 /** Converts from decibels to raw amplitude. */
 template<class T>
-inline T dbToAmp(T db)
+inline T dbToAmp(T dB)
 {
-  return pow(T(10), T(1.0/20) * db);
+  return exp(dB * T(0.11512925464970228420089957273422));
+  //return pow(T(10), T(1.0/20) * dB);  // Naive, expensive formula
 }
 // ToDo: 
 // -Verify formulas - or:
 // -Use optimized formula using exp (copy the code from RAPT)
 // -Add ampToDb, pitchToFreq, freqToPitch, etc.
+
+/** Converts a MIDI-note value into a frequency in Hz assuming A4 = 440 Hz. Uses two 
+multiplications and one call to exp. */
+template<class T>
+inline T pitchToFreq(T pitch)
+{
+  return T(8.1757989156437073336828122976033) 
+           * exp(T(0.057762265046662109118102676788181) * pitch);
+  //return 440.0*( pow(2.0, (pitch-69.0)/12.0) ); // naive, slower but numerically more precise
+}
+
 
 
 /** Function to convert a float or double to a string in a roundtrip safe way. That means, when 
