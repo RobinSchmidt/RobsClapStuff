@@ -55,7 +55,9 @@ a case. The "size" is the total size of the "destination" buffer, i.e. including
 terminating null. */
 int toStringWithSuffix(double value, char* destination, int size, int numDigitsAfterDot,
   const char* suffix = nullptr);
-
+// ToDo: Document the return value. It's the index of the null-terminator, so it's the length of 
+// the string excluding the null-terminator or -1 in case of failure. This is consistent with the
+// behavior of sprintf.
 
 int copyString(const char* src, char* dst, int dstSize);
 // ToDo: add documentation
