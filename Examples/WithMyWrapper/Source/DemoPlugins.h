@@ -245,6 +245,10 @@ protected:
 
   // Parameters:
   double sampleRate = 0.0;   // 0.0 is code for "unknown" (Or should we use -1.0? Hmm...nah.)
+  // We have already inherited the _sampleRate member, so we should get rid of this! Maybe add a 
+  // getSampleRate() function to the ClapPlugin baseclass to access it.
+
+
   double increment  = 0.0;   // Per sample increment for our phasor
 
   // ToDo:

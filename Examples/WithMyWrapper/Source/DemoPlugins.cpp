@@ -307,9 +307,11 @@ void ClapToneGenerator::parameterChanged(clap_id id, double newValue)
 
 void ClapToneGenerator::noteOn(int key, double vel)
 {
+  /*
   currentKey = key;
   double freq = RobsClapHelpers::pitchToFreq((double) currentKey);
   increment = freq / sampleRate;                     // VERIFY!
+  */
 
   // ToDo:
   //
@@ -324,11 +326,13 @@ void ClapToneGenerator::noteOn(int key, double vel)
 
 void ClapToneGenerator::noteOff(int key)
 {
+  /*
   if(key == currentKey)
   {
     reset();            // Sets currentKey = 0 and phasor = 0.0
     increment  =  0.0;  // Not really relevant but for tidiness
   }
+  */
 }
 
 /*
@@ -339,5 +343,8 @@ ToDo:
 -It also crashes in Bitwig when playing clusters of notes.
 -To find it, replace all the assert statements with some "clapAssert" which triggers a debug
  breakpoint and then attach to the BitwigHost process.
+-It seems also to happen when playing two notes simultaneously - hit two notes with two fingers
+ exactly simultaneously
+-Commenting out our code in noteOn/Off doesn't help
 
 */
