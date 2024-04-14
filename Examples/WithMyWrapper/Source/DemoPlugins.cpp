@@ -152,10 +152,10 @@ void ClapWaveShaper::parameterChanged(clap_id id, double newValue)
   using namespace RobsClapHelpers;
   switch(id)
   {
-  case kShape: { shape  = (Shapes)(int) round(  newValue); } break;  // use roundToInt(newValue)
-  case kDrive: { inAmp  = (float)       dbToAmp(newValue); } break;
-  case kDC:    { dc     = (float)               newValue;  } break;
-  case kGain:  { outAmp = (float)       dbToAmp(newValue); } break;
+  case kShape: { shape  = (Shape)(int) round(  newValue); } break;  // use roundToInt(newValue)
+  case kDrive: { inAmp  = (float)      dbToAmp(newValue); } break;
+  case kDC:    { dc     = (float)              newValue;  } break;
+  case kGain:  { outAmp = (float)      dbToAmp(newValue); } break;
   default:
   {
     // error("Unknown parameter id in ClapWaveShaper::setParameter");

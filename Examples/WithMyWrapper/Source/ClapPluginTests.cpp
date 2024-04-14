@@ -474,11 +474,11 @@ bool runWaveShaperTest()
   };
 
   // Check if the shape-id to string mapping works correctly:
-  using Shapes = ClapWaveShaper::Shapes;
-  ok &= checkShapeString(Shapes::kClip, "Clip");
-  ok &= checkShapeString(Shapes::kTanh, "Tanh");
-  ok &= checkShapeString(Shapes::kAtan, "Atan");
-  ok &= checkShapeString(Shapes::kErf,  "Erf");
+  using Shape = ClapWaveShaper::Shape;
+  ok &= checkShapeString(Shape::kClip, "Clip");
+  ok &= checkShapeString(Shape::kTanh, "Tanh");
+  ok &= checkShapeString(Shape::kAtan, "Atan");
+  ok &= checkShapeString(Shape::kErf,  "Erf");
 
   return ok;
 

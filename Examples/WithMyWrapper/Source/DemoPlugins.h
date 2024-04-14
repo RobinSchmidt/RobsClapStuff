@@ -9,7 +9,7 @@ ClapPluginStereo32Bit. The purpose of this class is to enable writing of common 
 ClapPluginStereo32Bit, you need to do the following things:
 
 (1) Derive your plugin class from RobsClapHelpers::ClapPluginStereo32Bit
-(2) Declare your parameters in some sort of "Params" enum.
+(2) Declare your parameters in some sort of "ParamId" enum.
 (3) Implement the constructor. It should populate the inherited parameter array using addParameter.
 (4) Override parameterChanged to handle parameter changes.
 (5) Override processBlockStereo to process (sub) blocks of audio sample frames.
@@ -131,7 +131,7 @@ public:
   //-----------------------------------------------------------------------------------------------
   // \name WaveShaper specific stuff
 
-  enum Shapes   // rename to ShapeId
+  enum Shape
   {
     kClip,        // Hard clipper at -1, +1.
     kTanh,        // Hyperbolic tangent.
@@ -155,10 +155,10 @@ public:
 protected:
 
   // Internal algorithm parameters/coeffs:
-  Shapes shape  = kClip;
-  float  inAmp  = 1.f;
-  float  outAmp = 1.f;
-  float  dc     = 0.f;
+  Shape shape  = kClip;
+  float inAmp  = 1.f;
+  float outAmp = 1.f;
+  float dc     = 0.f;
 
   // Holds the strings for the shape names for GUI display:
   std::vector<std::string> shapeNames;
