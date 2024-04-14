@@ -489,13 +489,51 @@ void ClapSynthStereo32Bit::handleMidiEvent(const uint8_t data[3])
   uint8_t status = data[0] & 0xf0;
 
 
+  if( status == 0x90 || status == 0x80 )
+  {
+    // Respond to note-on and note-off on channel 1
 
-  int dummy = 0;
+    // Bitwise and with 0x7f=01111111 sets the first bit of an 8-bit word to zero, allowing
+    // only numbers from 0 to 127 to pass unchanged, higher numbers (128-255) will be mapped
+    // into this range by subtracting 128:
+    uint8_t key = data[1] & 0x7f;
+    uint8_t vel = data[2] & 0x7f;
+
+    // Call noteOn or noteOff which subclasses will override:
+    if(status == 0x80 || vel == 0)    // 0x80: "proper" note-off, vel=0: "running status" note-off
+      noteOff(key);
+    else
+      noteOn(key, (double)vel / 127.0);
+  }
+  else if( (status) == 0xb0 && (data[1] == 0x7b) )
+  {
+    // Respond to "all notes off" event:
+    // (status=0xb0: controller on ch 1, midiData[1]=0x7b: control 123: all notes off):
+    for(uint16_t i = 0; i <= 127; i++)
+      noteOff(i);
+  }
 
   // Notes:
   //
   // -The code for the midi event handling was adopted from Open303VST::handleEvent.
   // -Subclasses can override this function if they want to to handle more types of midi messages
+  //
+  // ToDo:
+  //
+  // -Maybe implement responses to control-change and pitch-wheel events by calling hooks that 
+  //  subclasses can override - just like with noteOn/Off - but provide empty default 
+  //  implementations for those other event handlers. Subclasses may want ignore these types of 
+  //  events. See Open303VST::handleEvent for how to identify these events and convert the data 
+  //  into more easily digestible formats.
+  // -Maybe handle all-notes-off events by a different callback/hook like allNotesOff where the 
+  //  default implementation just does what we do above but subclasses can override it. Rationale:
+  //  the "all-notes-off" event is (I think) some sort of more aggressive "reset" command like 
+  //  "midi-panic" (if I remember correctly), so subclasses may want to handle such an event in
+  //  a more aggressive way - like making a full blown midi status reset or something. Such events
+  //  are typically used to deal with hanging notes.
+  // -We should probably not convert all messages to channel-1 messages. That's good enough for my
+  //  personal use cases but for a published library, we may want to retain the channel info.
+  // -Implement unit tests to test the midi responses.
 }
 
 void ClapSynthStereo32Bit::processEvent(const clap_event_header_t* hdr)
@@ -529,7 +567,7 @@ void ClapSynthStereo32Bit::processEvent(const clap_event_header_t* hdr)
 
   default:
   {
-    Base::processEvent(hdr);     // Fallback to baseclass implementation handles parameter changes.
+    Base::processEvent(hdr);     // Baseclass implementation handles parameter changes.
   }
 
   }
@@ -551,9 +589,6 @@ void ClapSynthStereo32Bit::processEvent(const clap_event_header_t* hdr)
   //  should have a member function noteEnded/reportNoteEndToHost/notifyHostNoteEnded that 
   //  subclasses can call and such a call will have the effect of scheduling sending of such 
   //  note-end events to the host?
-  //
-  // ToDo:
-  //
   //
   // See also:
   //

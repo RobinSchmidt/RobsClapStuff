@@ -61,7 +61,15 @@ ClapGain::ClapGain(const clap_plugin_descriptor *desc, const clap_host *host)
   //  parameter on the generated GUI. Apparently, knobs are only provided for automatable 
   //  parameters.
   // -The areParamsConsistent assertion checks that my convention for mapping back and forth 
-  //  between parameter-index and parameter-identifier is obeyed. 
+  //  between parameter-index and parameter-identifier is obeyed. This will be ensured, if you use
+  //  each of the identifiers from the ParamId enum once and only once in a call to addParameter.
+  //
+  //  ToDo: 
+  //
+  //  -Maybe pass numParams to the check and let it check, if the number of paramters matches. At 
+  //   the momemt, the check may return a false positive, if param-ids from the end are missing 
+  //   (I think -> verify -> maybe comment out the second addParameter call and see if the 
+  //   assertion triggers - I think, it will not but should)
 }
 
 void ClapGain::processBlockStereo(const float* inL, const float* inR, float* outL, float* outR,
@@ -214,4 +222,17 @@ float ClapWaveShaper::applyDistortion(float x)
   default:    y = 0.f;                 break;        // Error! Unknown shape. Return 0.
   }
   return outAmp * y;
+}
+
+//=================================================================================================
+
+
+void ClapToneGenerator::noteOn(int16_t key, double vel)
+{
+
+}
+
+void ClapToneGenerator::noteOff(int16_t key)
+{
+
 }

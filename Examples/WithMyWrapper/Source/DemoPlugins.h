@@ -164,3 +164,29 @@ protected:
   std::vector<std::string> shapeNames;
 
 };
+
+//=================================================================================================
+
+/** A simple tone generator to demonstrate usage of class ClapSynthStereo32Bit. */
+
+class ClapToneGenerator : public RobsClapHelpers::ClapSynthStereo32Bit
+{
+
+  using Base = ClapSynthStereo32Bit;
+
+public:
+
+
+  void noteOn( int16_t key, double velocity) override;
+
+  void noteOff(int16_t key) override;
+
+
+
+
+protected:
+
+  double sampleRate = 44100;  // ...or maybe init to some code for "unknown"?
+  int8_t currentKey = -1;     // -1 means: none.
+
+};
