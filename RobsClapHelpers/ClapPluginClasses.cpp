@@ -483,6 +483,21 @@ bool ClapSynthStereo32Bit::notePortsInfo(
   //  remain stable in updates.
 }
 
+void ClapSynthStereo32Bit::handleMidiEvent(const uint8_t data[3])
+{
+  // Convert all messages to corresponding messages on MIDI channel 1:
+  uint8_t status = data[0] & 0xf0;
+
+
+
+  int dummy = 0;
+
+  // Notes:
+  //
+  // -The code for the midi event handling was adopted from Open303VST::handleEvent.
+  // -Subclasses can override this function if they want to to handle more types of midi messages
+}
+
 void ClapSynthStereo32Bit::processEvent(const clap_event_header_t* hdr)
 {
   if(hdr->space_id != CLAP_CORE_EVENT_SPACE_ID)
@@ -493,46 +508,38 @@ void ClapSynthStereo32Bit::processEvent(const clap_event_header_t* hdr)
 
   case CLAP_EVENT_NOTE_ON:
   {
-    const clap_event_note* note = (const clap_event_note *) hdr;
+    const clap_event_note* note = (const clap_event_note*) hdr;
     noteOn(note->key, note->velocity);
   } 
   break;
 
   case CLAP_EVENT_NOTE_OFF:
   {
-
+    const clap_event_note* note = (const clap_event_note*) hdr;
+    noteOff(note->key);
   } 
   break;
 
   case CLAP_EVENT_MIDI:
   {
-
-  } 
-  break;
-
-  case CLAP_EVENT_MIDI2:
-  {
-
+    const clap_event_midi* midi = (const clap_event_midi*)(hdr);
+    handleMidiEvent(midi->data); // midi->data is the array of 3 midi bytes.
   } 
   break;
 
   default:
   {
-    Base::processEvent(hdr);
+    Base::processEvent(hdr);     // Fallback to baseclass implementation handles parameter changes.
   }
 
   }
-
-
-
-
-
 
   // Notes:
   //
-  // -Note-on/off events may arrive in 3 different flavors: CLAP_EVENT_NOTE_ON/OFF, 
-  //  CLAP_EVENT_MIDI, CLAP_EVENT_MIDI2 and we need to be able to handle them all because we said
-  //  that we support CLAP_NOTE_DIALECT_MIDI and CLAP_NOTE_DIALECT_CLAP in notePortsInfo
+  // -Note-on/off events may arrive in different flavors: CLAP_EVENT_NOTE_ON/OFF, 
+  //  CLAP_EVENT_MIDI, CLAP_EVENT_MIDI2. We need to be able to handle the ..._NOTE_ON/OFF and the 
+  //  _MIDI variants because we said that we support these "dialects" in our implementation of 
+  //  notePortsInfo(). We didn't say to support MIDI2, so we ignore these types of events here.
   // -There are also NOTE_CHOKE and NOTE_END event types. 
   // -If I get it right, the NOTE_CHOKE event is meant for ducking a voice by another voice like in
   //  mutually exclusive sounds like open and closed hihats in a drum machine. But it will also be 
@@ -544,6 +551,9 @@ void ClapSynthStereo32Bit::processEvent(const clap_event_header_t* hdr)
   //  should have a member function noteEnded/reportNoteEndToHost/notifyHostNoteEnded that 
   //  subclasses can call and such a call will have the effect of scheduling sending of such 
   //  note-end events to the host?
+  //
+  // ToDo:
+  //
   //
   // See also:
   //

@@ -320,6 +320,10 @@ public:
 
 
 
+  virtual void handleMidiEvent(const uint8_t midiDataBytes[3]);
+
+
+
 
   void processEvent(const clap_event_header_t* hdr) override;
 
