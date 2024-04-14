@@ -1,6 +1,6 @@
 #pragma once
 
-/** A collection of macros, functions and classes that are useful in programming audio 
+/** A collection of templates, functions and classes that are useful in programming audio 
 plugins. */
 
 
@@ -58,13 +58,13 @@ int toStringWithSuffix(double value, char* destination, int size, int numDigitsA
 
 
 int copyString(const char* src, char* dst, int dstSize);
-
+// ToDo: add documentation
 
 bool copyString(const std::vector<std::string>& strings, int index, char* dst, int dstSize);
+// ToDo: add documentation
 
 int findString(const std::vector<std::string>& strings, const char* stringToFind);
-
-
+// ToDo: add documentation
 
 
 /** Counts the number of times by which the given "element" occurrs in the "buffer" with given 

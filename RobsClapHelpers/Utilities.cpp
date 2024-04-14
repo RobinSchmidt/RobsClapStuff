@@ -1,6 +1,4 @@
 
-
-
 int toStringWithSuffix(double value, char* dest, int size, int numDigits, const char* suffix)
 {
   if(dest == nullptr || size < 1)
@@ -31,8 +29,6 @@ int toStringWithSuffix(double value, char* dest, int size, int numDigits, const 
   //  std::format. For the time being, I think, this is OK. Conversion of doubles to strings is 
   //  typically not performance critical in the context of audio plugins.
 
-
-
   // See:
   // https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/sprintf-s-sprintf-s-l-swprintf-s-swprintf-s-l?view=msvc-170
   // https://stackoverflow.com/questions/76029660/what-is-the-difference-between-sprintf-s-and-snprintf
@@ -43,7 +39,7 @@ int toStringWithSuffix(double value, char* dest, int size, int numDigits, const 
   // https://stackoverflow.com/questions/1505986/sprintf-s-with-a-buffer-too-small
   // https://www.ryanjuckett.com/printing-floating-point-numbers/
 
-  // This says something about straingstream using locale inromation - could that mean that on some
+  // This says something about stringstream using locale information - could that mean that on some
   // machines, we get commas instead of dots? That would break state recall!!
   // http://cplusplus.bordoon.com/speeding_up_string_conversions.html
   // https://mariusbancila.ro/blog/2023/09/12/formatting-text-in-c-the-old-and-the-new-ways/
@@ -102,7 +98,6 @@ void IndexIdentifierMap::addIndexIdentifierPair(uint32_t index, clap_id id)
   // -Maybe include an assertion that ensures that the given pair does not try to mess something 
   //  up by overwriting existing data.
 }
-
 
 bool IndexIdentifierMap::isConsistent() const
 {
