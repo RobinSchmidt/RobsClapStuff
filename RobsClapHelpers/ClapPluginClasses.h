@@ -206,12 +206,12 @@ public:
   had less parameters), then the missing ones will be assigned to their default values. */
   bool stateLoad(const clap_istream* stream) noexcept override;
 
-  /** This creates a string that represents the state which given by the values of all of our 
+  /** This creates a string that represents the state which is given by the values of all of our 
   parameters. */
   virtual std::string getStateAsString() const;
   // ToDo: document the format of the string
 
-  /** Restores the state, i.e. the values of all parameter, from the given string which was 
+  /** Restores the state, i.e. the values of all parameters, from the given string which was 
   presumably created by calling getStateAsString at some time before. */
   virtual bool setStateFromString(const std::string& stateString);
 
