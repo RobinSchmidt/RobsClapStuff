@@ -345,4 +345,7 @@ ToDo:
  exactly simultaneously
 -Commenting out our code in noteOn/Off doesn't help
 
+-> Replace all asserts by some custom clapAssert or assume/ensure/verify that triggers a debug 
+   breakpoint. Then let's see, if we can trigger it from Bitwig
+
 */
