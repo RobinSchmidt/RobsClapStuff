@@ -88,4 +88,8 @@ extern "C" const clap_plugin_entry_t clap_entry =
   // ToDo:
   //
   // -Explain how this entry point works on the ABI level.
+  // -Document typical use cases for the init/deinit functions. See also here:
+  //  https://github.com/free-audio/clap-saw-demo-imgui/blob/main/src/clap-saw-demo-pluginentry.cpp
+  //  They are empty dummy functions there, too. They are required to be fast and it's not allowed
+  //  to do any user intercation or GUI stuff there. See:  clap/include/clap/entry.h
 };

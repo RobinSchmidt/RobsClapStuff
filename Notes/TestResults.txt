@@ -26,7 +26,7 @@ That seems to be rather high performance hit for a simple gain plugin! Am I doin
 wrong? 
 
 -Commenting out the code in processBlockStereo doesn't seem to make a noticable difference - so the 
- actual signal processing does not seem to be at fault. In bItwig, this has the resul to mute the 
+ actual signal processing does not seem to be at fault. In Bitwig, this has the result to mute the 
  output, so it apparently uses out-of place processing with zero-initialized output buffers.
 
 -Returning CLAP_PROCESS_CONTINUE immediately from ClapPluginStereo32Bit::process also doesn't seem 
