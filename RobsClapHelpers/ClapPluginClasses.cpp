@@ -377,6 +377,9 @@ bool ClapPluginStereo32Bit::audioPortsInfo(
   //
   // -I think strcpy_s is a Microsoft compiler specific function? Figure out! If so, replace it to 
   //  make the code portable.
+  // -Maybe remove the spaces in "Stereo In" etc. In the clap-saw-demo.
+  // -ClapSaw demo uses an id of 1 for its 1st note port but an id of 0 fro ist 1st audio port:
+  //  https://github.com/free-audio/clap-saw-demo-imgui/blob/main/src/clap-saw-demo.cpp#L303
 }
 
 clap_process_status ClapPluginStereo32Bit::process(const clap_process *p) noexcept
@@ -446,4 +449,104 @@ clap_process_status ClapPluginStereo32Bit::process(const clap_process *p) noexce
   //  certain kinds of processors. If you want to do this in your subclass, just override process,
   //  call this baseclass method here and return whatever other return value you want to return to 
   //  the host
+  // -Maybe, if the number of inputs or outputs is less than 1, we should not return 
+  //  CLAP_PROCESS_ERROR but rather CLAP_PROCESS_SLEEP like here:
+  //  https://github.com/free-audio/clap-saw-demo-imgui/blob/main/src/clap-saw-demo.cpp#L349
+}
+
+//=================================================================================================
+
+bool ClapSynthStereo32Bit::notePortsInfo(
+  uint32_t index, bool isInput, clap_note_port_info* info) const noexcept
+{
+  if(isInput)
+  {
+    info->id = 1;  // ToDo: Try using 0. This is more consistent with the audio ports.
+    info->supported_dialects = CLAP_NOTE_DIALECT_MIDI | CLAP_NOTE_DIALECT_CLAP;
+    info->preferred_dialect  = CLAP_NOTE_DIALECT_CLAP;
+    strcpy_s(info->name, CLAP_NAME_SIZE, "Note In");
+    //strncpy(info->name, "Note In", CLAP_NAME_SIZE);  // From clap-saw-demo - compile error in VS
+    return true;
+  }
+  return false;
+
+
+  // ToDo:
+  //
+  // -Also support 
+  // -Figure out if there is a reason why clap-saw-demo uses 1 rather than 0 for the id, see here:
+  //  https://github.com/free-audio/clap-saw-demo-imgui/blob/main/src/clap-saw-demo.h#L152
+  //  https://github.com/free-audio/clap-saw-demo-imgui/blob/main/src/clap-saw-demo.cpp#L318
+  //  Using 1-based indexing for the note-ports is inconsistent with the 0-based indexing of the 
+  //  audio ports. If not, use 0. I guess, it doesn't matter - it's probably up to the plugin how 
+  //  to specify its ids just like with the parameter ids. But I guess, the assigned ids must 
+  //  remain stable in updates.
+}
+
+void ClapSynthStereo32Bit::processEvent(const clap_event_header_t* hdr)
+{
+  if(hdr->space_id != CLAP_CORE_EVENT_SPACE_ID)
+    return;
+
+  switch(hdr->type)
+  {
+
+  case CLAP_EVENT_NOTE_ON:
+  {
+    const clap_event_note* note = (const clap_event_note *) hdr;
+    noteOn(note->key, note->velocity);
+  } 
+  break;
+
+  case CLAP_EVENT_NOTE_OFF:
+  {
+
+  } 
+  break;
+
+  case CLAP_EVENT_MIDI:
+  {
+
+  } 
+  break;
+
+  case CLAP_EVENT_MIDI2:
+  {
+
+  } 
+  break;
+
+  default:
+  {
+    Base::processEvent(hdr);
+  }
+
+  }
+
+
+
+
+
+
+  // Notes:
+  //
+  // -Note-on/off events may arrive in 3 different flavors: CLAP_EVENT_NOTE_ON/OFF, 
+  //  CLAP_EVENT_MIDI, CLAP_EVENT_MIDI2 and we need to be able to handle them all because we said
+  //  that we support CLAP_NOTE_DIALECT_MIDI and CLAP_NOTE_DIALECT_CLAP in notePortsInfo
+  // -There are also NOTE_CHOKE and NOTE_END event types. 
+  // -If I get it right, the NOTE_CHOKE event is meant for ducking a voice by another voice like in
+  //  mutually exclusive sounds like open and closed hihats in a drum machine. But it will also be 
+  //  sent when the user double-clicks on the stop button in the DAW which should stop all sounds 
+  //  immediately (like in "midi-panic"?). Soo...maybe we should respond to such choke events by
+  //  a hard switch-off and reset?
+  // -The NOTE_END event is an event type to be sent from the plugin to the host to inform the host
+  //  that a note has ended such that the host can turn off any modulators for that voice. Maybe we
+  //  should have a member function noteEnded/reportNoteEndToHost/notifyHostNoteEnded that 
+  //  subclasses can call and such a call will have the effect of scheduling sending of such 
+  //  note-end events to the host?
+  //
+  // See also:
+  //
+  // https://github.com/free-audio/clap-saw-demo-imgui/blob/main/src/clap-saw-demo.cpp#L492
+
 }

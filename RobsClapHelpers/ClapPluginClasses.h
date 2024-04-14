@@ -292,12 +292,44 @@ public:
 //=================================================================================================
 
 /** UNDER CONSTRUCTION. */
-/*
+
 class ClapSynthStereo32Bit : public ClapPluginStereo32Bit
 {
 
+  using Base = ClapPluginStereo32Bit;
+
+public:
+
+
+  bool implementsNotePorts() const noexcept override { return true; }
+
+  uint32_t notePortsCount(bool isInput) const noexcept override { return isInput ? 1 : 0; }
+  // One input note port, no output note ports. Do we need an output port when we want to send
+  // NOTE_END events to the host? Figure out!
+
+  bool notePortsInfo(uint32_t index, bool isInput,
+    clap_note_port_info *info) const noexcept override;
+
+  /**  key is in 0..127, velocity in 0..1 */
+  virtual void noteOn( int16_t key, double velocity) = 0;
+  // Maybe have also optional parameters for channel, port_index, note_id (defaulting to -1 
+  // indicating "unspecified" or "all")
+
+  virtual void noteOff(int16_t key) = 0;
+  // Maybe let noteOff also have an (optional) off-velocity
+
+
+
+
+  void processEvent(const clap_event_header_t* hdr) override;
+
+
+
+
+protected:
+
 
 };
-*/
+
 
 

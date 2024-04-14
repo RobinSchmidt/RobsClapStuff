@@ -149,3 +149,5 @@ There is potential for optimization in the waveshaper:
  -How to sync GUI and audio thread (lock-free queues?). I currently don't have a GUI.
  -How to handle out-of-range values for the parameters. Should the plugin sanitize (clip) them? That 
   would add to the CPU load of the plugin just to work around a bug in the host.
+ -Naming ports. Should there be spaces in the names or not, etc.
+ -Giving ids to ports. Should we start counting from 0 or 1?
