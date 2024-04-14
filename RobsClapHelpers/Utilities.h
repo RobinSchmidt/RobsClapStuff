@@ -90,10 +90,10 @@ itself can choose. If we choose the list of identifiers to be a permutation of t
 we get all the relevant benefits of the additional flexibility of such an id-system (mostly, the 
 ability to re-order the knobs in the host-generated GUI in updated versions of the plugin) while at
 the same time not introducing as much overhead as we would have to when using "random" numbers for
-the ids. So, that's the route we chose here: the mapping between index and id is a bijective 
-mapping (i.e. a permutation) of the set { 0, ..., N-1 } to itself. This can easily be implemented
-by a piar of std::vector<int> of length N. No need for (moderately) complex data structures like
-a std::map or something similar. ...TBC...  */
+the ids. So, that's the route we choose here: the mapping between index and id is a bijective 
+mapping (i.e. a permutation) of the set { 0, ..., N-1 } to itself where N is the number of 
+parameters. This can easily be implemented by a pair of arrays (e.g. std::vector) of length N. No 
+need for (moderately) complex data structures like a std::map or something similar.  */
 
 class IndexIdentifierMap
 {
@@ -143,7 +143,8 @@ public:
   /** Checks the map for internal consistency. This is useful for unit testing of the class and for
   catching bugs on the client code side via assertions. After filling a map, you can add a line 
   like  assert(myMap.isConsistent());  to make sure you didn't make any mistakes during filling the 
-  map. */
+  map. A mistake would be, for example, to use an id twice or not at all which can easily happen, I 
+  guess. */
   bool isConsistent() const;
 
 protected:
