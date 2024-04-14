@@ -175,7 +175,7 @@ bool ClapPlugin::clapActivate(const clap_plugin *plugin, double sample_rate,
     self._isBeingActivated = false;
     assert(!self._isActive);
     assert(self._sampleRate == 0);
-    return false;                         
+    return false;
   }
   self._isBeingActivated = false;
 

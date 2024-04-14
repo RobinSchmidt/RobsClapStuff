@@ -259,7 +259,7 @@ ClapToneGenerator::ClapToneGenerator(const clap_plugin_descriptor *desc, const c
 bool ClapToneGenerator::activate(
   double newSampleRate, uint32_t minFrameCount, uint32_t maxFrameCount) noexcept
 {
-  sampleRate = newSampleRate;
+  //sampleRate = newSampleRate;
   reset();
   return true;
 
@@ -271,7 +271,7 @@ bool ClapToneGenerator::activate(
 
 void ClapToneGenerator::deactivate() noexcept
 {
-  sampleRate = 0.0;
+  //sampleRate = 0.0;
   reset();
 
   // Notes:
@@ -310,7 +310,7 @@ void ClapToneGenerator::noteOn(int key, double vel)
   /*
   currentKey = key;
   double freq = RobsClapHelpers::pitchToFreq((double) currentKey);
-  increment = freq / sampleRate;                     // VERIFY!
+  increment = freq / getSampleRate();
   */
 
   // ToDo:

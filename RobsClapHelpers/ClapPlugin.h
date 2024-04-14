@@ -274,6 +274,8 @@ public:
 
   const char* getPluginVendor()     const { return getPluginDescriptor()->vendor; }
 
+  double getSampleRate() const { return _sampleRate; }
+
   std::vector<std::string> getFeatures();
 
 
