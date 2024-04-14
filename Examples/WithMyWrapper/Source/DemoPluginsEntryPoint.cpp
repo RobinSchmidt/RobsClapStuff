@@ -12,7 +12,7 @@ static const clap_plugin_factory_t pluginFactory =
 {  
 .get_plugin_count = [] (const clap_plugin_factory *factory) -> uint32_t 
 {  
-  return 2; // Two plugins in this library: StereoGainDemo, WaveShaperDemo
+  return 3; // 3 plugins in this library: StereoGainDemo, WaveShaperDemo, ToneGeneratorDemo
 },
 
 .get_plugin_descriptor = [] (const clap_plugin_factory *factory, uint32_t index) 
@@ -22,6 +22,7 @@ static const clap_plugin_factory_t pluginFactory =
   {
   case 0:  return &ClapGain::descriptor;
   case 1:  return &ClapWaveShaper::descriptor;
+  case 2:  return &ClapToneGenerator::descriptor;
   default: return nullptr;
   }
 },
@@ -50,6 +51,14 @@ static const clap_plugin_factory_t pluginFactory =
     ClapWaveShaper* shaper = new ClapWaveShaper(&ClapWaveShaper::descriptor, host);
     return shaper->clapPlugin();
   }
+
+  // ToneGeneratorDemo:
+  if(strcmp(pluginID, ClapToneGenerator::descriptor.id) == 0)
+  {
+    ClapToneGenerator* toneGen = new ClapToneGenerator(&ClapToneGenerator::descriptor, host);
+    return toneGen->clapPlugin();
+  }
+
 
   // The host has passed a pluginID that could not be matched to any of the plugins in this 
   // library, so we return a nullptr:

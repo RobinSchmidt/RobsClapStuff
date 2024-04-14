@@ -296,7 +296,8 @@ public:
 class ClapSynthStereo32Bit : public ClapPluginStereo32Bit
 {
 
-  using Base = ClapPluginStereo32Bit;
+  using Base = ClapPluginStereo32Bit;   // For convenience
+  using Base::Base;                     // Inherit baseclass constructor(s)
 
 public:
 

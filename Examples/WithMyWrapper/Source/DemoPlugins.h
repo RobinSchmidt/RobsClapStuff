@@ -182,6 +182,7 @@ public:
   //-----------------------------------------------------------------------------------------------
   // \name Boilerplate
 
+  ClapToneGenerator(const clap_plugin_descriptor *desc, const clap_host *host);
 
   bool activate(double sampleRate, uint32_t minFrameCount, uint32_t maxFrameCount) 
     noexcept override;
@@ -192,6 +193,8 @@ public:
 
   void processBlockStereo(const float* inL, const float* inR, float* outL, float* outR, 
     uint32_t numFrames) override;
+
+  void parameterChanged(clap_id id, double newValue) override;
 
   void noteOn( int key, double velocity) override;
 

@@ -247,6 +247,15 @@ const clap_plugin_descriptor_t ClapToneGenerator::descriptor =
   .features     = ClapToneGenerator::features,
 };
 
+ClapToneGenerator::ClapToneGenerator(const clap_plugin_descriptor *desc, const clap_host *host) 
+  : ClapSynthStereo32Bit(desc, host) 
+{
+
+  // ToDo:
+  //
+  // -Add parameters
+}
+
 bool ClapToneGenerator::activate(
   double newSampleRate, uint32_t minFrameCount, uint32_t maxFrameCount) noexcept
 {
@@ -284,6 +293,11 @@ void ClapToneGenerator::processBlockStereo(
 {
   for(uint32_t n = 0; n < numFrames; ++n)
     outL[n] = outR[n] = getSample();
+}
+
+void ClapToneGenerator::parameterChanged(clap_id id, double newValue)
+{
+
 }
 
 void ClapToneGenerator::noteOn(int key, double vel)
