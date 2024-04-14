@@ -67,7 +67,7 @@ bool ClapPluginWithParams::paramsTextToValue(
   // ToDo:
   //
   // -Figure out what happens in case of a parse-error. It would be nice to have a parser that 
-  //  returns a bool (true in case fo success, false in case of failure).
+  //  returns a bool (true in case of success, false in case of failure).
 }
 
 void ClapPluginWithParams::paramsFlush(
@@ -271,14 +271,14 @@ bool ClapPluginWithParams::setStateFromString(const std::string& stateStr)
     return false;
 
   // Extract the substring that contains the parameters, i.e. anything in between '[' and ']',
-  // excluding the opening bracket and including the closing bracket excluding the brackets 
-  // themselves:
+  // excluding the opening bracket and including the closing bracket. The closing bracket ']' is 
+  // included and then replaced by a comma ',' to avoid the need for a special case for last 
+  // parameter in the subsequent loop:
   size_t start, end;
   start = stateStr.find("Parameters: [", 0) + 13;
   end   = stateStr.find(']', start);
   std::string paramsStr = stateStr.substr(start, end-start+1);
   paramsStr[paramsStr.size()-1] = ',';  
-    // Replace closing ']' by ',' to avoid the need for a special case for last param.
 
   uint32_t numParamsFound = 0;
   size_t i = 0;                                // Index into paramsStr
@@ -424,7 +424,8 @@ clap_process_status ClapPluginStereo32Bit::process(const clap_process *p) noexce
     // to adjust them. Actually, numFrames and numEvents do not need to be passed because they
     // are also stored in the process
 
-    // Process the sub-block until the next event:
+    // Process the sub-block until the next event. This is a call to the overriden implementation
+    // in the subclass in a sort of "template method" pattern:
     processBlockStereo(
       &p->audio_inputs[0].data32[0][frameIndex],   
       &p->audio_inputs[0].data32[1][frameIndex],

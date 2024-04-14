@@ -16,8 +16,8 @@ their parameters and override parameterChanged() to respond to parameter changes
 When adding a parameter, you need to assign an identifier (short: id) to it. When the host later 
 wants to set or get the value of the parameter or convert it to a string or whatever, it will refer
 to the parameter by this id. The way the id-system is handled by this class here assumes that the
-ids are determined by an enum (that is supposedly defined somewhere inside you plugin subclass) and
-that the ids run continuously from 0 to N-1 where N is the number of parameters. An id, once 
+ids are determined by an enum (that is supposedly defined somewhere inside your plugin subclass) 
+and that the ids run continuously from 0 to N-1 where N is the number of parameters. An id, once 
 assigned to a parameter, must remain stable from one plugin version to the next. That means, after 
 a plugin is published, you cannot reorder the enum or delete entries from it or insert entries at 
 arbitrary positions. You can, however, append new entries at the end for more parameters. You also 
@@ -79,7 +79,7 @@ public:
 
   /** Fills out the passed clap_param_info struct with the data for the parameter with the given 
   index. Note that the "index" is not the same thing as the "identifier" or "id", for short. The 
-  index is a number that runs from 0 to n numParams-1 and determines the order in which the 
+  index is a number that runs from 0 to numParams-1 and determines the order in which the 
   parameters will be presented on the host-generated GUI. The id is a number that the plugin itself
   may assign to its parameters. The id is actually a field in the info struct. When the host wants 
   to set a parameter, it will use this id to identify the parameter. The index is just used here to 
@@ -271,9 +271,9 @@ public:
   bool audioPortsInfo(uint32_t index, bool isInput, clap_audio_port_info *info) 
     const noexcept override;
 
-  /** We override the process callback to handle the passed events and wheneve an event is 
-  received ve call processEvent with that event. In between the events we call processBlockStereo
-  with the pointers an numFrames variables adjusted to the correct sub-buffer to be processed. */
+  /** We override the process callback to handle the passed events and whenever an event is 
+  received we call processEvent with that event. In between the events we call processBlockStereo
+  with the pointers and numFrames variables adjusted for the sub-buffer to be processed. */
   clap_process_status process(const clap_process *process) noexcept override;
   // baseclass needs also an implementation of this
 

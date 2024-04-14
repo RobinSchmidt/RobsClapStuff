@@ -155,10 +155,10 @@ public:
 protected:
 
   // Internal algorithm parameters/coeffs:
-  int   shape  = kClip;
-  float inAmp  = 1.f;
-  float outAmp = 1.f;
-  float dc     = 0.f;
+  Shapes shape  = kClip;
+  float  inAmp  = 1.f;
+  float  outAmp = 1.f;
+  float  dc     = 0.f;
 
   // Holds the strings for the shape names for GUI display:
   std::vector<std::string> shapeNames;
