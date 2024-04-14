@@ -140,3 +140,12 @@ There is potential for optimization in the waveshaper:
  https://github.com/free-audio/clap-saw-demo-imgui/blob/main/src/clap-saw-demo.cpp
  it gives the host the range of 1...127 in ClapSawDemo::paramsInfo and does the lin-to-exp mapping 
  in ClapSawDemo::paramsValueToText
+
+-Figure out best practices for:
+ -Handling nonlinear parameter mapping functions. The clap-saw-example uses 1..127 for an 
+  exponentially mapped filter cutoff. I guess, I'd use 0..1 by default like in VST.
+ -Handling parameter ids - some examples use "random" numbers and std::unordered_map. I use a 
+  permutation of the indices.
+ -How to sync GUI and audio thread (lock-free queues?). I currently don't have a GUI.
+ -How to handle out-of-range values for the parameters. Should the plugin sanitize (clip) them? That 
+  would add to the CPU load of the plugin just to work around a bug in the host.
