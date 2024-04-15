@@ -41,6 +41,22 @@ inline void clapAssert(bool expression, const char *errorMessage = nullptr)
 #endif
 }
 
+/** Extracts the input events from teh given processing buffer into a std::vector for easy 
+inspection in the debugger. In the process(...) function, you can just add a line like:
+
+  auto inEvents = extractInEvents(p);
+
+and then you can inspect the event list. */
+inline std::vector<clap_event_header_t> extractInEvents(const clap_process* p)
+{
+  const uint32_t numEvents = p->in_events->size(p->in_events);
+  std::vector<clap_event_header_t> inEvents(numEvents);
+  for(int i = 0; i < numEvents; i++)
+    inEvents[i] = *(p->in_events->get(p->in_events, i));
+  return inEvents;
+}
+// Maybe un-inline
+
 //=================================================================================================
 // Math
 

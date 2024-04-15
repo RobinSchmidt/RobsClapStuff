@@ -17,4 +17,4 @@ bool runIndexIdentifierMapTest();
 bool runWaveShaperTest();
 
 
-//bool runProcessingTest();
+bool runProcessingTest();

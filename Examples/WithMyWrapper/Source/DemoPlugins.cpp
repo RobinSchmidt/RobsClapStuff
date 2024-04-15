@@ -355,15 +355,18 @@ processBlockStereo
 ClapToneGenerator::processBlockStereo gets called with ridiculusly large numFrames from 
 ClapPluginStereo32Bit::process. There, we had the following data whit it happened in a few trials:
 
-eventIndex     =   1     1    1    1    1
-frameIndex     =  61   426  474  449   71
-nextEventFrame =  46   326  321  301   54
-numEvents      =   2     2    3    2    2
-numFrames      = 480   480  480  480  480
+eventIndex     =   1     1    1    1    1    1
+frameIndex     =  61   426  474  449   71  385
+nextEventFrame =  46   326  321  301   54  269
+numEvents      =   2     2    3    2    2    2
+numFrames      = 480   480  480  480  480  480
 
 It looks like it happens whenever there are more than 1 event per block and/or when 
-frameIndex > nextEventFrame. How can this happen? Are the event unordered? Write a unit test that
-produces some test audio- and event buffers
+frameIndex > nextEventFrame. How can this happen? Are the events unordered? Nope! Write a unit test
+that produces some test audio- and event buffers.
+
+In the last run, the numFrames parameter in the inner ClapToneGenerator::processBlockStereo was
+4294967180 (== nextEventFrame - frameIndex  == 269 - 385 == -116 == 2^32 - 116).
 
 
 

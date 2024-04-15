@@ -10,6 +10,7 @@ bool runAllClapTests(/*bool printResults*/)
   ok &= runNumberToStringTest();
   ok &= runIndexIdentifierMapTest();
   ok &= runWaveShaperTest();
+  ok &= runProcessingTest();
 
   return ok;
 }
@@ -488,6 +489,59 @@ bool runWaveShaperTest()
   //    ws.paramsValueToText(ClapWaveShaper::Params::kShape, ...
   //  The desired behavior is that it behaves like rounding, i.e. 0..0.5 should give the same 
   //  result as the integer 0, 0.5..1.5 the same result as 2, etc.
+}
+
+
+void initClapProcess(clap_process* p)
+{
+  p->audio_inputs        = nullptr;
+  p->audio_inputs_count  = 0;
+  p->audio_outputs       = nullptr;
+  p->audio_outputs_count = 0;
+  p->frames_count        = 0;
+  p->in_events           = nullptr;
+  p->out_events          = nullptr;
+  p->steady_time         = 0;
+  p->transport           = nullptr;
+
+  // Check, if that's all!
+}
+
+bool runProcessingTest()
+{
+  bool ok = true;
+
+  using namespace RobsClapHelpers;
+
+  // Create and set up a ClapGain object:
+  clap_plugin_descriptor_t desc = ClapGain::descriptor;
+  ClapGain gain(&desc, nullptr);
+  using  ID     = ClapGain::ParamId;       // For convenience
+  double gainDb = -10.0;
+  gain.setParameter(ID::kGain, gainDb);
+
+  // Create an initialize the clap processing buffer:
+  clap_process p;
+  initClapProcess(&p);
+
+  // Call process on the gain with the invalid processing buffer and check that it correctly 
+  // returns an error:
+  clap_process_status status = gain.process(&p);
+  ok &= status == CLAP_PROCESS_ERROR;
+
+
+
+  // Create stereo input and output buffers:
+
+
+
+  // Check, if the output buffer is as expected
+  double gainLin = dbToAmp(gainDb);
+
+
+
+
+  return ok;
 }
 
 
