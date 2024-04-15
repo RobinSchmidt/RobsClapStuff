@@ -28,6 +28,7 @@ bool runAllClapTests(/*bool printResults*/)
 // load/save. This stuff needs verification. I don't know if my mock-stream behaves the way it is 
 // intended by the CLAP API. I'm just guessing.
 
+/*
 struct ClapStreamData
 {
   std::vector<uint8_t> data;
@@ -74,6 +75,7 @@ int64_t clapStreamRead(const struct clap_istream* stream, void* buffer, uint64_t
   // Return the number of bytes consumed (i.e. written into the buffer):
   return numToRead;
 }
+*/
 
 
 /** A dummy class to simulate addition and re-ordering of parameters in an updated version of a 
