@@ -588,76 +588,8 @@ bool runProcessingTest()
 //=================================================================================================
 // Processing, using helper classes for the tedious buffer setup
 
+
 /*
-class ClapAudioBuffer
-{
-
-public:
-
-  ClapAudioBuffer(uint32_t newNumChannels = 1, uint32_t newNumFrames = 1)
-  {
-    setSize(newNumChannels, newNumFrames);
-  }
-
-  void setSize(uint32_t newNumChannels, uint32_t newNumFrames)
-  {
-    numChannels = newNumChannels;
-    numFrames   = newNumFrames;
-    allocateBuffers();
-  }
-
-  const clap_audio_buffer* getWrappee() const { return &_buffer; }
-
-  clap_audio_buffer* getWrappee() { return &_buffer; }
-
-
-
-  uint32_t getNumChannels() const { return numChannels; }
-
-  uint32_t getNumFrames() const { return numFrames; }
-
-  float* getChannelPointer(uint32_t index) { return channelPointers[index]; }
-
-
-private:
-
-  void allocateBuffers();
-
-  clap_audio_buffer _buffer;
-
-  std::vector<std::vector<float>> data;
-  std::vector<float*> channelPointers;
-
-  uint32_t numChannels = 1;   // Should be at least 1. Redundant - stored already in _buffer.channel_count
-  uint32_t numFrames   = 1;   // Should be at least 1
-};
-
-void ClapAudioBuffer::allocateBuffers()
-{
-  data.resize(numChannels);
-  channelPointers.resize(numChannels);
-  for(uint32_t c = 0; c < numChannels; c++)
-  {
-    data[c].resize(numFrames);
-    channelPointers[c] = &data[c][0];
-  }
-
-  _buffer.channel_count = numChannels;
-  _buffer.data32 = &channelPointers[0];
-
-  // These are always the same at the moment:
-  _buffer.data64        = nullptr;
-  _buffer.constant_mask = 0;
-  _buffer.latency       = 0;
-}
-*/
-
-
-
-
-
-
-
 union ClapEvent
 {
   clap_event_param_value paramValue;
@@ -665,7 +597,9 @@ union ClapEvent
   clap_event_note        note;
   // ...more to come...
 };
+*/
 
+/*
 class ClapEventBuffer
 {
 
@@ -695,13 +629,15 @@ private:
   std::vector<ClapEvent> events;
 
 };
-
+*/
+/*
 void ClapEventBuffer::addParamValueEvent(clap_id paramId, double value, uint32_t time)
 {
   ClapEvent ev;
   ev.paramValue = createParamValueEvent(paramId, value, time);
   events.push_back(ev);
 }
+*/
 
 
 /** C++ wrapper around clap_input_events. By deriving from ClapEventBuffer, we inherit the owned

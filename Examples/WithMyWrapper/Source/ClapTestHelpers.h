@@ -33,6 +33,47 @@ void initClapOutEventBuffer(clap_output_events* b);
 clap_event_param_value createParamValueEvent(clap_id paramId, double value, uint32_t time = 0);
 
 
+union ClapEvent
+{
+  clap_event_param_value paramValue;
+  clap_event_midi        midi;
+  clap_event_note        note;
+  // ...more to come...
+};
+
+
+class ClapEventBuffer
+{
+
+public:
+
+  uint32_t getNumEvents() { return (uint32_t) events.size(); }
+
+  const clap_event_header_t* getEventHeader(uint32_t index)
+  {
+    return &events[index].paramValue.header; 
+    // It should not matter which field of the union we use. The header has always the same 
+    // meaning. We use paramValue here, but midi or note should work just as well.
+
+    // This will cause an access violation when index >= numEvents, in particular, when numEvents
+    // is zero. Maybe in this case, we should return a pointer to some dummy header - as in the
+    // null-object pattern?.
+  }
+
+  void clear() { events.clear(); }
+
+  void addEvent(const ClapEvent& newEvent) { events.push_back(newEvent); }
+
+  void addParamValueEvent(clap_id paramId, double value, uint32_t time);
+
+private:
+
+  std::vector<ClapEvent> events;
+
+};
+
+
+
 
 //=================================================================================================
 // Audio Buffers

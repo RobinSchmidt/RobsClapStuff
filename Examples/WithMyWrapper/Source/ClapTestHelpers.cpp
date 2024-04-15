@@ -99,6 +99,14 @@ clap_event_param_value createParamValueEvent(clap_id paramId, double value, uint
 }
 
 
+void ClapEventBuffer::addParamValueEvent(clap_id paramId, double value, uint32_t time)
+{
+  ClapEvent ev;
+  ev.paramValue = createParamValueEvent(paramId, value, time);
+  events.push_back(ev);
+}
+
+
 
 
 //=================================================================================================
