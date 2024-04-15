@@ -291,16 +291,12 @@ void ClapToneGenerator::processBlockStereo(
 {
   for(uint32_t n = 0; n < numFrames; ++n)
     outL[n] = outR[n] = getSample();
-
-
-  //// Test:
-  //for(uint32_t n = 0; n < numFrames; ++n)
-  //  outL[n] = outR[n] = 0.0;
 }
 
 void ClapToneGenerator::parameterChanged(clap_id id, double newValue)
 {
-
+  // We don't have any parameters yet, but this function is a mandatory override (i.e. purely 
+  // virtual) ...and we want to add parameters later anyway...
 }
 
 void ClapToneGenerator::noteOn(int key, double vel)
@@ -329,47 +325,3 @@ void ClapToneGenerator::noteOff(int key)
   }
 }
 
-/*
-
-
-
-ToDo:
-
-
-OK - I think, this is fixed:
-
--The ClapToneGenerator currently has 3 failing tests in the clap-validator. It crashes in those 
- tests(!).
--It also crashes in Bitwig when playing clusters of notes.
--To find it, replace all the assert statements with some "clapAssert" which triggers a debug
- breakpoint and then attach to the BitwigHost process.
--It seems also to happen when playing two notes simultaneously - hit two notes with two fingers
- exactly simultaneously
--Commenting out our code in noteOn/Off doesn't help
-
--> Replace all asserts by some custom clapAssert or assume/ensure/verify that triggers a debug 
-   breakpoint. Then let's see, if we can trigger it from Bitwig
-
-...oookay - the debug-break triggers in ClapPluginStereo32Bit::process when it tries to call
-processBlockStereo
-
-
-ClapToneGenerator::processBlockStereo gets called with ridiculusly large numFrames from 
-ClapPluginStereo32Bit::process. There, we had the following data whit it happened in a few trials:
-
-eventIndex     =   1     1    1    1    1    1
-frameIndex     =  61   426  474  449   71  385
-nextEventFrame =  46   326  321  301   54  269
-numEvents      =   2     2    3    2    2    2
-numFrames      = 480   480  480  480  480  480
-
-It looks like it happens whenever there are more than 1 event per block and/or when 
-frameIndex > nextEventFrame. How can this happen? Are the events unordered? Nope! Write a unit test
-that produces some test audio- and event buffers.
-
-In the last run, the numFrames parameter in the inner ClapToneGenerator::processBlockStereo was
-4294967180 (== nextEventFrame - frameIndex  == 269 - 385 == -116 == 2^32 - 116).
-
-
-
-*/

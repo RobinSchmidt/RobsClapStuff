@@ -167,7 +167,9 @@ protected:
 
 //=================================================================================================
 
-/** A simple tone generator to demonstrate usage of class ClapSynthStereo32Bit. It demonstrates how
+/** UNDER CONSTRUCTION (kinda works already but is still lacking some features)
+
+A simple tone generator to demonstrate usage of class ClapSynthStereo32Bit. It demonstrates how
 to respond to midi note events and how to deal with a sample-rate dependent and stateful DSP 
 algorithm. To handle all this correctly, we need to override a few more methods like de/activate, 
 reset, noteOn/Off, etc. */
@@ -240,7 +242,6 @@ public:
   }
 
 
-
 protected:
 
   // Parameters:
@@ -253,7 +254,7 @@ protected:
   //float startPhase  = 0.0;
   //float ampByKey    = 0.0;
   //float ampByVel    = 0.0;
-
+  //float pitchWheel  = 0.0;
 
   // State:
   double phasor     = 0.0;   // Current sine phase in 0..1

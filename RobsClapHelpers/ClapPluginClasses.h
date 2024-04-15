@@ -291,7 +291,12 @@ public:
 
 //=================================================================================================
 
-/** UNDER CONSTRUCTION. */
+/** UNDER CONSTRUCTION. 
+
+This class can serve as baseclass for instrument plugins, provided that they want to work with 
+stereo I/O for audio in 32 bit. In addition to the baseclass ClapPluginStereo32Bit, this class
+handles muscial events like note-on/off. Subclasses should respond to such events by overriding
+the appropriate virtual functions such as noteOn, noteOff, etc. ...TBC... */
 
 class ClapSynthStereo32Bit : public ClapPluginStereo32Bit
 {
@@ -315,12 +320,13 @@ public:
   bool notePortsInfo(uint32_t index, bool isInput,
     clap_note_port_info *info) const noexcept override;
 
-  /**  key is in 0..127, velocity in 0..1 */
+  /** This is hook function that subclasses should override to respond to noteOn events. The key is
+  in 0..127 like in MIDI 1.0, the velocity in 0..1 */
   virtual void noteOn(int key, double velocity) = 0;
   // Maybe have also optional parameters for channel, port_index, note_id (defaulting to -1 
   // indicating "unspecified" or "all")
   // The data type int16_t is taken from the clap-saw-example. I think it might be for 
-  // compatibility with MIDI 2.0= See:
+  // compatibility with MIDI 2.0. See:
   // https://www.kvraudio.com/forum/viewtopic.php?t=567879
   // https://midi.org/midi-2-0-scope-a-development-and-test-tool-for-midi-2-0-messages
   //
@@ -331,6 +337,9 @@ public:
   // so for easy compatibility, this would be the best type anyway.
   // ...maybe use int32_t instead of int to make it the same on all platforms?
   // Ahh - it was in clap_event_note - the note-key filed there is of type int16_t
+  // ...maybe settle for another format that is compatible with midi 1 and midi 2. Is that even
+  // possible? Maybe we can support the microtuning extension somehow? That would be very cool!
+  // Maybe note on events should have an additional data field for the frequency. We'll see...
 
 
   virtual void noteOff(int key) = 0;

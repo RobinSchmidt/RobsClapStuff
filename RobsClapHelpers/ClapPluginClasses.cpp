@@ -384,9 +384,7 @@ bool ClapPluginStereo32Bit::audioPortsInfo(
 
 clap_process_status ClapPluginStereo32Bit::process(const clap_process *p) noexcept
 {
-  // DEBUG-STUFF:
   //auto inEvents = RobsClapHelpers::extractInEvents(p); // For inspection in debugger
-
 
   // Check number of input and output ports/busses:
   if(  p->audio_inputs_count  != 1 
@@ -472,22 +470,9 @@ bool ClapSynthStereo32Bit::notePortsInfo(
 {
   if(isInput)
   {
-    //info->id = 1;  // ToDo: Try using 0. This is more consistent with the audio ports.
-    //info->supported_dialects = CLAP_NOTE_DIALECT_MIDI | CLAP_NOTE_DIALECT_CLAP;
-    //info->preferred_dialect  = CLAP_NOTE_DIALECT_CLAP;
-
-    info->id = 0;  // ToDo: Try using 0. This is more consistent with the audio ports.
+    info->id = 0;
     info->supported_dialects = CLAP_NOTE_DIALECT_MIDI | CLAP_NOTE_DIALECT_CLAP;
     info->preferred_dialect  = CLAP_NOTE_DIALECT_CLAP;
-
-    //info->id = 0;
-    //info->supported_dialects = CLAP_NOTE_DIALECT_MIDI;
-    //info->preferred_dialect  = CLAP_NOTE_DIALECT_MIDI;
-
-    //info->id = 0;
-    //info->supported_dialects = CLAP_NOTE_DIALECT_CLAP;
-    //info->preferred_dialect  = CLAP_NOTE_DIALECT_CLAP;
-
     strcpy_s(info->name, CLAP_NAME_SIZE, "Note In");
     //strncpy(info->name, "Note In", CLAP_NAME_SIZE);  // From clap-saw-demo - compile error in VS
     return true;
@@ -497,21 +482,21 @@ bool ClapSynthStereo32Bit::notePortsInfo(
 
   // ToDo:
   //
-  // -Also support 
+  // -Maybe support MIDI 2.0 later
   // -Figure out if there is a reason why clap-saw-demo uses 1 rather than 0 for the id, see here:
   //  https://github.com/free-audio/clap-saw-demo-imgui/blob/main/src/clap-saw-demo.h#L152
   //  https://github.com/free-audio/clap-saw-demo-imgui/blob/main/src/clap-saw-demo.cpp#L318
   //  Using 1-based indexing for the note-ports is inconsistent with the 0-based indexing of the 
   //  audio ports. If not, use 0. I guess, it doesn't matter - it's probably up to the plugin how 
   //  to specify its ids just like with the parameter ids. But I guess, the assigned ids must 
-  //  remain stable in updates.
+  //  remain stable in updates. Zero seems to work in Bitwig, so unless there's a good reason to 
+  //  use 1, I'd rather use 0.
 }
 
 void ClapSynthStereo32Bit::handleMidiEvent(const uint8_t data[3])
 {
   // Convert all messages to corresponding messages on MIDI channel 1:
   uint8_t status = data[0] & 0xf0;
-
 
   if( status == 0x90 || status == 0x80 )
   {
@@ -562,43 +547,26 @@ void ClapSynthStereo32Bit::handleMidiEvent(const uint8_t data[3])
 
 void ClapSynthStereo32Bit::processEvent(const clap_event_header_t* hdr)
 {
-  //return;  
-  // Test - doesn't help fixing the crashes in clap-validator - this is really weird. It crashes 
-  // even when we don't do anything here.
-
   if(hdr->space_id != CLAP_CORE_EVENT_SPACE_ID)
     return;
 
   switch(hdr->type)
   {
-
-   
-  case CLAP_EVENT_NOTE_ON:
-  {
+  case CLAP_EVENT_NOTE_ON: {
     const clap_event_note* note = (const clap_event_note*) hdr;
     noteOn(note->key, note->velocity);
-  } 
-  break;
-
-  case CLAP_EVENT_NOTE_OFF:
-  {
+  } break;
+  case CLAP_EVENT_NOTE_OFF: {
     const clap_event_note* note = (const clap_event_note*) hdr;
     noteOff(note->key);
-  } 
-  break;
- 
-  case CLAP_EVENT_MIDI:
-  {
+  } break;
+  case CLAP_EVENT_MIDI: {
     const clap_event_midi* midi = (const clap_event_midi*)(hdr);
     handleMidiEvent(midi->data); // midi->data is the array of 3 midi bytes.
-  } 
-  break;
-
-  default:
-  {
+  } break;
+  default: {
     Base::processEvent(hdr);     // Baseclass implementation handles parameter changes.
   }
-
   }
 
   // Notes:
@@ -622,5 +590,4 @@ void ClapSynthStereo32Bit::processEvent(const clap_event_header_t* hdr)
   // See also:
   //
   // https://github.com/free-audio/clap-saw-demo-imgui/blob/main/src/clap-saw-demo.cpp#L492
-
 }
