@@ -843,6 +843,9 @@ public:
 
   uint32_t getNumFrames() const { return numFrames; }
 
+  float* getChannelPointer(uint32_t index) { return channelPointers[index]; }
+
+
 private:
 
   void allocateBuffers();
@@ -1002,6 +1005,15 @@ public:
     updateWrappee();
   }
 
+  float* getInChannelPointer(uint32_t index) { return inBuf.getChannelPointer(index); }
+
+  float* getOutChannelPointer(uint32_t index) { return outBuf.getChannelPointer(index); }
+
+
+  clap_process* getWrappee() { return &_process; }
+  // Maybe try to return a const pointer?
+
+
 private:
 
   void updateWrappee(); // rename to updateWrappee
@@ -1035,35 +1047,57 @@ void ClapProcessBuffer_1In_1Out::updateWrappee()
 
 
 
-
-
-
-
-
-
-
-
-
-
 bool runProcessingTest2()
 {
   bool ok = true;
 
-  //int N = 60;                                    // Number of sample frames
+  using namespace RobsClapHelpers;
 
-  //ClapAudioBuffer    inBuf(2, N), outBuf(2, N);  // The 2 is the number of channels
-  //ClapInEventBuffer  inEvs;
-  //ClapOutEventBuffer outEvs;
+  // Create and set up a ClapGain object:
+  clap_plugin_descriptor_t desc = ClapGain::descriptor;
+  ClapGain gain(&desc, nullptr);
+  using  ID     = ClapGain::ParamId;       // For convenience
+  double gainDb = -10.0;
+  gain.setParameter(ID::kGain, gainDb);
 
+  // Create a processing buffer:
   uint32_t numChannels =  2;  // Stereo
   uint32_t numFrames   = 60;  // 60 is nice - has many divisors
-
   ClapProcessBuffer_1In_1Out procBuf(numChannels, numFrames);
 
+  // Retrieve pointers to the actual signal buffers:
+  float* inL  = procBuf.getInChannelPointer(0);
+  float* inR  = procBuf.getInChannelPointer(1);
+  float* outL = procBuf.getOutChannelPointer(0);
+  float* outR = procBuf.getOutChannelPointer(1);
+  // Maybe it would be more convenient to work with references to the std::vectors
+
+  // Create a test input signal - we use a sinusoid:
+  int N = numFrames;  // Shorthand, because we need it often
+  float w = 0.2;  // Normalized radian freq of input sine
+  for(int n = 0; n < N; n++)
+  {
+    inL[n] = sin(w*n);
+    inR[n] = cos(w*n);
+  }
+
+  // Compute target output:
+  float gainLin = (float) dbToAmp(gainDb);
+  std::vector<float> tgtL(N), tgtR(N);
+  for(int n = 0; n < N; n++)
+  {
+    tgtL[n] = gainLin * inL[n];
+    tgtR[n] = gainLin * inR[n];
+  }
+
+  // Let the gain plugin compute its output for the given sine input:
+  clap_process_status status = gain.process(procBuf.getWrappee());
+  ok &= status == CLAP_PROCESS_CONTINUE;
+  ok &= equals(&tgtL[0], outL, N);
+  ok &= equals(&tgtR[0], outR, N);
 
 
 
-  uint32_t N = numFrames;  // Shorthand, because we need it often
 
 
 

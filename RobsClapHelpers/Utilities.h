@@ -111,6 +111,19 @@ inline int countOccurrences(const T* buffer, int length, const T& element)
   return count;
 }
 
+/** Compares the two given buffers with given length for equality in the sense that all entries
+must be equal. */
+template<class T>
+inline bool equals(const T* buf1, const T* buf2, int length)
+{
+  for(int i = 0; i < length; i++)
+    if(buf1[i] != buf2[i])
+      return false;
+  return true;
+}
+
+
+
 //=================================================================================================
 // Strings
 
