@@ -39,6 +39,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\Source\ClapPluginTests.cpp" />
+    <ClCompile Include="..\..\Source\ClapTestHelpers.cpp" />
     <ClCompile Include="..\..\Source\DemoPlugins.cpp" />
     <ClCompile Include="..\..\Source\GNUPlotter.cpp" />
     <ClCompile Include="..\..\Source\Tests.cpp" />
@@ -49,6 +50,7 @@
     <ClInclude Include="..\..\..\..\RobsClapHelpers\RobsClapHelpers.h" />
     <ClInclude Include="..\..\..\..\RobsClapHelpers\Utilities.h" />
     <ClInclude Include="..\..\Source\ClapPluginTests.h" />
+    <ClInclude Include="..\..\Source\ClapTestHelpers.h" />
     <ClInclude Include="..\..\Source\DemoPlugins.h" />
     <ClInclude Include="..\..\Source\GNUPlotter.h" />
   </ItemGroup>

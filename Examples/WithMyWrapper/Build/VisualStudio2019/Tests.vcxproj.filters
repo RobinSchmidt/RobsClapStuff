@@ -34,6 +34,9 @@
     <ClCompile Include="..\..\Source\GNUPlotter.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\ClapTestHelpers.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\ClapPluginTests.h">
@@ -55,6 +58,9 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\GNUPlotter.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\ClapTestHelpers.h">
       <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>
