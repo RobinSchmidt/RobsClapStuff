@@ -1005,6 +1005,15 @@ public:
     updateWrappee();
   }
 
+
+  void addInputParamValueEvent(clap_id paramId, double value, uint32_t time)
+  {
+    inEvs.addParamValueEvent(paramId, value, time);
+  }
+
+  void clearInputEvents() { inEvs.clear(); }
+
+
   float* getInChannelPointer(uint32_t index) { return inBuf.getChannelPointer(index); }
 
   float* getOutChannelPointer(uint32_t index) { return outBuf.getChannelPointer(index); }
@@ -1044,7 +1053,6 @@ void ClapProcessBuffer_1In_1Out::updateWrappee()
   _process.steady_time = 0;
   _process.transport   = nullptr;
 }
-
 
 
 bool runProcessingTest2()
@@ -1095,6 +1103,45 @@ bool runProcessingTest2()
   ok &= status == CLAP_PROCESS_CONTINUE;
   ok &= equals(&tgtL[0], outL, N);
   ok &= equals(&tgtR[0], outR, N);
+
+  // Create some gain-change events:
+  double   gainDb0 = 1.0;
+  uint32_t n0      = 0;
+  double   gainDb1 = 3.0;
+  uint32_t n1      = N/3;
+  double   gainDb2 = -2.0;
+  uint32_t n2      = 2*N/3;
+  procBuf.addInputParamValueEvent(ID::kGain, gainDb0, n0);
+  procBuf.addInputParamValueEvent(ID::kGain, gainDb1, n1);
+  procBuf.addInputParamValueEvent(ID::kGain, gainDb2, n2);
+
+  // Compute target output:
+  gainLin = (float) dbToAmp(gainDb0);
+  for(int n = 0; n < n1; n++)
+  {
+    tgtL[n] = gainLin * inL[n];
+    tgtR[n] = gainLin * inR[n];
+  }
+  gainLin = (float) dbToAmp(gainDb1);
+  for(int n = n1; n < n2; n++)
+  {
+    tgtL[n] = gainLin * inL[n];
+    tgtR[n] = gainLin * inR[n];
+  }
+  gainLin = (float) dbToAmp(gainDb2);
+  for(int n = n2; n < N; n++)
+  {
+    tgtL[n] = gainLin * inL[n];
+    tgtR[n] = gainLin * inR[n];
+  }
+
+  // Let the plugin compute its output with the gain-change events and compare to target output:
+  gain.setAllParametersToDefault();
+  status = gain.process(procBuf.getWrappee());
+  ok &= status == CLAP_PROCESS_CONTINUE;
+  ok &= equals(&tgtL[0], outL, N);
+  ok &= equals(&tgtR[0], outR, N);
+  // This fails!
 
 
 
