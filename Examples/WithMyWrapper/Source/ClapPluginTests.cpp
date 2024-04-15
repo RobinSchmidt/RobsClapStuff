@@ -438,7 +438,7 @@ void initClapOutEventBuffer(clap_output_events* b)
                           // -> bool
 }
 */
-
+/*
 void initEventHeader(clap_event_header_t* hdr, uint32_t time = 0)
 {
   hdr->size     = -1;    // uint32_t, still invalid - must be assigned by "subclass" initializer
@@ -447,7 +447,9 @@ void initEventHeader(clap_event_header_t* hdr, uint32_t time = 0)
   hdr->type     = -1;    // uint16_t, still invalid
   hdr->flags    =  0;    // uint32_t, 0 == CLAP_EVENT_IS_LIVE
 }
+*/
 
+/*
 clap_event_param_value createParamValueEvent(clap_id paramId, double value, uint32_t time = 0)
 {
   // Create event and set up the header:
@@ -466,6 +468,7 @@ clap_event_param_value createParamValueEvent(clap_id paramId, double value, uint
   ev.value      = value;      // double
   return ev;
 }
+*/
 
 
 bool runProcessingTest()

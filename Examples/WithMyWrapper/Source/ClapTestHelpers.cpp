@@ -115,6 +115,37 @@ void initClapOutEventBuffer(clap_output_events* b)
                           // -> bool
 }
 
+void initEventHeader(clap_event_header_t* hdr, uint32_t time)
+{
+  hdr->size     = -1;    // uint32_t, still invalid - must be assigned by "subclass" initializer
+  hdr->time     =  time; // uint32_t
+  hdr->space_id =  0;    // uint16_t, 0 == CLAP_CORE_EVENT_SPACE?
+  hdr->type     = -1;    // uint16_t, still invalid
+  hdr->flags    =  0;    // uint32_t, 0 == CLAP_EVENT_IS_LIVE
+}
+
+
+clap_event_param_value createParamValueEvent(clap_id paramId, double value, uint32_t time)
+{
+  // Create event and set up the header:
+  clap_event_param_value ev;
+  initEventHeader(&ev.header, time);
+  ev.header.type = CLAP_EVENT_PARAM_VALUE;
+  ev.header.size = sizeof(clap_event_param_value);
+
+  // Set up the param_value specific fields and return the event:
+  ev.param_id   = paramId;    // clap_id
+  ev.cookie     = nullptr;    // void*
+  ev.note_id    = -1;         // int32_t, -1 means: wildcard/unspecified/doesn't-matter/all
+  ev.port_index = -1;         // int16_t
+  ev.channel    = -1;         // int16_t
+  ev.key        = -1;         // int16_t
+  ev.value      = value;      // double
+  return ev;
+}
+
+
+
 
 
 

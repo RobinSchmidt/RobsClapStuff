@@ -36,6 +36,13 @@ void initClapInEventBuffer(clap_input_events* b);
 
 void initClapOutEventBuffer(clap_output_events* b);
 
+void initEventHeader(clap_event_header_t* hdr, uint32_t time = 0);
+
+clap_event_param_value createParamValueEvent(clap_id paramId, double value, uint32_t time = 0);
+// Maybe this should go into an "Events" section before the "Buffers" section
+
+
+
 
 //=================================================================================================
 // Test Plugins
