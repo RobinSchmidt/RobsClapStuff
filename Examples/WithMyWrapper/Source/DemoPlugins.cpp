@@ -348,4 +348,23 @@ ToDo:
 -> Replace all asserts by some custom clapAssert or assume/ensure/verify that triggers a debug 
    breakpoint. Then let's see, if we can trigger it from Bitwig
 
+...oookay - the debug-break triggers in ClapPluginStereo32Bit::process when it tries to call
+processBlockStereo
+
+
+ClapToneGenerator::processBlockStereo gets called with ridiculusly large numFrames from 
+ClapPluginStereo32Bit::process. There, we had the following data whit it happened in a few trials:
+
+eventIndex     =   1     1    1    1    1
+frameIndex     =  61   426  474  449   71
+nextEventFrame =  46   326  321  301   54
+numEvents      =   2     2    3    2    2
+numFrames      = 480   480  480  480  480
+
+It looks like it happens whenever there are more than 1 event per block and/or when 
+frameIndex > nextEventFrame. How can this happen? Are the event unordered? Write a unit test that
+produces some test audio- and event buffers
+
+
+
 */

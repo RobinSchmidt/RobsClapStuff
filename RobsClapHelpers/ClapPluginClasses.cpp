@@ -440,6 +440,8 @@ clap_process_status ClapPluginStereo32Bit::process(const clap_process *p) noexce
   // This code needs verification. I copy/pasted it from  plugin-template.c  and made some edits
   // which I think, are appropriate. It gives reasonable results in Bitwig though - but that 
   // doesn't replace unit testing.
+  // Oh! It really seems to work only reliably when the events are all at sample zero. We may run
+  // into situations where
 
   return CLAP_PROCESS_CONTINUE;
 

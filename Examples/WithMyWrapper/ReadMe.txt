@@ -62,3 +62,6 @@ So to catch crashes on startup, we need to
 To do an edit and rebuild, it is not enough to plug out the plugin. We need to plug out Surge too in 
 order to release the plugin file
 
+When a plugin crashes and we reload it, we may have to re-attach the debugger after reload.
+(ToDo: figure out, if this is only the case, when the plugin is the only one on the channel)
+
