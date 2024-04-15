@@ -41,6 +41,7 @@ union ClapEvent
   // ...more to come...
 };
 
+//-------------------------------------------------------------------------------------------------
 
 class ClapEventBuffer
 {
@@ -72,6 +73,8 @@ private:
 
 };
 
+
+//-------------------------------------------------------------------------------------------------
 
 /** C++ wrapper around clap_input_events. By deriving from ClapEventBuffer, we inherit the owned
 vector of events. */
@@ -110,6 +113,8 @@ private:
 
 };
 
+//-------------------------------------------------------------------------------------------------
+
 class ClapOutEventBuffer : public ClapEventBuffer
 {
 
@@ -138,11 +143,6 @@ private:
 
 };
 
-
-
-
-
-
 //=================================================================================================
 // Audio Buffers
 //
@@ -154,6 +154,8 @@ private:
 void initClapProcess(clap_process* p);
 
 void initClapAudioBuffer(clap_audio_buffer* b);
+
+//-------------------------------------------------------------------------------------------------
 
 class ClapAudioBuffer
 {
@@ -197,6 +199,57 @@ private:
   uint32_t numChannels = 1;   // Should be at least 1. Redundant - stored already in _buffer.channel_count
   uint32_t numFrames   = 1;   // Should be at least 1
 };
+
+//-------------------------------------------------------------------------------------------------
+
+/** A processing buffer with one input and one output port for audio signals. A port can have 
+multiple channles, though. ...TBC... */
+
+class ClapProcessBuffer_1In_1Out
+{
+
+public:
+
+  ClapProcessBuffer_1In_1Out(uint32_t numChannels, uint32_t numFrames)
+    : inBuf(numChannels, numFrames), outBuf(numChannels, numFrames)
+  {
+    updateWrappee();
+  }
+
+
+  void addInputParamValueEvent(clap_id paramId, double value, uint32_t time)
+  {
+    inEvs.addParamValueEvent(paramId, value, time);
+  }
+
+  void clearInputEvents() { inEvs.clear(); }
+
+
+  float* getInChannelPointer(uint32_t index) { return inBuf.getChannelPointer(index); }
+
+  float* getOutChannelPointer(uint32_t index) { return outBuf.getChannelPointer(index); }
+
+
+  clap_process* getWrappee() { return &_process; }
+  // Maybe try to return a const pointer?
+
+
+private:
+
+  void updateWrappee(); // rename to updateWrappee
+
+  clap_process _process;         // The wrapped C-struct
+
+  ClapAudioBuffer    inBuf;
+  ClapAudioBuffer    outBuf;
+  ClapInEventBuffer  inEvs;
+  ClapOutEventBuffer outEvs;
+
+  // ToDo: 
+  // -Maybe make non-copyable, etc.
+  // -Maybe make a more general class that has multiple I/O ports
+};
+
 
 
 

@@ -98,16 +98,12 @@ clap_event_param_value createParamValueEvent(clap_id paramId, double value, uint
   return ev;
 }
 
-
 void ClapEventBuffer::addParamValueEvent(clap_id paramId, double value, uint32_t time)
 {
   ClapEvent ev;
   ev.paramValue = createParamValueEvent(paramId, value, time);
   events.push_back(ev);
 }
-
-
-
 
 //=================================================================================================
 // Buffers
@@ -157,11 +153,7 @@ void initClapProcess(clap_process* p)
   //  get lost. If it does, the events won't be lost but will be delayed.
 }
 
-
-
-
-
-
+//-------------------------------------------------------------------------------------------------
 
 void ClapAudioBuffer::allocateBuffers()
 {
@@ -182,13 +174,22 @@ void ClapAudioBuffer::allocateBuffers()
   _buffer.latency       = 0;
 }
 
+//-------------------------------------------------------------------------------------------------
 
+void ClapProcessBuffer_1In_1Out::updateWrappee()
+{
+  _process.audio_inputs        = inBuf.getWrappee();
+  _process.audio_inputs_count  = 1;
+  _process.audio_outputs       = outBuf.getWrappee();
+  _process.audio_outputs_count = 1;
+  _process.frames_count        = inBuf.getNumFrames();    // == outBuf.getNumFrames()
+  _process.in_events           = inEvs.getWrappee();
+  _process.out_events          = outEvs.getWrappee();
 
-
-
-
-
-
+  // Maybe we have to do something more elaborate here later:
+  _process.steady_time = 0;
+  _process.transport   = nullptr;
+}
 
 //=================================================================================================
 // ClapGain2

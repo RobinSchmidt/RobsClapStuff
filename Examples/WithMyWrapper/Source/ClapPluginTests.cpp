@@ -590,79 +590,10 @@ bool runProcessingTest()
 
 
 
-
-/** C++ wrapper around clap_input_events. By deriving from ClapEventBuffer, we inherit the owned
-vector of events. */
-/*
-class ClapInEventBuffer : public ClapEventBuffer
-{
-
-public:
-
-  ClapInEventBuffer()
-  {
-    _inEvents.ctx  = this;
-    _inEvents.size = ClapInEventBuffer::getSize;
-    _inEvents.get  = ClapInEventBuffer::getEvent;
-  }
-
-  const clap_input_events* getWrappee() const { return &_inEvents; }
-
-
-private:
-
-  clap_input_events _inEvents;
-
-  static uint32_t getSize(const struct clap_input_events* list)
-  {
-    ClapInEventBuffer* self = (ClapInEventBuffer*) list->ctx;
-    return self->getNumEvents();
-  }
-
-  static const clap_event_header_t* getEvent(const struct clap_input_events* list, uint32_t index)
-  {
-    ClapInEventBuffer* self = (ClapInEventBuffer*) list->ctx;
-    return self->getEventHeader(index);
-  }
-
-};
-
-class ClapOutEventBuffer : public ClapEventBuffer
-{
-
-public:
-
-  ClapOutEventBuffer()
-  {
-    _outEvents.ctx      = this;
-    _outEvents.try_push = ClapOutEventBuffer::tryPushEvent;
-  }
-
-
-  clap_output_events* getWrappee() { return &_outEvents; }
-
-
-private:
-
-  clap_output_events _outEvents;
-
-  static bool tryPushEvent(const struct clap_output_events *list, const clap_event_header_t *ev)
-  {
-    RobsClapHelpers::clapError("Not yet implemented");
-    return false;
-  }
-
-};
-*/
-
-
-
-
-
-
 /** A processing buffer with one input and one output port for audio signals. A port can have 
 multiple channles, though. ...TBC... */
 
+/*
 class ClapProcessBuffer_1In_1Out
 {
 
@@ -707,7 +638,9 @@ private:
   // -Maybe make non-copyable, etc.
   // -Maybe make a more general class that has multiple I/O ports
 };
+*/
 
+/*
 void ClapProcessBuffer_1In_1Out::updateWrappee()
 {
   _process.audio_inputs        = inBuf.getWrappee();
@@ -722,6 +655,9 @@ void ClapProcessBuffer_1In_1Out::updateWrappee()
   _process.steady_time = 0;
   _process.transport   = nullptr;
 }
+*/
+
+
 
 
 bool runProcessingTest2()
