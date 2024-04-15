@@ -1150,8 +1150,8 @@ bool runProcessingTest2()
 
 
   // Plot outputs and target signals:
-  GNUPlotter plt;
-  plt.plotArrays(N, &tgtL[0], outL, &tgtR[0], outR);
+  //GNUPlotter plt;
+  //plt.plotArrays(N, &tgtL[0], outL, &tgtR[0], outR);
 
 
 
@@ -1162,6 +1162,7 @@ bool runProcessingTest2()
   // -Test it with multiple events of the same kind at a single sample. Only the last event should
   //  count
   // -Test it with multiple events of different kinds at a single sample. They should all count.
+  // -Test processing with in-place buffers
 }
 
 
@@ -1170,7 +1171,6 @@ bool runProcessingTest2()
 
 ToDo:
 
-- Test processing function. Test also, if sample accurate automation works (not sure how to test
-  that, though)
+- Make files ClapTestHelpers.h/cpp where all the mocking stuff goes into
 
 */
