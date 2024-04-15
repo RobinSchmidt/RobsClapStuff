@@ -28,11 +28,13 @@ int64_t clapStreamRead(const struct clap_istream* stream, void* buffer, uint64_t
 // convenience classes for that purpose.
 
 
+void initClapProcess(clap_process* p);
 
+void initClapAudioBuffer(clap_audio_buffer* b);
 
+void initClapInEventBuffer(clap_input_events* b);
 
-
-
+void initClapOutEventBuffer(clap_output_events* b);
 
 
 //=================================================================================================

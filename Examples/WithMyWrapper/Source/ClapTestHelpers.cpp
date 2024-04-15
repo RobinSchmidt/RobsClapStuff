@@ -46,6 +46,80 @@ int64_t clapStreamRead(const struct clap_istream* stream, void* buffer, uint64_t
 }
 
 //=================================================================================================
+// Buffers
+
+void initClapProcess(clap_process* p)
+{
+  p->steady_time         = 0;        // int64_t
+  p->frames_count        = 0;        // uint32_t
+  p->transport           = nullptr;  // const clap_event_transport_t *
+  p->audio_inputs        = nullptr;  // const clap_audio_buffer_t *
+  p->audio_outputs       = nullptr;  // clap_audio_buffer_t *
+  p->audio_inputs_count  = 0;        // uint32_t
+  p->audio_outputs_count = 0;        // uint32_t
+  p->in_events           = nullptr;  // const clap_input_events_t *
+  p->out_events          = nullptr;  // const clap_output_events_t *
+
+  // ToDo:
+  //
+  // -Explain, how the out_events buffer is supposed to be used. We somehow seem to be expected to
+  //  write into it, I guess. But it's a pointer to const - so it looks like we can't modify it. It 
+  //  would be a bit strange anyway because the host can't possibly know the number of output 
+  //  events, so it can't be responsible for the allocation. Maybe the plugin is supposed to have a
+  //  pre-allocated buffer? Figure out! Ah: clap_output_events has a "try_push" method. Looks 
+  //  like the host pre-allocates memory for a queue and the plugin can push events onto that 
+  //  queue. The function may fail - then it will return false. Maybe in such a case, the plugin
+  //  is supposed to try again in the next process call - or if it doesn't, the events will just 
+  //  get lost. If it does, the events won't be lost but will be delayed.
+}
+
+void initClapAudioBuffer(clap_audio_buffer* b)
+{
+  b->data32        = nullptr;  // float**
+  b->data64        = nullptr;  // double**
+  b->channel_count = 0;        // uint32_t
+  b->latency       = 0;        // uint32_t
+  b->constant_mask = 0;        // uint64_t
+
+  // Notes:
+  //
+  // -I think, the constant_mask has a bit set to 1 for each channel that is constant? If channel
+  //  with index 0 is constant, the rightmost bit is one, if channel with index 1 is constant, the
+  //  second-rightmost bit is 1 etc.? The doc says the purpose of this mask is to avoid processing
+  //  "garbage" - I'm not quite sure what that means. DC signals can actually be quite useful in
+  //  many contexts - of course, not directly as audio signals - but for control signals. Dunno.
+  //  It's just a hint anyway and can probably be ignored.
+  // -The latency field is supposed to tell us something about the "latency from/to the audio 
+  //  interface" according to the doc.
+}
+
+void initClapInEventBuffer(clap_input_events* b)
+{
+  b->ctx  = nullptr;  // void*
+  b->size = nullptr;  // function pointer: (const struct clap_input_events *list)  ->  uint32_t
+  b->get  = nullptr;  // function pointer: (const struct clap_input_events *list, uint32_t index)
+                      //                   -> const clap_event_header_t *
+
+  // Notes:
+  //
+  // -Looks like these function pointers take as first argument a pointer to the struct itself. 
+  //  This looks like th C-way of passing explicitly the "this" pointer that is the implicit first
+  //  parameter of C++ classes in member functions. So, they are basically "member-functions" of 
+  //  the struct
+}
+
+void initClapOutEventBuffer(clap_output_events* b)
+{
+  b->ctx      = nullptr;  // void*
+  b->try_push = nullptr;  // (const struct clap_output_events *list, const clap_event_header_t *ev)
+                          // -> bool
+}
+
+
+
+
+
+//=================================================================================================
 // ClapGain2
 
 const char* const ClapGain2::features[5] = 

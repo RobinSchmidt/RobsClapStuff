@@ -367,6 +367,7 @@ bool runWaveShaperTest()
 //-------------------------------------------------------------------------------------------------
 // Processing, doing all the buffer setup work by hand
 
+/*
 void initClapProcess(clap_process* p)
 {
   p->steady_time         = 0;        // int64_t
@@ -391,7 +392,8 @@ void initClapProcess(clap_process* p)
   //  is supposed to try again in the next process call - or if it doesn't, the events will just 
   //  get lost. If it does, the events won't be lost but will be delayed.
 }
-
+*/
+/*
 void initClapAudioBuffer(clap_audio_buffer* b)
 {
   b->data32        = nullptr;  // float**
@@ -411,7 +413,8 @@ void initClapAudioBuffer(clap_audio_buffer* b)
   // -The latency field is supposed to tell us something about the "latency from/to the audio 
   //  interface" according to the doc.
 }
-
+*/
+/*
 void initClapInEventBuffer(clap_input_events* b)
 {
   b->ctx  = nullptr;  // void*
@@ -426,13 +429,15 @@ void initClapInEventBuffer(clap_input_events* b)
   //  parameter of C++ classes in member functions. So, they are basically "member-functions" of 
   //  the struct
 }
-
+*/
+/*
 void initClapOutEventBuffer(clap_output_events* b)
 {
   b->ctx      = nullptr;  // void*
   b->try_push = nullptr;  // (const struct clap_output_events *list, const clap_event_header_t *ev)
                           // -> bool
 }
+*/
 
 void initEventHeader(clap_event_header_t* hdr, uint32_t time = 0)
 {
