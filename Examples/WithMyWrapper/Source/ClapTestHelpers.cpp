@@ -216,3 +216,25 @@ const clap_plugin_descriptor_t ClapGain2::descriptor =
   .description  = "Stereo gain and panning",
   .features     = ClapGain2::features,
 };
+
+ClapGain2::ClapGain2(const clap_plugin_descriptor* desc, const clap_host* host)  
+  : ClapPluginStereo32Bit(desc, host) 
+{
+  // Flags for our parameters - they are automatable:
+  clap_param_info_flags automatable = CLAP_PARAM_IS_AUTOMATABLE;
+
+  // Add the parameters. The order in which we add them here determines their "index" which in 
+  // turn determines the order in which the host presents the knobs/sliders. The "id", on the 
+  // other hand, is determined by our enum and must remain stable from version to version. We can
+  // reorder the parameters on the host-generated GUI - but we cannot reorder the ids, once they
+  // have been assigned.
+  // new index   old index   id
+  addParameter(kMono,    "Mono",     0.0,  +1.0, 0.0, automatable); // 0           none        3
+  addParameter(kMidSide, "MidSide",  0.0,  +1.0, 0.5, automatable); // 1           none        2
+  addParameter(kPan,     "Pan",     -1.0,  +1.0, 0.0, automatable); // 2           1           1
+  addParameter(kGain,    "Gain",   -40.0, +40.0, 0.0, automatable); // 3           0           0
+
+  // In the "old version", index and id did actually match but in the new version, it's all 
+  // messed up. The state recall should nevertheless work - even for a state saved with the old 
+  // version. A unit test verifies this...
+}

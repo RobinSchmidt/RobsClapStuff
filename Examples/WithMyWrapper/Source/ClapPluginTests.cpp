@@ -251,7 +251,6 @@ bool runNumberToStringTest()
   ok  &= Str(buf) == Str("0");
   ok  &= pos == 1;
 
-
   return ok;
 
   // ToDo:
