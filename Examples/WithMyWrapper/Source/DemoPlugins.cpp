@@ -335,7 +335,13 @@ void ClapToneGenerator::noteOff(int key)
 
 /*
 
+
+
 ToDo:
+
+
+OK - I think, this is fixed:
+
 -The ClapToneGenerator currently has 3 failing tests in the clap-validator. It crashes in those 
  tests(!).
 -It also crashes in Bitwig when playing clusters of notes.

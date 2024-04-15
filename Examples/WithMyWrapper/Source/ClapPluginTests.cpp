@@ -1163,6 +1163,8 @@ bool runProcessingTest2()
   //  count
   // -Test it with multiple events of different kinds at a single sample. They should all count.
   // -Test processing with in-place buffers
+  // -Test the tone generator with midi and clap-note events (notes can be sent in different 
+  //  "dialects")
 }
 
 

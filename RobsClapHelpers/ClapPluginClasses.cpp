@@ -476,15 +476,17 @@ bool ClapSynthStereo32Bit::notePortsInfo(
     //info->supported_dialects = CLAP_NOTE_DIALECT_MIDI | CLAP_NOTE_DIALECT_CLAP;
     //info->preferred_dialect  = CLAP_NOTE_DIALECT_CLAP;
 
+    info->id = 0;  // ToDo: Try using 0. This is more consistent with the audio ports.
+    info->supported_dialects = CLAP_NOTE_DIALECT_MIDI | CLAP_NOTE_DIALECT_CLAP;
+    info->preferred_dialect  = CLAP_NOTE_DIALECT_CLAP;
+
     //info->id = 0;
     //info->supported_dialects = CLAP_NOTE_DIALECT_MIDI;
     //info->preferred_dialect  = CLAP_NOTE_DIALECT_MIDI;
 
-    info->id = 0;
-    info->supported_dialects = CLAP_NOTE_DIALECT_CLAP;
-    info->preferred_dialect  = CLAP_NOTE_DIALECT_CLAP;
-
-
+    //info->id = 0;
+    //info->supported_dialects = CLAP_NOTE_DIALECT_CLAP;
+    //info->preferred_dialect  = CLAP_NOTE_DIALECT_CLAP;
 
     strcpy_s(info->name, CLAP_NAME_SIZE, "Note In");
     //strncpy(info->name, "Note In", CLAP_NAME_SIZE);  // From clap-saw-demo - compile error in VS
@@ -585,16 +587,12 @@ void ClapSynthStereo32Bit::processEvent(const clap_event_header_t* hdr)
   } 
   break;
  
-
-
-    /*
   case CLAP_EVENT_MIDI:
   {
     const clap_event_midi* midi = (const clap_event_midi*)(hdr);
     handleMidiEvent(midi->data); // midi->data is the array of 3 midi bytes.
   } 
   break;
-  */
 
   default:
   {
