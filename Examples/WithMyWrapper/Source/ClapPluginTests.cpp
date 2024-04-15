@@ -510,7 +510,11 @@ void initClapProcess(clap_process* p)
   //  write into it, I guess. But it's a pointer to const - so it looks like we can't modify it. It 
   //  would be a bit strange anyway because the host can't possibly know the number of output 
   //  events, so it can't be responsible for the allocation. Maybe the plugin is supposed to have a
-  //  pre-allocated buffer? Figure out!
+  //  pre-allocated buffer? Figure out! Ah: clap_output_events has a "try_push" method. Looks 
+  //  like the host pre-allocates memory for a queue and the plugin can push events onto that 
+  //  queue. The function may fail - then it will return false. Maybe in such a case, the plugin
+  //  is supposed to try again in the next process call - or if it doesn't, the events will just 
+  //  get lost. If it does, the events won't be lost but will be delayed.
 }
 
 void initClapAudioBuffer(clap_audio_buffer* b)
@@ -532,6 +536,24 @@ void initClapAudioBuffer(clap_audio_buffer* b)
   // -The latency field is supposed to tell us something about the "latency from/to the audio 
   //  interface" according to the doc.
 }
+
+void initClapInEventBuffer(clap_input_events* b)
+{
+  b->ctx  = nullptr;  // void*
+  b->size = nullptr;  // function pointer: (const struct clap_input_events *list)  ->  uint32_t
+  b->get  = nullptr;  // function pointer: (const struct clap_input_events *list, uint32_t index)
+                      //                   -> const clap_event_header_t *
+
+  // Notes:
+  //
+  // -Looks like these function pointers take as first argument a pointer to the struct itself. 
+  //  This looks like th C-way of passing explicitly the "this" pointer that is the implicit first
+  //  parameter of C++ classes in member functions. So, they are basically "member-functions" of 
+  //  the struct
+}
+
+
+
 
 bool runProcessingTest()
 {
@@ -559,10 +581,10 @@ bool runProcessingTest()
   clap_audio_buffer inBuf, outBuf;
   initClapAudioBuffer(&inBuf);
   initClapAudioBuffer(&outBuf);
-  p.audio_inputs       = &inBuf;
-  p.audio_inputs_count = 1;
-  p.audio_outputs      = &outBuf;
-  p.audio_inputs_count = 1;
+  p.audio_inputs        = &inBuf;
+  p.audio_inputs_count  = 1;
+  p.audio_outputs       = &outBuf;
+  p.audio_outputs_count = 1;
 
   // Now the process buffer has valid pointers to audio buffers. Try to run the gain again. It 
   // should still return CLAP_PROCESS_ERROR because the audio buffers themselves are still invalid:
@@ -585,6 +607,12 @@ bool runProcessingTest()
   outBuf.data32        = outs;
   outBuf.channel_count = 2;
 
+  // We also need to set up the in/out event buffers or else we'll get an access violation
+  clap_input_events  inEvents;
+  clap_output_events outEvents;
+  initClapInEventBuffer(&inEvents);
+
+  // ...
 
 
   // Now we are finally set up with valid buffers and can let the gain plugin process some audio:
@@ -611,6 +639,9 @@ bool runProcessingTest()
   // -Check, what happens if both the float and double buffers are non-nullptrs. I think, this 
   //  should not occur and counts as host misbehavior
   // -Test in place processing by using  outBuf.data32 = ins;
+  // -Maybe factor out the whole tedious process of setting up the clap_process object into a 
+  //  function. Maybe make a class ClapProcessBuffer that allocates all the required buffers. It 
+  //  may also be useful for writing a clap host
 }
 
 
