@@ -80,7 +80,7 @@ ClapPlugin::ClapPlugin(const clap_plugin_descriptor* desc, const clap_host* host
 bool ClapPlugin::clapInit(const clap_plugin *plugin) noexcept 
 {
   auto &self = from(plugin, false);
-  assert(!self._wasInitialized);   // init is supposed to be done only once
+  clapAssert(!self._wasInitialized);   // init is supposed to be done only once
   self._wasInitialized = true;
 
   //self._host.init();  
@@ -99,15 +99,15 @@ void ClapPlugin::clapDestroy(const clap_plugin *plugin) noexcept
   self._isBeingDestroyed = true;
   if(self._isGuiCreated) 
   {
-    assert(false);    // Host forgot to destroy the gui
+    clapAssert(false);    // Host forgot to destroy the gui
     //clapGuiDestroy(plugin);  // Uncomment later again - maybe implement an empty stub
   }
   if(self._isActive) 
   {
-    assert(false);    // Host forgot to deactivate before destroying
+    clapAssert(false);    // Host forgot to deactivate before destroying
     clapDeactivate(plugin);
   }
-  assert(!self._isActive);
+  clapAssert(!self._isActive);
   //self.runCallbacksOnMainThread();   // What is this supposed to do?
   delete &self;
 }
@@ -139,8 +139,8 @@ clap_process_status ClapPlugin::clapProcess(
 
   self.ensureInitialized("process");
   self.ensureAudioThread("clap_plugin.process");
-  assert(self._isActive);
-  assert(self._isProcessing);
+  clapAssert(self._isActive);
+  clapAssert(self._isProcessing);
   if(! (self._isActive && self._isProcessing) )
     return CLAP_PROCESS_ERROR;
 
@@ -158,12 +158,12 @@ bool ClapPlugin::clapActivate(const clap_plugin *plugin, double sample_rate,
   // Sanity checks:
   self.ensureInitialized("activate");
   self.ensureMainThread("clap_plugin.activate");
-  assert(!self._isActive);                // Before activation, we should be in inactive state
-  assert(self._sampleRate == 0);          // Sample rate member should be 0 in inactive state
-  assert(sample_rate > 0);                // New sample rate should be > 0
-  assert(minFrameCount >= 1);             // Block size should be at least 1 sample
-  assert(maxFrameCount <= INT32_MAX);     // Block size should not exceed 2^32-1 (verify!)
-  assert(minFrameCount <= maxFrameCount); // Block size min must be <= max
+  clapAssert(!self._isActive);                // Before activation, we should be in inactive state
+  clapAssert(self._sampleRate == 0);          // Sample rate member should be 0 in inactive state
+  clapAssert(sample_rate > 0);                // New sample rate should be > 0
+  clapAssert(minFrameCount >= 1);             // Block size should be at least 1 sample
+  clapAssert(maxFrameCount <= INT32_MAX);     // Block size should not exceed 2^32-1 (verify!)
+  clapAssert(minFrameCount <= maxFrameCount); // Block size min must be <= max
 
   // Call the actual activation function. Depending on the type of plugin, this may take some time 
   // (buffers may need to be allocated, lookup tables generated etc.), so we have a flag that is 
@@ -173,8 +173,8 @@ bool ClapPlugin::clapActivate(const clap_plugin *plugin, double sample_rate,
   {
     // The activation has failed. Set us back into not-being-activated state and report failure:
     self._isBeingActivated = false;
-    assert(!self._isActive);
-    assert(self._sampleRate == 0);
+    clapAssert(!self._isActive);
+    clapAssert(self._sampleRate == 0);
     return false;
   }
   self._isBeingActivated = false;
@@ -191,7 +191,7 @@ void ClapPlugin::clapDeactivate(const clap_plugin *plugin) noexcept
   auto &self = from(plugin);
   self.ensureInitialized("deactivate");
   self.ensureMainThread("clap_plugin.deactivate");
-  assert(self._isActive);      // Plugin was deactivated twice
+  clapAssert(self._isActive);      // Plugin was deactivated twice
   if(!self._isActive)
     return;
   self.deactivate();
@@ -207,8 +207,8 @@ bool ClapPlugin::clapStartProcessing(const clap_plugin *plugin) noexcept
   self.ensureInitialized("start_processing");
   self.ensureAudioThread("clap_plugin.start_processing");
 
-  assert(self._isActive);       // Plugin hsould be activated before starting processing
-  assert(!self._isProcessing);  // clap_plugin.start_processing() was called twice
+  clapAssert(self._isActive);       // Plugin hsould be activated before starting processing
+  clapAssert(!self._isProcessing);  // clap_plugin.start_processing() was called twice
   if(self._isProcessing)
     return true;
 
@@ -224,8 +224,8 @@ void ClapPlugin::clapStopProcessing(const clap_plugin *plugin) noexcept
 
   self.ensureInitialized("stop_processing");
   self.ensureAudioThread("clap_plugin.stop_processing");
-  assert(self._isActive);     // Host called stop_processing() on a deactivated plugin
-  assert(self._isProcessing); // Host called stop_processing() twice
+  clapAssert(self._isActive);     // Host called stop_processing() on a deactivated plugin
+  clapAssert(self._isProcessing); // Host called stop_processing() twice
 
   self.stopProcessing();
   self._isProcessing = false;
@@ -238,7 +238,7 @@ void ClapPlugin::clapReset(const clap_plugin *plugin) noexcept
 
   self.ensureInitialized("reset");
   self.ensureAudioThread("clap_plugin.reset");
-  assert(self._isActive); // Host called clap_plugin.reset() on a deactivated plugin
+  clapAssert(self._isActive); // Host called clap_plugin.reset() on a deactivated plugin
 
   self.reset();
 }
@@ -275,7 +275,7 @@ bool ClapPlugin::clapAudioPortsInfo(const clap_plugin *plugin, uint32_t index, b
   auto &self = from(plugin);
   self.ensureMainThread("clap_plugin_audio_ports.info");
   uint32_t count = clapAudioPortsCount(plugin, is_input);
-  assert(index < count);    // Index out of range
+  clapAssert(index < count);    // Index out of range
   if(index >= count) 
     return false;
   return self.audioPortsInfo(index, is_input, info);
@@ -300,11 +300,11 @@ uint32_t ClapPlugin::clapLatencyGet(const clap_plugin *plugin) noexcept
 {
   auto &self = from(plugin);
   self.ensureMainThread("clap_plugin_latency.get");
-  assert(self._isActive);        // Sample rate unknown if plug not active
+  clapAssert(self._isActive);        // Sample rate unknown if plug not active
   return self.latencyGet();
 
   // ToDo:
-  // -Verify the  assert(self._isActive)  error check. In the original code, it is different and 
+  // -Verify the  clapAssert(self._isActive)  error check. In the original code, it is different and 
   //  looks strange. It raises an error if(!self._isActive && !self._isBeingActivated). So the 
   //  error is raised only when it's not active and also not being activated. That seems to suggest
   //  that it's ok to inquiry the latency during the activation process? But that seems wrong to me 
@@ -324,9 +324,9 @@ bool ClapPlugin::clapParamsInfo(const clap_plugin *plugin,  uint32_t param_index
 {
   auto &self = from(plugin);
   self.ensureMainThread("clap_plugin_params.info");
-  assert(param_index < clapParamsCount(plugin));              // Parameter index out of range
+  clapAssert(param_index < clapParamsCount(plugin));              // Parameter index out of range
   const auto res = self.paramsInfo(param_index, param_info);  // result?
-  assert(res);                                                // Parameter info retrieval failed
+  clapAssert(res);                                                // Parameter info retrieval failed
   return res;
 }
 bool ClapPlugin::clapParamsValue(
@@ -357,8 +357,8 @@ bool ClapPlugin::clapParamsTextToValue(const clap_plugin* plugin, clap_id param_
   auto &self = from(plugin);
 
   self.ensureMainThread("clap_plugin_params.text_to_value");
-  assert(display != nullptr);
-  assert(value   != nullptr);
+  clapAssert(display != nullptr);
+  clapAssert(value   != nullptr);
 
 
   if(!self.paramsTextToValue(param_id, display, value))
@@ -374,8 +374,8 @@ void ClapPlugin::clapParamsFlush(const clap_plugin* plugin, const clap_input_eve
 {
   auto &self = from(plugin);
   self.ensureParamThread("clap_plugin_params.flush");  // What is the "ParamThread"?
-  assert(in  != nullptr);
-  assert(out != nullptr);
+  clapAssert(in  != nullptr);
+  clapAssert(out != nullptr);
   self.paramsFlush(in, out);
 
   // Notes:
@@ -397,7 +397,7 @@ bool ClapPlugin::clapNotePortsInfo(const clap_plugin *plugin, uint32_t index, bo
   auto &self = from(plugin);
   self.ensureMainThread("clap_plugin_note_ports.info");
   auto count = clapNotePortsCount(plugin, is_input);
-  assert(index < count);
+  clapAssert(index < count);
   if(index >= count)
     return false;
   return self.notePortsInfo(index, is_input, info);
@@ -409,12 +409,12 @@ bool ClapPlugin::clapNotePortsInfo(const clap_plugin *plugin, uint32_t index, bo
 // Line 1749 in clap/helpers/plugin.hxx
 ClapPlugin& ClapPlugin::from(const clap_plugin *plugin, bool requireInitialized) noexcept 
 {
-  assert(plugin != nullptr);
-  assert(plugin->plugin_data != nullptr);  // The host must never change this pointer!
+  clapAssert(plugin != nullptr);
+  clapAssert(plugin->plugin_data != nullptr);  // The host must never change this pointer!
                                            // It's owned by the plugin (I think)
 
   auto &self = *static_cast<ClapPlugin*>(plugin->plugin_data);
-  assert(self._wasInitialized || requireInitialized == false);
+  clapAssert(self._wasInitialized || requireInitialized == false);
 
   return *static_cast<ClapPlugin*>(plugin->plugin_data); // Can we just return self?
 
@@ -424,7 +424,7 @@ ClapPlugin& ClapPlugin::from(const clap_plugin *plugin, bool requireInitialized)
 // Line 191
 void ClapPlugin::ensureInitialized(const char *method) const noexcept 
 {
-  assert(_wasInitialized);
+  clapAssert(_wasInitialized);
 }
 
 // Line 1728
@@ -433,7 +433,7 @@ void ClapPlugin::ensureMainThread(const char *method) const noexcept
   //if(!_host.canUseThreadCheck() || _host.isMainThread())
   //  return;
   //else
-  //  assert(false);  // Wrong thread
+  //  clapAssert(false);  // Wrong thread
 
   // Notes:
   // -This is a stub. An actual implementation would have to inquire the host if this is the main
@@ -446,7 +446,7 @@ void ClapPlugin::ensureAudioThread(const char* method) const noexcept
   //if(!_host.canUseThreadCheck() || _host.isAudioThread())
   //  return;
   //else
-  //  assert(false);  // Wrong thread
+  //  clapAssert(false);  // Wrong thread
 }
 
 void ClapPlugin::ensureParamThread(const char *method) const noexcept 

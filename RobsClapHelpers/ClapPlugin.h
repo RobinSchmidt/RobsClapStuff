@@ -66,8 +66,8 @@ public:
 
   double sampleRate() const noexcept 
   {
-    //assert(_isActive && "sample rate is only known if the plugin is active");
-    //assert(_sampleRate > 0);
+    //clapAssert(_isActive && "sample rate is only known if the plugin is active");
+    //clapAssert(_sampleRate > 0);
     return _sampleRate;
   }
 

@@ -29,7 +29,7 @@ parameters such that the index naturally runs from 0 to N-1. Then, the list of t
 be some permutation of the list of their corresponding indices. It is easy to mess this up which is
 why I recommend to use some sort debug-assertion like:
 
-  assert(areParamsConsistent());
+  clapAssert(areParamsConsistent());
 
 after adding your parameters in your constructor. Look at the examples ClapGain, ClapWaveShaper for
 how this could look like. @see paramsInfo(). Messing this up could happen, for example, by 

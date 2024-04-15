@@ -162,7 +162,7 @@ void ClapPluginWithParams::setParameter(clap_id id, double newValue)
   }
   else
   {
-    //assert(false);  // Host tries to set a parameter with invalid id.
+    //clapAssert(false);  // Host tries to set a parameter with invalid id.
   }
 
   // ToDo:
@@ -181,7 +181,7 @@ double ClapPluginWithParams::getParameter(clap_id id) const
     return values[id];
   else
   {
-    //assert(false);  // Host tries to retrieve a parameter with invalid id.
+    //clapAssert(false);  // Host tries to retrieve a parameter with invalid id.
     return 0.0;
   }
 }
@@ -234,9 +234,9 @@ std::string ClapPluginWithParams::getStateAsString() const
     for(uint32_t i = 0; i < numParams; ++i)
     {
       bool infoOK  = paramsInfo(i, &info);
-      assert(infoOK);
+      clapAssert(infoOK);
       bool valueOK = paramsValue(info.id, &value);
-      assert(valueOK);
+      clapAssert(valueOK);
       s += std::to_string(info.id) + ':';
       s += std::string(info.name)  + ':';   // Maybe store the name optionally
       s += toStringExact(value)    + ',';   // Roundtrip-safe double-to-string conversion

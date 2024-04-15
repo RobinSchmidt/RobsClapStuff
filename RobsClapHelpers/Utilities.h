@@ -162,20 +162,20 @@ public:
   // -Document usage. Explain how during building the map, it may temporarily be in an inconsistent
   //  state (depending on the order in which the entries are added) but at the very end, when 
   //  building it is finished, the state should be consistent - which should probably be checked by
-  //  something like  assert(myMap.isConsistent()).
+  //  something like  clapAssert(myMap.isConsistent()).
   // -Maybe rename to addEntry
 
   /** Returns the identifier that corresponds to the given index. */
   clap_id getIdentifier(uint32_t index) const
   {
-    assert(isValidIndex(index));
+    clapAssert(isValidIndex(index));
     return identifiers[index];
   }
 
   /** Returns the index that corresponds to the given identifier. */
   uint32_t getIndex(clap_id identifier) const 
   {
-    assert(isValidIdentifier(identifier));
+    clapAssert(isValidIdentifier(identifier));
     return indices[identifier];
   }
 
@@ -198,7 +198,7 @@ public:
 
   /** Checks the map for internal consistency. This is useful for unit testing of the class and for
   catching bugs on the client code side via assertions. After filling a map, you can add a line 
-  like  assert(myMap.isConsistent());  to make sure you didn't make any mistakes during filling the 
+  like  clapAssert(myMap.isConsistent());  to make sure you didn't make any mistakes during filling the 
   map. A mistake would be, for example, to use an id twice or not at all which can easily happen, I 
   guess. */
   bool isConsistent() const;

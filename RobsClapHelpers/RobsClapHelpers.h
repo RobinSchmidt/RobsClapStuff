@@ -13,7 +13,7 @@ the code, you need to exclude them from the build. */
 #include <iomanip>       // setprecision
 #include <limits>        // numeric_limits
 #include <algorithm>     // min, max
-#include <cassert>       // assert
+//#include <cassert>       // assert - obsoloete now - we now use clapAssert
 #include <cstring>       // strcmp
 
 // The CLAP SDK:
