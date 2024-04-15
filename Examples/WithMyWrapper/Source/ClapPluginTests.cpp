@@ -588,6 +588,7 @@ bool runProcessingTest()
 //=================================================================================================
 // Processing, using helper classes for the tedious buffer setup
 
+/*
 class ClapAudioBuffer
 {
 
@@ -605,7 +606,6 @@ public:
     allocateBuffers();
   }
 
-  /** Returns a const pointer to our wrapped C-struct. */
   const clap_audio_buffer* getWrappee() const { return &_buffer; }
 
   clap_audio_buffer* getWrappee() { return &_buffer; }
@@ -650,6 +650,12 @@ void ClapAudioBuffer::allocateBuffers()
   _buffer.constant_mask = 0;
   _buffer.latency       = 0;
 }
+*/
+
+
+
+
+
 
 
 union ClapEvent

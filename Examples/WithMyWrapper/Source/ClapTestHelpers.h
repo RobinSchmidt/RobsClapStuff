@@ -24,10 +24,18 @@ int64_t clapStreamRead(const struct clap_istream* stream, void* buffer, uint64_t
 //
 // ToDo: make functions for creating note-events in different dialects
 
+void initEventHeader(clap_event_header_t* hdr, uint32_t time = 0);
+
+void initClapInEventBuffer(clap_input_events* b);
+
+void initClapOutEventBuffer(clap_output_events* b);
+
 clap_event_param_value createParamValueEvent(clap_id paramId, double value, uint32_t time = 0);
 
+
+
 //=================================================================================================
-// Buffers
+// Audio Buffers
 //
 // Classes for making it convenient to mock buffer objects like the clap_process struct that 
 // gets passed to the processing function. Setting these buffer objects up by allocating the 
@@ -38,11 +46,48 @@ void initClapProcess(clap_process* p);
 
 void initClapAudioBuffer(clap_audio_buffer* b);
 
-void initClapInEventBuffer(clap_input_events* b);
+class ClapAudioBuffer
+{
 
-void initClapOutEventBuffer(clap_output_events* b);
+public:
 
-void initEventHeader(clap_event_header_t* hdr, uint32_t time = 0);
+  ClapAudioBuffer(uint32_t newNumChannels = 1, uint32_t newNumFrames = 1)
+  {
+    setSize(newNumChannels, newNumFrames);
+  }
+
+  void setSize(uint32_t newNumChannels, uint32_t newNumFrames)
+  {
+    numChannels = newNumChannels;
+    numFrames   = newNumFrames;
+    allocateBuffers();
+  }
+
+  /** Returns a const pointer to our wrapped C-struct. */
+  const clap_audio_buffer* getWrappee() const { return &_buffer; }
+
+  clap_audio_buffer* getWrappee() { return &_buffer; }
+
+
+  uint32_t getNumChannels() const { return numChannels; }
+
+  uint32_t getNumFrames() const { return numFrames; }
+
+  float* getChannelPointer(uint32_t index) { return channelPointers[index]; }
+
+
+private:
+
+  void allocateBuffers();
+
+  clap_audio_buffer _buffer;
+
+  std::vector<std::vector<float>> data;
+  std::vector<float*> channelPointers;
+
+  uint32_t numChannels = 1;   // Should be at least 1. Redundant - stored already in _buffer.channel_count
+  uint32_t numFrames   = 1;   // Should be at least 1
+};
 
 
 

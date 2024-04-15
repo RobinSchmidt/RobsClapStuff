@@ -48,6 +48,37 @@ int64_t clapStreamRead(const struct clap_istream* stream, void* buffer, uint64_t
 //=================================================================================================
 // Events
 
+void initEventHeader(clap_event_header_t* hdr, uint32_t time)
+{
+  hdr->size     = -1;    // uint32_t, still invalid - must be assigned by "subclass" initializer
+  hdr->time     =  time; // uint32_t
+  hdr->space_id =  0;    // uint16_t, 0 == CLAP_CORE_EVENT_SPACE?
+  hdr->type     = -1;    // uint16_t, still invalid
+  hdr->flags    =  0;    // uint32_t, 0 == CLAP_EVENT_IS_LIVE
+}
+
+void initClapInEventBuffer(clap_input_events* b)
+{
+  b->ctx  = nullptr;  // void*
+  b->size = nullptr;  // function pointer: (const struct clap_input_events *list)  ->  uint32_t
+  b->get  = nullptr;  // function pointer: (const struct clap_input_events *list, uint32_t index)
+                      //                   -> const clap_event_header_t *
+
+  // Notes:
+  //
+  // -Looks like these function pointers take as first argument a pointer to the struct itself. 
+  //  This looks like th C-way of passing explicitly the "this" pointer that is the implicit first
+  //  parameter of C++ classes in member functions. So, they are basically "member-functions" of 
+  //  the struct
+}
+
+void initClapOutEventBuffer(clap_output_events* b)
+{
+  b->ctx      = nullptr;  // void*
+  b->try_push = nullptr;  // (const struct clap_output_events *list, const clap_event_header_t *ev)
+                          // -> bool
+}
+
 clap_event_param_value createParamValueEvent(clap_id paramId, double value, uint32_t time)
 {
   // Create event and set up the header:
@@ -67,8 +98,31 @@ clap_event_param_value createParamValueEvent(clap_id paramId, double value, uint
   return ev;
 }
 
+
+
+
 //=================================================================================================
 // Buffers
+
+void initClapAudioBuffer(clap_audio_buffer* b)
+{
+  b->data32        = nullptr;  // float**
+  b->data64        = nullptr;  // double**
+  b->channel_count = 0;        // uint32_t
+  b->latency       = 0;        // uint32_t
+  b->constant_mask = 0;        // uint64_t
+
+  // Notes:
+  //
+  // -I think, the constant_mask has a bit set to 1 for each channel that is constant? If channel
+  //  with index 0 is constant, the rightmost bit is one, if channel with index 1 is constant, the
+  //  second-rightmost bit is 1 etc.? The doc says the purpose of this mask is to avoid processing
+  //  "garbage" - I'm not quite sure what that means. DC signals can actually be quite useful in
+  //  many contexts - of course, not directly as audio signals - but for control signals. Dunno.
+  //  It's just a hint anyway and can probably be ignored.
+  // -The latency field is supposed to tell us something about the "latency from/to the audio 
+  //  interface" according to the doc.
+}
 
 void initClapProcess(clap_process* p)
 {
@@ -95,56 +149,31 @@ void initClapProcess(clap_process* p)
   //  get lost. If it does, the events won't be lost but will be delayed.
 }
 
-void initClapAudioBuffer(clap_audio_buffer* b)
-{
-  b->data32        = nullptr;  // float**
-  b->data64        = nullptr;  // double**
-  b->channel_count = 0;        // uint32_t
-  b->latency       = 0;        // uint32_t
-  b->constant_mask = 0;        // uint64_t
 
-  // Notes:
-  //
-  // -I think, the constant_mask has a bit set to 1 for each channel that is constant? If channel
-  //  with index 0 is constant, the rightmost bit is one, if channel with index 1 is constant, the
-  //  second-rightmost bit is 1 etc.? The doc says the purpose of this mask is to avoid processing
-  //  "garbage" - I'm not quite sure what that means. DC signals can actually be quite useful in
-  //  many contexts - of course, not directly as audio signals - but for control signals. Dunno.
-  //  It's just a hint anyway and can probably be ignored.
-  // -The latency field is supposed to tell us something about the "latency from/to the audio 
-  //  interface" according to the doc.
+
+
+
+
+
+void ClapAudioBuffer::allocateBuffers()
+{
+  data.resize(numChannels);
+  channelPointers.resize(numChannels);
+  for(uint32_t c = 0; c < numChannels; c++)
+  {
+    data[c].resize(numFrames);
+    channelPointers[c] = &data[c][0];
+  }
+
+  _buffer.channel_count = numChannels;
+  _buffer.data32 = &channelPointers[0];
+
+  // These are always the same at the moment:
+  _buffer.data64        = nullptr;
+  _buffer.constant_mask = 0;
+  _buffer.latency       = 0;
 }
 
-void initClapInEventBuffer(clap_input_events* b)
-{
-  b->ctx  = nullptr;  // void*
-  b->size = nullptr;  // function pointer: (const struct clap_input_events *list)  ->  uint32_t
-  b->get  = nullptr;  // function pointer: (const struct clap_input_events *list, uint32_t index)
-                      //                   -> const clap_event_header_t *
-
-  // Notes:
-  //
-  // -Looks like these function pointers take as first argument a pointer to the struct itself. 
-  //  This looks like th C-way of passing explicitly the "this" pointer that is the implicit first
-  //  parameter of C++ classes in member functions. So, they are basically "member-functions" of 
-  //  the struct
-}
-
-void initClapOutEventBuffer(clap_output_events* b)
-{
-  b->ctx      = nullptr;  // void*
-  b->try_push = nullptr;  // (const struct clap_output_events *list, const clap_event_header_t *ev)
-                          // -> bool
-}
-
-void initEventHeader(clap_event_header_t* hdr, uint32_t time)
-{
-  hdr->size     = -1;    // uint32_t, still invalid - must be assigned by "subclass" initializer
-  hdr->time     =  time; // uint32_t
-  hdr->space_id =  0;    // uint16_t, 0 == CLAP_CORE_EVENT_SPACE?
-  hdr->type     = -1;    // uint16_t, still invalid
-  hdr->flags    =  0;    // uint32_t, 0 == CLAP_EVENT_IS_LIVE
-}
 
 
 
