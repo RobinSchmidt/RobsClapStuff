@@ -1,8 +1,48 @@
 #pragma once
 
-/** A collection of templates, functions and classes that are useful in programming audio 
+/** A collection of macros templates, functions and classes that are useful in programming audio 
 plugins. */
 
+
+//=================================================================================================
+// Debugging
+
+#if defined(DEBUG) || defined(_DEBUG)
+  #define CLAP_DEBUG
+#endif
+
+#if defined(CLAP_DEBUG)
+  #ifdef _MSC_VER
+    #pragma intrinsic (__debugbreak)
+    #define CLAP_DEBUG_BREAK __debugbreak();
+  #else 
+    #define CLAP_DEBUG_BREAK { }
+    //#define CLAP_DEBUG_BREAK __builtin_trap();  // Preliminary - GCC only?
+  #endif
+#endif
+// ToDo: Reactivate the "#define CLAP_DEBUG_BREAK __builtin_trap();" and check, if that also works
+// for clang. If not, put it into some sort of "#elif GCC" (look up what the macro actually is, may 
+// be "__GNUC__" or something)
+
+/** This function should be used to indicate a runtime error. */
+inline void clapError(const char *message = nullptr)
+{
+#ifdef CLAP_DEBUG
+  CLAP_DEBUG_BREAK;  // The "message" may (or may not) have more info about what happened
+#endif
+}
+
+/** This function should be used for runtime assertions. */
+inline void clapAssert(bool expression, const char *errorMessage = nullptr)
+{
+#ifdef CLAP_DEBUG
+  if( expression == false )
+    clapError(errorMessage);
+#endif
+}
+
+//=================================================================================================
+// Math
 
 template<class T>
 inline T clip(T val, T min, T max)
@@ -13,7 +53,6 @@ inline T clip(T val, T min, T max)
 
   // ToDo: Maybe use std::min/max or std::clamp
 }
-
 
 /** Converts from decibels to raw amplitude. */
 template<class T>
@@ -37,7 +76,23 @@ inline T pitchToFreq(T pitch)
   //return 440.0*( pow(2.0, (pitch-69.0)/12.0) ); // naive, slower but numerically more precise
 }
 
+//=================================================================================================
+// Arrays
 
+/** Counts the number of times by which the given "element" occurrs in the "buffer" with given 
+"length". */
+template<class T>
+inline int countOccurrences(const T* buffer, int length, const T& element)
+{
+  int count = 0;
+  for(int i = 0; i < length; i++)
+    if(buffer[i] == element)
+      count++;
+  return count;
+}
+
+//=================================================================================================
+// Strings
 
 /** Function to convert a float or double to a string in a roundtrip safe way. That means, when 
 parsing the produced string with e.g. std::atof, we get the original value back exactly. Can be 
@@ -79,19 +134,6 @@ bool copyString(const std::vector<std::string>& strings, int index, char* dst, i
 
 int findString(const std::vector<std::string>& strings, const char* stringToFind);
 // ToDo: add documentation
-
-
-/** Counts the number of times by which the given "element" occurrs in the "buffer" with given 
-"length". */
-template<class T>
-inline int countOccurrences(const T* buffer, int length, const T& element)
-{
-  int count = 0;
-  for(int i = 0; i < length; i++)
-    if(buffer[i] == element)
-      count++;
-  return count;
-}
 
 
 //=================================================================================================
