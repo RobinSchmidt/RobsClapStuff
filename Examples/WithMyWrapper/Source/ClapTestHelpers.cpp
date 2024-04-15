@@ -46,6 +46,28 @@ int64_t clapStreamRead(const struct clap_istream* stream, void* buffer, uint64_t
 }
 
 //=================================================================================================
+// Events
+
+clap_event_param_value createParamValueEvent(clap_id paramId, double value, uint32_t time)
+{
+  // Create event and set up the header:
+  clap_event_param_value ev;
+  initEventHeader(&ev.header, time);
+  ev.header.type = CLAP_EVENT_PARAM_VALUE;
+  ev.header.size = sizeof(clap_event_param_value);
+
+  // Set up the param_value specific fields and return the event:
+  ev.param_id   = paramId;    // clap_id
+  ev.cookie     = nullptr;    // void*
+  ev.note_id    = -1;         // int32_t, -1 means: wildcard/unspecified/doesn't-matter/all
+  ev.port_index = -1;         // int16_t
+  ev.channel    = -1;         // int16_t
+  ev.key        = -1;         // int16_t
+  ev.value      = value;      // double
+  return ev;
+}
+
+//=================================================================================================
 // Buffers
 
 void initClapProcess(clap_process* p)
@@ -63,7 +85,7 @@ void initClapProcess(clap_process* p)
   // ToDo:
   //
   // -Explain, how the out_events buffer is supposed to be used. We somehow seem to be expected to
-  //  write into it, I guess. But it's a pointer to const - so it looks like we can't modify it. It 
+  //  write into it, I guess. But it's a pointer to const - so it looks like we can't modify it. It
   //  would be a bit strange anyway because the host can't possibly know the number of output 
   //  events, so it can't be responsible for the allocation. Maybe the plugin is supposed to have a
   //  pre-allocated buffer? Figure out! Ah: clap_output_events has a "try_push" method. Looks 
@@ -124,25 +146,6 @@ void initEventHeader(clap_event_header_t* hdr, uint32_t time)
   hdr->flags    =  0;    // uint32_t, 0 == CLAP_EVENT_IS_LIVE
 }
 
-
-clap_event_param_value createParamValueEvent(clap_id paramId, double value, uint32_t time)
-{
-  // Create event and set up the header:
-  clap_event_param_value ev;
-  initEventHeader(&ev.header, time);
-  ev.header.type = CLAP_EVENT_PARAM_VALUE;
-  ev.header.size = sizeof(clap_event_param_value);
-
-  // Set up the param_value specific fields and return the event:
-  ev.param_id   = paramId;    // clap_id
-  ev.cookie     = nullptr;    // void*
-  ev.note_id    = -1;         // int32_t, -1 means: wildcard/unspecified/doesn't-matter/all
-  ev.port_index = -1;         // int16_t
-  ev.channel    = -1;         // int16_t
-  ev.key        = -1;         // int16_t
-  ev.value      = value;      // double
-  return ev;
-}
 
 
 

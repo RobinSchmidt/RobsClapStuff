@@ -20,13 +20,19 @@ int64_t clapStreamWrite(const struct clap_ostream* stream, const void* buffer, u
 int64_t clapStreamRead(const struct clap_istream* stream, void* buffer, uint64_t size);
 
 //=================================================================================================
+// Events
+//
+// ToDo: make functions for creating note-events in different dialects
+
+clap_event_param_value createParamValueEvent(clap_id paramId, double value, uint32_t time = 0);
+
+//=================================================================================================
 // Buffers
 //
 // Classes for making it convenient to mock buffer objects like the clap_process struct that 
 // gets passed to the processing function. Setting these buffer objects up by allocating the 
 // required memory and setting up their pointers is a quite tedious task so it makes sense to have 
 // convenience classes for that purpose.
-
 
 void initClapProcess(clap_process* p);
 
@@ -38,8 +44,6 @@ void initClapOutEventBuffer(clap_output_events* b);
 
 void initEventHeader(clap_event_header_t* hdr, uint32_t time = 0);
 
-clap_event_param_value createParamValueEvent(clap_id paramId, double value, uint32_t time = 0);
-// Maybe this should go into an "Events" section before the "Buffers" section
 
 
 
