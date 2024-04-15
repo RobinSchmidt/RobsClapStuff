@@ -555,16 +555,44 @@ bool runProcessingTest()
   clap_process_status status = gain.process(&p);
   ok &= status == CLAP_PROCESS_ERROR;
 
-  // Create an initialize the clap audio buffers to be used in the process buffer:
+  // Create and initialize the clap audio buffers to be used in the process buffer:
   clap_audio_buffer inBuf, outBuf;
   initClapAudioBuffer(&inBuf);
   initClapAudioBuffer(&outBuf);
+  p.audio_inputs       = &inBuf;
+  p.audio_inputs_count = 1;
+  p.audio_outputs      = &outBuf;
+  p.audio_inputs_count = 1;
 
+  // Now the process buffer has valid pointers to audio buffers. Try to run the gain again. It 
+  // should still return CLAP_PROCESS_ERROR because the audio buffers themselves are still invalid:
+  status = gain.process(&p);
+  ok &= status == CLAP_PROCESS_ERROR;
 
-
-  // Create stereo input and output buffers:
+  // Create the actual stereo input and output buffers as std::vectors and create length-2 arrays
+  // of pointers to float pointing to the beginning of these vectors
   int N = 60;   // Processing buffer size
   std::vector<float> inL(N), inR(N), outL(N), outR(N);
+  float *ins[2], *outs[2];
+  ins[0]  = &inL[0];
+  ins[1]  = &inR[0];
+  outs[0] = &outL[0];
+  outs[1] = &outR[0];
+
+  // Assign the pointers in clap_audio_buffer objects:
+  inBuf.data32         = ins;
+  inBuf.channel_count  = 2;
+  outBuf.data32        = outs;
+  outBuf.channel_count = 2;
+
+
+
+  // Now we are finally set up with valid buffers and can let the gain plugin process some audio:
+  status = gain.process(&p);
+  ok &= status == CLAP_PROCESS_CONTINUE;
+
+
+
 
 
 
@@ -577,6 +605,12 @@ bool runProcessingTest()
 
 
   return ok;
+
+  // ToDo:
+  //
+  // -Check, what happens if both the float and double buffers are non-nullptrs. I think, this 
+  //  should not occur and counts as host misbehavior
+  // -Test in place processing by using  outBuf.data32 = ins;
 }
 
 
