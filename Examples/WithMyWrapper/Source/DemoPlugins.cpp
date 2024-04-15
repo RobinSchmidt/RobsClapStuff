@@ -305,11 +305,9 @@ void ClapToneGenerator::parameterChanged(clap_id id, double newValue)
 
 void ClapToneGenerator::noteOn(int key, double vel)
 {
-  /*
   currentKey = key;
   double freq = RobsClapHelpers::pitchToFreq((double) currentKey);
   increment = freq / getSampleRate();
-  */
 
   // ToDo:
   //
@@ -324,13 +322,11 @@ void ClapToneGenerator::noteOn(int key, double vel)
 
 void ClapToneGenerator::noteOff(int key)
 {
-  /*
   if(key == currentKey)
   {
     reset();            // Sets currentKey = 0 and phasor = 0.0
     increment  =  0.0;  // Not really relevant but for tidiness
   }
-  */
 }
 
 /*
