@@ -568,6 +568,35 @@ void initClapOutEventBuffer(clap_output_events* b)
                           // -> bool
 }
 
+void initEventHeader(clap_event_header_t* hdr)
+{
+  hdr->size     = -1;  // uint32_t, still invalid - must be assigned by "subclass" initializer
+  hdr->time     =  0;  // uint32_t
+  hdr->space_id =  0;  // uint16_t, 0 == CLAP_CORE_EVENT_SPACE?
+  hdr->type     = -1;  // uint16_t, still invalid
+  hdr->flags    =  0;  // uint32_t, 0 == CLAP_EVENT_IS_LIVE
+}
+
+clap_event_param_value createParamValueEvent(clap_id paramId, double value)
+{
+  // Create event and set up the header:
+  clap_event_param_value ev;
+  initEventHeader(&ev.header);
+  ev.header.type = CLAP_EVENT_PARAM_VALUE;
+  ev.header.size = sizeof(clap_event_param_value);
+
+  // Set up the param_value specific fields and return the event:
+  ev.param_id   = paramId;    // clap_id
+  ev.cookie     = nullptr;    // void*
+  ev.note_id    = -1;         // int32_t, -1 means: wildcard/unspecified/doesn't-matter/all
+  ev.port_index = -1;         // int16_t
+  ev.channel    = -1;         // int16_t
+  ev.key        = -1;         // int16_t
+  ev.value      = value;      // double
+  return ev;
+}
+
+
 bool runProcessingTest()
 {
   bool ok = true;
@@ -650,9 +679,14 @@ bool runProcessingTest()
   status = gain.process(&p);
   ok &= status == CLAP_PROCESS_CONTINUE;
 
-  // If it all worked out so far, it means that the general infrastructure is correctly wired up. We 
-  // now try to do some actual processing...
 
+  // If it all worked out so far, it means that the general infrastructure is correctly wired up. 
+  // Our calls to gain.process so far were dummy runs with an empty (length zero) buffer. That's
+  // actually a situation, that should not even occurr in practice. The buffers will always at 
+  // least be of length 1 (for the sample frames). But the plugin can actually deal with length 
+  // zero, too. We now try to do some actual processing...
+
+  // Create a test input signal - we use a sinusoid:
   float w = 0.2;  // Normalized radian freq of input sine
   for(int n = 0; n < N; n++)
   {
@@ -674,13 +708,20 @@ bool runProcessingTest()
   status = gain.process(&p);
   ok &= status == CLAP_PROCESS_CONTINUE;
 
-  // Check, if the output buffer is as expected:
+  // Check, if the output buffer matches the target:
   ok &= tgtL == outL;
   ok &= tgtR == outR;
 
 
+  // So far there were not any events to process. Now we create some processing buffers with 
+  // parameter change events....
+
+  clap_event_param_value ev = createParamValueEvent(ID::kGain, -20.0);
+  // Maybe have an uint32_t time as 3rd parameter
 
 
+
+  //clap_event_param_value
 
 
 
