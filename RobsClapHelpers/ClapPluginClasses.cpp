@@ -433,23 +433,24 @@ clap_process_status ClapPluginStereo32Bit::process(const clap_process *p) noexce
 
     // Process the sub-block until the next event. This is a call to the overriden implementation
     // in the subclass in a sort of "template method" pattern:
+    uint32_t subBlockLength = nextEventFrame - frameIndex;
     processBlockStereo(
       &p->audio_inputs[0].data32[0][frameIndex],
       &p->audio_inputs[0].data32[1][frameIndex],
       &p->audio_outputs[0].data32[0][frameIndex],
       &p->audio_outputs[0].data32[1][frameIndex],
-      nextEventFrame - frameIndex);
-    //frameIndex += nextEventFrame;                // OLD - BUGGY!!
-    frameIndex += (nextEventFrame - frameIndex);   // NEW - Needs more tests...
-
-    // Maybe use
-    // uint32_t subBlockLength = nextEventFrame - frameIndex;
+      subBlockLength);
+    frameIndex += subBlockLength;   // NEW - Needs more tests...
   }
   // This code needs verification. I copy/pasted it from  plugin-template.c  and made some edits
   // which I think, are appropriate. It gives reasonable results in Bitwig though - but that 
   // doesn't replace unit testing.
-  // Oh! It really seems to work only reliably when the events are all at sample zero. We may run
-  // into situations where
+  // ...oookayy - the old version did indeed have an embarrassing bug that made it work only when
+  // the events are at the beginning of the block. The clap-validator did not catch these. Maybe
+  // the params-fuzz tests don't test sending multiple param-change events per block? Maybe check 
+  // the code (but it's in Rust) and if it indeed dos test pamaeter change events only for this
+  // very special case, make a feature request.
+
 
   return CLAP_PROCESS_CONTINUE;
 

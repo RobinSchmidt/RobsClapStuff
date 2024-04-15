@@ -7,7 +7,7 @@ bool runAllClapTests(/*bool printResults*/)
   bool ok = true;
 
   // Currently debugged test:
-  ok &= runProcessingTest2();
+  //ok &= runProcessingTest2();
 
   // All tests in order:
   ok &= runStateRecallTest();
@@ -1087,8 +1087,8 @@ bool runProcessingTest2()
 
   // Create a test input signal - we use a sinusoid:
   int N = numFrames;  // Shorthand, because we need it often
-  //float w = 0.2;  // Normalized radian freq of input sine
-  float w = 0.0;  // DC - for test
+  float w = 0.2;      // Normalized radian freq of input sine
+  //float w = 0.0;    // DC - for test (plots are easier to interpret with DC)
   for(int n = 0; n < N; n++)
   {
     inL[n] = sin(w*n);
@@ -1147,24 +1147,21 @@ bool runProcessingTest2()
   ok &= status == CLAP_PROCESS_CONTINUE;
   ok &= equals(&tgtL[0], outL, N);
   ok &= equals(&tgtR[0], outR, N);
-  // This fails! Now it would be nice to be able to plot target and output. It fails at i=40
-  // It's strange! There seem to be only 2 instead of 3 calls to processEvent -> setParameter
-  // for the block. Nevertheless, there are 3 distinctive sub-blocks. The 3rd sub-block does have
-  // a different gain - but it's wrong! If we only process 2 events, then the sub-blocks 2 and 3
-  // should have the same gain
 
 
+  // Plot outputs and target signals:
   GNUPlotter plt;
-  //plt.plotArrays(N, inL, inR);
   plt.plotArrays(N, &tgtL[0], outL, &tgtR[0], outR);
-  // Aha! We can see it now!
-
-
-
 
 
 
   return ok;
+
+  // ToDo:
+  //
+  // -Test it with multiple events of the same kind at a single sample. Only the last event should
+  //  count
+  // -Test it with multiple events of different kinds at a single sample. They should all count.
 }
 
 
