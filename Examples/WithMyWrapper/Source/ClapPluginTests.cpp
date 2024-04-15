@@ -15,6 +15,8 @@ bool runAllClapTests(/*bool printResults*/)
   return ok;
 }
 
+//-------------------------------------------------------------------------------------------------
+// State
 
 // Some helpers to mock the clap stream objects that will be provided by the host during state
 // load/save. This stuff needs verification. I don't know if my mock-stream behaves the way it is 
@@ -243,6 +245,9 @@ bool runStateRecallTest()
   //  values.
 }
 
+//-------------------------------------------------------------------------------------------------
+// Instantiation
+
 bool runDescriptorReadTest()
 {
   bool ok = true;
@@ -268,6 +273,8 @@ bool runDescriptorReadTest()
   return ok;
 }
 
+//-------------------------------------------------------------------------------------------------
+// Utilities
 
 bool runNumberToStringTest()
 {
@@ -491,6 +498,8 @@ bool runWaveShaperTest()
   //  result as the integer 0, 0.5..1.5 the same result as 2, etc.
 }
 
+//-------------------------------------------------------------------------------------------------
+// Processing
 
 void initClapProcess(clap_process* p)
 {
@@ -552,8 +561,12 @@ void initClapInEventBuffer(clap_input_events* b)
   //  the struct
 }
 
-
-
+void initClapOutEventBuffer(clap_output_events* b)
+{
+  b->ctx      = nullptr;  // void*
+  b->try_push = nullptr;  // (const struct clap_output_events *list, const clap_event_header_t *ev)
+                          // -> bool
+}
 
 bool runProcessingTest()
 {
@@ -611,8 +624,19 @@ bool runProcessingTest()
   clap_input_events  inEvents;
   clap_output_events outEvents;
   initClapInEventBuffer(&inEvents);
+  initClapOutEventBuffer(&outEvents);
 
-  // ...
+  // Try to define some lambda functions to assign to the function pointers in the inEvents buffer
+  //
+
+  auto inEventsSize = [](const struct clap_input_events *list)
+  {
+    uint32_t result = 0;
+    return result;
+  };
+  inEvents.size = inEventsSize;
+
+  //  (const struct clap_input_events *list)  ->  uint32_t
 
 
   // Now we are finally set up with valid buffers and can let the gain plugin process some audio:
