@@ -6,6 +6,10 @@ bool runAllClapTests(/*bool printResults*/)
 {
   bool ok = true;
 
+  // Currently debugged test:
+  ok &= runProcessingTest2();
+
+  // All tests in order:
   ok &= runStateRecallTest();
   ok &= runDescriptorReadTest();
   ok &= runNumberToStringTest();
@@ -1083,7 +1087,8 @@ bool runProcessingTest2()
 
   // Create a test input signal - we use a sinusoid:
   int N = numFrames;  // Shorthand, because we need it often
-  float w = 0.2;  // Normalized radian freq of input sine
+  //float w = 0.2;  // Normalized radian freq of input sine
+  float w = 0.0;  // DC - for test
   for(int n = 0; n < N; n++)
   {
     inL[n] = sin(w*n);
@@ -1117,19 +1122,19 @@ bool runProcessingTest2()
   procBuf.addInputParamValueEvent(ID::kGain, gainDb2, n2);
 
   // Compute target output:
-  gainLin = (float) dbToAmp(gainDb0);
+  gainLin = (float) dbToAmp(gainDb0);    // 1.12201846
   for(int n = 0; n < n1; n++)
   {
     tgtL[n] = gainLin * inL[n];
     tgtR[n] = gainLin * inR[n];
   }
-  gainLin = (float) dbToAmp(gainDb1);
+  gainLin = (float) dbToAmp(gainDb1);    // 1.41253757
   for(int n = n1; n < n2; n++)
   {
     tgtL[n] = gainLin * inL[n];
     tgtR[n] = gainLin * inR[n];
   }
-  gainLin = (float) dbToAmp(gainDb2);
+  gainLin = (float) dbToAmp(gainDb2);    // 0.794328213
   for(int n = n2; n < N; n++)
   {
     tgtL[n] = gainLin * inL[n];
@@ -1143,10 +1148,16 @@ bool runProcessingTest2()
   ok &= equals(&tgtL[0], outL, N);
   ok &= equals(&tgtR[0], outR, N);
   // This fails! Now it would be nice to be able to plot target and output. It fails at i=40
+  // It's strange! There seem to be only 2 instead of 3 calls to processEvent -> setParameter
+  // for the block. Nevertheless, there are 3 distinctive sub-blocks. The 3rd sub-block does have
+  // a different gain - but it's wrong! If we only process 2 events, then the sub-blocks 2 and 3
+  // should have the same gain
 
 
   GNUPlotter plt;
+  //plt.plotArrays(N, inL, inR);
   plt.plotArrays(N, &tgtL[0], outL, &tgtR[0], outR);
+  // Aha! We can see it now!
 
 
 
