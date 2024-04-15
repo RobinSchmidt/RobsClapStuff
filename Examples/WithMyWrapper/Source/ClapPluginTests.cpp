@@ -1141,7 +1141,7 @@ bool runProcessingTest2()
   ok &= status == CLAP_PROCESS_CONTINUE;
   ok &= equals(&tgtL[0], outL, N);
   ok &= equals(&tgtR[0], outR, N);
-  // This fails!
+  // This fails! Now it would be nice to be able to plot target and output. It fails at i=40
 
 
 

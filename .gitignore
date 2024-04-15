@@ -42,9 +42,11 @@
 
 /Examples/WithMyWrapper/Build/VisualStudio2019/x64
 /Examples/WithMyWrapper/Build/VisualStudio2019/.vs
+/Examples/WithMyWrapper/Build/VisualStudio2019/enc_temp_folder
 
 #---------------------------------------------------------------------------------------------------
 # Ignored files:
+
 
 
 
