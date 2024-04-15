@@ -15,6 +15,5 @@ bool runDescriptorReadTest();
 bool runNumberToStringTest();
 bool runIndexIdentifierMapTest();
 bool runWaveShaperTest();
-
-
 bool runProcessingTest();
+bool runProcessingTest2();

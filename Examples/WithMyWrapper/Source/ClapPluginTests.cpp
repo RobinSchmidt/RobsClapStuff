@@ -11,6 +11,7 @@ bool runAllClapTests(/*bool printResults*/)
   ok &= runIndexIdentifierMapTest();
   ok &= runWaveShaperTest();
   ok &= runProcessingTest();
+  ok &= runProcessingTest2();
 
   return ok;
 }
@@ -499,7 +500,7 @@ bool runWaveShaperTest()
 }
 
 //-------------------------------------------------------------------------------------------------
-// Processing
+// Processing, doing all the buffer setup work by hand
 
 void initClapProcess(clap_process* p)
 {
@@ -793,17 +794,8 @@ bool runProcessingTest()
   ok &= tgtL == outL;
   ok &= tgtR == outR;
 
-
   // ...suprisingly, that seems to work. I actually wanted to expose the crash. Does it happen only
   // with midi events? 
-
-  // Maybe have an uint32_t time as 3rd parameter
-
-
-
-  //clap_event_param_value
-
-
 
   return ok;
 
@@ -817,6 +809,75 @@ bool runProcessingTest()
   //  may also be useful for writing a clap host
   // -Check what happens when we have more than one event at one time instant
 }
+
+//=================================================================================================
+// Processing, using helper classes for the tedious buffer setup
+
+class ClapAudioBuffer
+{
+
+public:
+
+  ClapAudioBuffer(uint32_t newNumChannels = 1, uint32_t newNumFrames = 1)
+  {
+    setSize(newNumChannels, newNumFrames);
+  }
+
+  void setSize(uint32_t newNumChannels, uint32_t newNumFrames)
+  {
+    numChannels = newNumChannels;
+    numFrames   = newNumFrames;
+    allocateBuffers();
+  }
+
+private:
+
+  void allocateBuffers();
+
+  clap_audio_buffer _buffer;
+
+  std::vector<std::vector<float>> data;
+  std::vector<float*> channelPointers;
+
+  uint32_t numChannels = 1;   // Should be at least 1. Redundant - stored already in _buffer.channel_count
+  uint32_t numFrames   = 1;   // Should be at least 1
+};
+
+void ClapAudioBuffer::allocateBuffers()
+{
+  data.resize(numChannels);
+  channelPointers.resize(numChannels);
+  for(uint32_t c = 0; c < numChannels; c++)
+  {
+    data[c].resize(numFrames);
+    channelPointers[c] = &data[c][0];
+  }
+
+  _buffer.channel_count = numChannels;
+  _buffer.data32 = &channelPointers[0];
+
+  // These are always the same at the moment:
+  _buffer.data64        = nullptr;
+  _buffer.constant_mask = 0;
+  _buffer.latency       = 0;
+}
+
+
+bool runProcessingTest2()
+{
+  bool ok = true;
+
+  int N = 60;                                 // Number of sample frames
+  ClapAudioBuffer inBuf(2, N), outBuf(2, N);  // The 2 is the number of channels
+
+
+
+
+
+
+  return ok;
+}
+
 
 
 /*

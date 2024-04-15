@@ -59,7 +59,7 @@ inline std::vector<clap_event_header_t> extractInEvents(const clap_process* p)
     inEvents[i] = *(p->in_events->get(p->in_events, i));
   return inEvents;
 }
-// Maybe un-inline
+// Maybe un-inline - move implementation to cpp file
 
 //=================================================================================================
 // Math
