@@ -808,6 +808,8 @@ bool runProcessingTest()
   //  function. Maybe make a class ClapProcessBuffer that allocates all the required buffers. It 
   //  may also be useful for writing a clap host
   // -Check what happens when we have more than one event at one time instant
+  // -Instead of calling gain.process directly, go through the actual CLAP API, i.e. obtain the 
+  //  wrapped C-struct and let it do the processing
 }
 
 //=================================================================================================
@@ -965,7 +967,28 @@ private:
 
 };
 
+class ClapProcessBuffer
+{
 
+public:
+
+  ClapProcessBuffer(uint32_t numChannels, uint32_t numFrames)
+    : inBuf(numChannels, numFrames), outBuf(numChannels, numFrames)
+  {
+    //updateWrappedStruct();
+  }
+
+private:
+
+  clap_process _process;         // The wrapped C-struct
+
+  ClapAudioBuffer    inBuf;
+  ClapAudioBuffer    outBuf;
+  ClapInEventBuffer  inEvs;
+  ClapOutEventBuffer outEvs;
+
+  // ToDo: maybe make non-copyable, etc.
+};
 
 
 
@@ -984,10 +1007,13 @@ bool runProcessingTest2()
   bool ok = true;
 
   int N = 60;                                    // Number of sample frames
-  ClapAudioBuffer    inBuf(2, N), outBuf(2, N);  // The 2 is the number of channels
-  ClapInEventBuffer  inEvs;
-  ClapOutEventBuffer outEvs;
 
+  //ClapAudioBuffer    inBuf(2, N), outBuf(2, N);  // The 2 is the number of channels
+  //ClapInEventBuffer  inEvs;
+  //ClapOutEventBuffer outEvs;
+
+
+  ClapProcessBuffer procBuf(2, N);    // The 2 is the number of channels
 
 
 
