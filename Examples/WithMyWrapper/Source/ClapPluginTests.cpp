@@ -909,11 +909,6 @@ void ClapEventBuffer::addParamValueEvent(clap_id paramId, double value, uint32_t
 }
 
 
-
-
-
-
-
 class ClapInEventBuffer
 {
 
@@ -928,7 +923,7 @@ private:
 
   clap_input_events _inEvents;
 
-  ClapEventBuffer eventData;
+  ClapEventBuffer eventData;  // Maybe subclass instead of using a member
 
   static uint32_t getSize(const struct clap_input_events *list);
 
@@ -948,6 +943,9 @@ const clap_event_header_t* ClapInEventBuffer::getEvent(
   ClapEventBuffer* data = (ClapEventBuffer*) list->ctx;
   return data->getEventHeader(index);
 }
+
+
+
 
 
 
