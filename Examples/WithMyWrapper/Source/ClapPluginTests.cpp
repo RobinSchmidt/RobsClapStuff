@@ -507,6 +507,26 @@ void initClapProcess(clap_process* p)
   // Check, if that's all!
 }
 
+void initClapAudioBuffer(clap_audio_buffer* b)
+{
+  b->channel_count = 0;
+  b->constant_mask = 0;
+  b->data32        = nullptr;
+  b->data64        = nullptr;
+  b->latency       = 0;
+
+  // Notes:
+  //
+  // -I think, the constant_mask has a bit set to 1 for each channel that is constant? If channel
+  //  with index 0 is constant, the rightmost bit is one, if channel with index 1 is constant, the
+  //  second-rightmost bit is 1 etc.? The doc says the purpose of this mask is to avoid processing
+  //  "garbage" - I'm not quite sure what that means. DC signals can actually be quite useful in
+  //  many contexts - of course, not directly as audio signals - but for control signals. Dunno.
+  //  It's just a hint anyway and can probably be ignored.
+  // -The latency field is supposed to tell us something about the "latency from/to the audio 
+  //  interface" according to the doc.
+}
+
 bool runProcessingTest()
 {
   bool ok = true;
@@ -529,9 +549,18 @@ bool runProcessingTest()
   clap_process_status status = gain.process(&p);
   ok &= status == CLAP_PROCESS_ERROR;
 
+  // Create an initialize the clap audio buffers to be used in the process buffer:
+  clap_audio_buffer inBuf, outBuf;
+  initClapAudioBuffer(&inBuf);
+  initClapAudioBuffer(&outBuf);
+
 
 
   // Create stereo input and output buffers:
+  int N = 60;   // Processing buffer size
+  std::vector<float> inL(N), inR(N), outL(N), outR(N);
+
+
 
 
 
