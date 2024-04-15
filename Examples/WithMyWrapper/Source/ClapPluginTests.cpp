@@ -494,26 +494,32 @@ bool runWaveShaperTest()
 
 void initClapProcess(clap_process* p)
 {
-  p->audio_inputs        = nullptr;
-  p->audio_inputs_count  = 0;
-  p->audio_outputs       = nullptr;
-  p->audio_outputs_count = 0;
-  p->frames_count        = 0;
-  p->in_events           = nullptr;
-  p->out_events          = nullptr;
-  p->steady_time         = 0;
-  p->transport           = nullptr;
+  p->steady_time         = 0;        // int64_t
+  p->frames_count        = 0;        // uint32_t
+  p->transport           = nullptr;  // const clap_event_transport_t *
+  p->audio_inputs        = nullptr;  // const clap_audio_buffer_t *
+  p->audio_outputs       = nullptr;  // clap_audio_buffer_t *
+  p->audio_inputs_count  = 0;        // uint32_t
+  p->audio_outputs_count = 0;        // uint32_t
+  p->in_events           = nullptr;  // const clap_input_events_t *
+  p->out_events          = nullptr;  // const clap_output_events_t *
 
-  // Check, if that's all!
+  // ToDo:
+  //
+  // -Explain, how the out_events buffer is supposed to be used. We somehow seem to be expected to
+  //  write into it, I guess. But it's a pointer to const - so it looks like we can't modify it. It 
+  //  would be a bit strange anyway because the host can't possibly know the number of output 
+  //  events, so it can't be responsible for the allocation. Maybe the plugin is supposed to have a
+  //  pre-allocated buffer? Figure out!
 }
 
 void initClapAudioBuffer(clap_audio_buffer* b)
 {
-  b->channel_count = 0;
-  b->constant_mask = 0;
-  b->data32        = nullptr;
-  b->data64        = nullptr;
-  b->latency       = 0;
+  b->data32        = nullptr;  // float**
+  b->data64        = nullptr;  // double**
+  b->channel_count = 0;        // uint32_t
+  b->latency       = 0;        // uint32_t
+  b->constant_mask = 0;        // uint64_t
 
   // Notes:
   //
