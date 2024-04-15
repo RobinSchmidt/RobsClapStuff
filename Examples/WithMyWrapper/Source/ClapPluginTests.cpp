@@ -626,32 +626,60 @@ bool runProcessingTest()
   initClapInEventBuffer(&inEvents);
   initClapOutEventBuffer(&outEvents);
 
-  // Try to define some lambda functions to assign to the function pointers in the inEvents buffer
-  //
-
-  auto inEventsSize = [](const struct clap_input_events *list)
+  // Define some lambda functions and assign them to the function pointers in the inEvents buffer:
+  auto inEventsSize = [](const struct clap_input_events *list) -> uint32_t
   {
     uint32_t result = 0;
     return result;
   };
   inEvents.size = inEventsSize;
 
-  //  (const struct clap_input_events *list)  ->  uint32_t
+  auto inEventsGet = [](const struct clap_input_events* list, uint32_t index)
+                         -> const clap_event_header_t *
+  {
+    clap_event_header_t* hdr = nullptr;
+    return hdr;
+  };
+  inEvents.get = inEventsGet;
 
+  // Set up the in_events and out_events fields in the process buffer
+  p.in_events  = &inEvents;
+  p.out_events = &outEvents;
 
   // Now we are finally set up with valid buffers and can let the gain plugin process some audio:
   status = gain.process(&p);
   ok &= status == CLAP_PROCESS_CONTINUE;
 
+  // If it all worked out so far, it means that the general infrastructure is correctly wired up. We 
+  // now try to do some actual processing...
+
+  float w = 0.2;  // Normalized radian freq of input sine
+  for(int n = 0; n < N; n++)
+  {
+    inL[n] = sin(w*n);
+    inR[n] = cos(w*n);
+  }
+
+  // Compute target output:
+  float gainLin = (float) dbToAmp(gainDb);
+  std::vector<float> tgtL(N), tgtR(N);
+  for(int n = 0; n < N; n++)
+  {
+    tgtL[n] = gainLin * inL[n];
+    tgtR[n] = gainLin * inR[n];
+  }
+
+  // Let the gain plugin compute its output for the given sine input:
+  p.frames_count = N;
+  status = gain.process(&p);
+  ok &= status == CLAP_PROCESS_CONTINUE;
+
+  // Check, if the output buffer is as expected:
+  ok &= tgtL == outL;
+  ok &= tgtR == outR;
 
 
 
-
-
-
-
-  // Check, if the output buffer is as expected
-  double gainLin = dbToAmp(gainDb);
 
 
 
