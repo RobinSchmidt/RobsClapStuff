@@ -1089,7 +1089,7 @@ bool runProcessingTest2()
   uint32_t N = numFrames;  // Shorthand, because we need it often
   float w = 0.2f;          // Normalized radian freq of input sine
   //float w = 0.0f;        // DC - for test (plots are easier to interpret with DC)
-  for(int n = 0; n < N; n++)
+  for(uint32_t n = 0; n < N; n++)
   {
     inL[n] = sin(w*n);
     inR[n] = cos(w*n);
@@ -1098,7 +1098,7 @@ bool runProcessingTest2()
   // Compute target output:
   float gainLin = (float) dbToAmp(gainDb);
   std::vector<float> tgtL(N), tgtR(N);
-  for(int n = 0; n < N; n++)
+  for(uint32_t n = 0; n < N; n++)
   {
     tgtL[n] = gainLin * inL[n];
     tgtR[n] = gainLin * inR[n];
