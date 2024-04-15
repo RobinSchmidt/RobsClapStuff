@@ -76,6 +76,11 @@ private:
 
   std::vector<ClapEvent> events;
 
+
+  // ToDo:
+  // 
+  // -Provide functions like isSorted() and sort(), maybe merge()
+
 };
 
 
