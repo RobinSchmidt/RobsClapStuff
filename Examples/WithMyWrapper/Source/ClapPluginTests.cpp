@@ -832,6 +832,17 @@ public:
     allocateBuffers();
   }
 
+  /** Returns a const pointer to our wrapped C-struct. */
+  const clap_audio_buffer* getWrappee() const { return &_buffer; }
+
+  clap_audio_buffer* getWrappee() { return &_buffer; }
+
+
+
+  uint32_t getNumChannels() const { return numChannels; }
+
+  uint32_t getNumFrames() const { return numFrames; }
+
 private:
 
   void allocateBuffers();
@@ -926,6 +937,10 @@ public:
     _inEvents.get  = ClapInEventBuffer::getEvent;
   }
 
+  /** Returns a const pointer to our wrapped C-struct. */
+  const clap_input_events* getWrappee() const { return &_inEvents; }
+
+
 private:
 
   clap_input_events _inEvents;
@@ -955,6 +970,11 @@ public:
     _outEvents.try_push = ClapOutEventBuffer::tryPushEvent;
   }
 
+
+  /** Returns a pointer to our wrapped C-struct. */
+  clap_output_events* getWrappee() { return &_outEvents; }
+
+
 private:
 
   clap_output_events _outEvents;
@@ -967,18 +987,24 @@ private:
 
 };
 
-class ClapProcessBuffer
+
+/** A processing buffer with one input and one output port for audio signals. A port can have 
+multiple channles, though. ...TBC... */
+
+class ClapProcessBuffer_1In_1Out
 {
 
 public:
 
-  ClapProcessBuffer(uint32_t numChannels, uint32_t numFrames)
+  ClapProcessBuffer_1In_1Out(uint32_t numChannels, uint32_t numFrames)
     : inBuf(numChannels, numFrames), outBuf(numChannels, numFrames)
   {
-    //updateWrappedStruct();
+    updateWrappee();
   }
 
 private:
+
+  void updateWrappee(); // rename to updateWrappee
 
   clap_process _process;         // The wrapped C-struct
 
@@ -987,8 +1013,25 @@ private:
   ClapInEventBuffer  inEvs;
   ClapOutEventBuffer outEvs;
 
-  // ToDo: maybe make non-copyable, etc.
+  // ToDo: 
+  // -Maybe make non-copyable, etc.
+  // -Maybe make a more general class that has multiple I/O ports
 };
+
+void ClapProcessBuffer_1In_1Out::updateWrappee()
+{
+  _process.audio_inputs        = inBuf.getWrappee();
+  _process.audio_inputs_count  = 1;
+  _process.audio_outputs       = outBuf.getWrappee();
+  _process.audio_outputs_count = 1;
+  _process.frames_count        = inBuf.getNumFrames();    // == outBuf.getNumFrames()
+  _process.in_events           = inEvs.getWrappee();
+  _process.out_events          = outEvs.getWrappee();
+
+  // Maybe we have to do something more elaborate here later:
+  _process.steady_time = 0;
+  _process.transport   = nullptr;
+}
 
 
 
@@ -1006,15 +1049,21 @@ bool runProcessingTest2()
 {
   bool ok = true;
 
-  int N = 60;                                    // Number of sample frames
+  //int N = 60;                                    // Number of sample frames
 
   //ClapAudioBuffer    inBuf(2, N), outBuf(2, N);  // The 2 is the number of channels
   //ClapInEventBuffer  inEvs;
   //ClapOutEventBuffer outEvs;
 
+  uint32_t numChannels =  2;  // Stereo
+  uint32_t numFrames   = 60;  // 60 is nice - has many divisors
 
-  ClapProcessBuffer procBuf(2, N);    // The 2 is the number of channels
+  ClapProcessBuffer_1In_1Out procBuf(numChannels, numFrames);
 
+
+
+
+  uint32_t N = numFrames;  // Shorthand, because we need it often
 
 
 
