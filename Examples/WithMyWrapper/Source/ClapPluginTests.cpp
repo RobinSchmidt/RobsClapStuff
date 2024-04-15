@@ -1,5 +1,6 @@
 
 #include "ClapPluginTests.h"
+#include "GNUPlotter.h"
 
 bool runAllClapTests(/*bool printResults*/)
 {
@@ -1142,6 +1143,10 @@ bool runProcessingTest2()
   ok &= equals(&tgtL[0], outL, N);
   ok &= equals(&tgtR[0], outR, N);
   // This fails! Now it would be nice to be able to plot target and output. It fails at i=40
+
+
+  GNUPlotter plt;
+  plt.plotArrays(N, &tgtL[0], outL, &tgtR[0], outR);
 
 
 

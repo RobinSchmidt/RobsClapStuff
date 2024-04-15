@@ -40,6 +40,7 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\ClapPluginTests.cpp" />
     <ClCompile Include="..\..\Source\DemoPlugins.cpp" />
+    <ClCompile Include="..\..\Source\GNUPlotter.cpp" />
     <ClCompile Include="..\..\Source\Tests.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -49,6 +50,7 @@
     <ClInclude Include="..\..\..\..\RobsClapHelpers\Utilities.h" />
     <ClInclude Include="..\..\Source\ClapPluginTests.h" />
     <ClInclude Include="..\..\Source\DemoPlugins.h" />
+    <ClInclude Include="..\..\Source\GNUPlotter.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
