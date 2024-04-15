@@ -568,20 +568,20 @@ void initClapOutEventBuffer(clap_output_events* b)
                           // -> bool
 }
 
-void initEventHeader(clap_event_header_t* hdr)
+void initEventHeader(clap_event_header_t* hdr, uint32_t time = 0)
 {
-  hdr->size     = -1;  // uint32_t, still invalid - must be assigned by "subclass" initializer
-  hdr->time     =  0;  // uint32_t
-  hdr->space_id =  0;  // uint16_t, 0 == CLAP_CORE_EVENT_SPACE?
-  hdr->type     = -1;  // uint16_t, still invalid
-  hdr->flags    =  0;  // uint32_t, 0 == CLAP_EVENT_IS_LIVE
+  hdr->size     = -1;    // uint32_t, still invalid - must be assigned by "subclass" initializer
+  hdr->time     =  time; // uint32_t
+  hdr->space_id =  0;    // uint16_t, 0 == CLAP_CORE_EVENT_SPACE?
+  hdr->type     = -1;    // uint16_t, still invalid
+  hdr->flags    =  0;    // uint32_t, 0 == CLAP_EVENT_IS_LIVE
 }
 
-clap_event_param_value createParamValueEvent(clap_id paramId, double value)
+clap_event_param_value createParamValueEvent(clap_id paramId, double value, uint32_t time = 0)
 {
   // Create event and set up the header:
   clap_event_param_value ev;
-  initEventHeader(&ev.header);
+  initEventHeader(&ev.header, time);
   ev.header.type = CLAP_EVENT_PARAM_VALUE;
   ev.header.size = sizeof(clap_event_param_value);
 
@@ -656,20 +656,20 @@ bool runProcessingTest()
   initClapOutEventBuffer(&outEvents);
 
   // Define some lambda functions and assign them to the function pointers in the inEvents buffer:
-  auto inEventsSize = [](const struct clap_input_events *list) -> uint32_t
+  auto inEventsSize0 = [](const struct clap_input_events *list) -> uint32_t
   {
     uint32_t result = 0;
     return result;
   };
-  inEvents.size = inEventsSize;
+  inEvents.size = inEventsSize0;
 
-  auto inEventsGet = [](const struct clap_input_events* list, uint32_t index)
+  auto inEventsGet0 = [](const struct clap_input_events* list, uint32_t index)
                          -> const clap_event_header_t *
   {
     clap_event_header_t* hdr = nullptr;
     return hdr;
   };
-  inEvents.get = inEventsGet;
+  inEvents.get = inEventsGet0;
 
   // Set up the in_events and out_events fields in the process buffer
   p.in_events  = &inEvents;
@@ -685,6 +685,7 @@ bool runProcessingTest()
   // actually a situation, that should not even occurr in practice. The buffers will always at 
   // least be of length 1 (for the sample frames). But the plugin can actually deal with length 
   // zero, too. We now try to do some actual processing...
+
 
   // Create a test input signal - we use a sinusoid:
   float w = 0.2;  // Normalized radian freq of input sine
@@ -716,7 +717,57 @@ bool runProcessingTest()
   // So far there were not any events to process. Now we create some processing buffers with 
   // parameter change events....
 
-  clap_event_param_value ev = createParamValueEvent(ID::kGain, -20.0);
+
+  // Create a std::vector for the parameter change events, assign the inEvents.ctx to a pointer to
+  // it (this is the "context", I guess) and then re-assign the function pointers in the inEvents 
+  // buffer such that these functions use the vector instead of just returning zero or nullptr:
+  std::vector<clap_event_param_value> inEventVec;
+  inEvents.ctx = &inEventVec;
+
+  auto inEventsSize = [](const struct clap_input_events *list) -> uint32_t
+  {
+    std::vector<clap_event_param_value>* vec;
+    vec = (std::vector<clap_event_param_value>*) (list->ctx);
+    uint32_t result = (uint32_t) vec->size();
+    return result;
+  };
+  inEvents.size = inEventsSize;
+
+  auto inEventsGet = [](const struct clap_input_events* list, uint32_t index)
+    -> const clap_event_header_t *
+  {
+    std::vector<clap_event_param_value>* vec;
+    vec = (std::vector<clap_event_param_value>*) (list->ctx);
+
+    if(index < (uint32_t)vec->size() )
+      return &(vec->at(index).header);
+    else
+      return nullptr;
+  };
+  inEvents.get = inEventsGet;
+
+  // Now we are all set up. Whatever the content we put into our inEventVec, it will be received as
+  // events in the process calls. We first start with a single event with sample offset 0. It sets
+  // the dB-gain to -20.
+  gain.setAllParametersToDefault();  // Do a reset first
+  gainDb = -20.0;
+  inEventVec.push_back(createParamValueEvent(ID::kGain, gainDb, 0));
+
+  status = gain.process(&p);
+  ok &= status == CLAP_PROCESS_CONTINUE;
+
+  // Compute target output and compare to actual output:
+  gainLin = (float) dbToAmp(gainDb);
+  for(int n = 0; n < N; n++)
+  {
+    tgtL[n] = gainLin * inL[n];
+    tgtR[n] = gainLin * inR[n];
+  }
+  ok &= tgtL == outL;
+  ok &= tgtR == outR;
+
+
+
   // Maybe have an uint32_t time as 3rd parameter
 
 
