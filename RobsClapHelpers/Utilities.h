@@ -55,7 +55,7 @@ inline std::vector<clap_event_header_t> extractInEvents(const clap_process* p)
 
   const uint32_t numEvents = p->in_events->size(p->in_events);
   inEvents.resize(numEvents);
-  for(int i = 0; i < numEvents; i++)
+  for(uint32_t i = 0; i < numEvents; i++)
     inEvents[i] = *(p->in_events->get(p->in_events, i));
   return inEvents;
 }

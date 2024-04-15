@@ -694,7 +694,7 @@ bool runProcessingTest()
 
 
   // Create a test input signal - we use a sinusoid:
-  float w = 0.2;  // Normalized radian freq of input sine
+  float w = 0.2f;  // Normalized radian freq of input sine
   for(int n = 0; n < N; n++)
   {
     inL[n] = sin(w*n);
@@ -1086,9 +1086,9 @@ bool runProcessingTest2()
   // Maybe it would be more convenient to work with references to the std::vectors
 
   // Create a test input signal - we use a sinusoid:
-  int N = numFrames;  // Shorthand, because we need it often
-  float w = 0.2;      // Normalized radian freq of input sine
-  //float w = 0.0;    // DC - for test (plots are easier to interpret with DC)
+  uint32_t N = numFrames;  // Shorthand, because we need it often
+  float w = 0.2f;          // Normalized radian freq of input sine
+  //float w = 0.0f;        // DC - for test (plots are easier to interpret with DC)
   for(int n = 0; n < N; n++)
   {
     inL[n] = sin(w*n);
@@ -1123,19 +1123,19 @@ bool runProcessingTest2()
 
   // Compute target output:
   gainLin = (float) dbToAmp(gainDb0);    // 1.12201846
-  for(int n = 0; n < n1; n++)
+  for(uint32_t n = 0; n < n1; n++)
   {
     tgtL[n] = gainLin * inL[n];
     tgtR[n] = gainLin * inR[n];
   }
   gainLin = (float) dbToAmp(gainDb1);    // 1.41253757
-  for(int n = n1; n < n2; n++)
+  for(uint32_t n = n1; n < n2; n++)
   {
     tgtL[n] = gainLin * inL[n];
     tgtR[n] = gainLin * inR[n];
   }
   gainLin = (float) dbToAmp(gainDb2);    // 0.794328213
-  for(int n = n2; n < N; n++)
+  for(uint32_t n = n2; n < N; n++)
   {
     tgtL[n] = gainLin * inL[n];
     tgtR[n] = gainLin * inR[n];
