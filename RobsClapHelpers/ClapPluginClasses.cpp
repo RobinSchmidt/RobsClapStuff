@@ -439,7 +439,11 @@ clap_process_status ClapPluginStereo32Bit::process(const clap_process *p) noexce
       &p->audio_outputs[0].data32[0][frameIndex],
       &p->audio_outputs[0].data32[1][frameIndex],
       nextEventFrame - frameIndex);
-    frameIndex += nextEventFrame;
+    //frameIndex += nextEventFrame;                // OLD - BUGGY!!
+    frameIndex += (nextEventFrame - frameIndex);   // NEW - Needs more tests...
+
+    // Maybe use
+    // uint32_t subBlockLength = nextEventFrame - frameIndex;
   }
   // This code needs verification. I copy/pasted it from  plugin-template.c  and made some edits
   // which I think, are appropriate. It gives reasonable results in Bitwig though - but that 
