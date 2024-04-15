@@ -45,3 +45,28 @@ int64_t clapStreamRead(const struct clap_istream* stream, void* buffer, uint64_t
   return numToRead;
 }
 
+//=================================================================================================
+// ClapGain2
+
+const char* const ClapGain2::features[5] = 
+{ 
+  CLAP_PLUGIN_FEATURE_AUDIO_EFFECT,
+  CLAP_PLUGIN_FEATURE_UTILITY, 
+  CLAP_PLUGIN_FEATURE_MIXING, 
+  CLAP_PLUGIN_FEATURE_MASTERING,            // Was not present in the old version
+  NULL 
+};
+
+const clap_plugin_descriptor_t ClapGain2::descriptor = 
+{
+  .clap_version = CLAP_VERSION_INIT,
+  .id           = "RS-MET.StereoGainDemo",  // This field must match the old version's
+  .name         = "StereoGainDemo",         // ...all the other fields are (probably) not important
+  .vendor       = "",
+  .url          = "",
+  .manual_url   = "",
+  .support_url  = "",
+  .version      = "0.0.0",
+  .description  = "Stereo gain and panning",
+  .features     = ClapGain2::features,
+};
