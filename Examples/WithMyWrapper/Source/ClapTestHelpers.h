@@ -20,11 +20,30 @@ int64_t clapStreamWrite(const struct clap_ostream* stream, const void* buffer, u
 int64_t clapStreamRead(const struct clap_istream* stream, void* buffer, uint64_t size);
 
 //=================================================================================================
+// Buffers
+//
+// Classes for making it convenient to mock buffer objects like the clap_process struct that 
+// gets passed to the processing function. Setting these buffer objects up by allocating the 
+// required memory and setting up their pointers is a quite tedious task so it makes sense to have 
+// convenience classes for that purpose.
+
+
+
+
+
+
+
+
+
+//=================================================================================================
+// Test Plugins
+//
+// Some plugins for testing and debugging things like correct behavior in version updates, etc.
 
 /** A dummy class to simulate addition and re-ordering of parameters in an updated version of a 
 plugin. We want to check, that state-recall still works with the new version. This "Gain 2" plugin
-mocks an updated "StereoGain" plugin that has one parameter more and the old parameters in a 
-different order ...TBC... */
+mocks an updated "StereoGain" plugin that has two parameters more and the old parameters in a 
+different order (index-wise - not id-wise - the ids must remain stable) ...TBC... */
 
 class ClapGain2 : public RobsClapHelpers::ClapPluginStereo32Bit
 {
