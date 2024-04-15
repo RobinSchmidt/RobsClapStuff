@@ -909,12 +909,17 @@ void ClapEventBuffer::addParamValueEvent(clap_id paramId, double value, uint32_t
 }
 
 
-class ClapInEventBuffer
+/** C++ wrapper around clap_input_events. By deriving from ClapEventBuffer, we inherit the owned
+vector of events. */
+
+class ClapInEventBuffer : public ClapEventBuffer
 {
+
+public:
 
   ClapInEventBuffer()
   {
-    _inEvents.ctx  = &eventData;
+    _inEvents.ctx  = this;
     _inEvents.size = ClapInEventBuffer::getSize;
     _inEvents.get  = ClapInEventBuffer::getEvent;
   }
@@ -923,26 +928,46 @@ private:
 
   clap_input_events _inEvents;
 
-  ClapEventBuffer eventData;  // Maybe subclass instead of using a member
+  static uint32_t getSize(const struct clap_input_events* list)
+  {
+    ClapInEventBuffer* self = (ClapInEventBuffer*) list->ctx;
+    return self->getNumEvents();
+  }
 
-  static uint32_t getSize(const struct clap_input_events *list);
-
-  static const clap_event_header_t* getEvent(const struct clap_input_events* list, uint32_t index);
+  static const clap_event_header_t* getEvent(const struct clap_input_events* list, uint32_t index)
+  {
+    ClapInEventBuffer* self = (ClapInEventBuffer*) list->ctx;
+    return self->getEventHeader(index);
+  }
 
 };
 
-uint32_t ClapInEventBuffer::getSize(const struct clap_input_events* list)
+class ClapOutEventBuffer : public ClapEventBuffer
 {
-  ClapEventBuffer* data = (ClapEventBuffer*) list->ctx;
-  return data->getNumEvents();
-}
 
-const clap_event_header_t* ClapInEventBuffer::getEvent(
-  const struct clap_input_events* list, uint32_t index)
-{
-  ClapEventBuffer* data = (ClapEventBuffer*) list->ctx;
-  return data->getEventHeader(index);
-}
+public:
+
+  ClapOutEventBuffer()
+  {
+    _outEvents.ctx      = this;
+    _outEvents.try_push = ClapOutEventBuffer::tryPushEvent;
+  }
+
+private:
+
+  clap_output_events _outEvents;
+
+  static bool tryPushEvent(const struct clap_output_events *list, const clap_event_header_t *ev)
+  {
+    RobsClapHelpers::clapError("Not yet implemented");
+    return false;
+  }
+
+};
+
+
+
+
 
 
 
@@ -958,11 +983,11 @@ bool runProcessingTest2()
 {
   bool ok = true;
 
-  int N = 60;                                 // Number of sample frames
-  ClapAudioBuffer inBuf(2, N), outBuf(2, N);  // The 2 is the number of channels
+  int N = 60;                                    // Number of sample frames
+  ClapAudioBuffer    inBuf(2, N), outBuf(2, N);  // The 2 is the number of channels
+  ClapInEventBuffer  inEvs;
+  ClapOutEventBuffer outEvs;
 
-
-  ClapEventBuffer events;
 
 
 
