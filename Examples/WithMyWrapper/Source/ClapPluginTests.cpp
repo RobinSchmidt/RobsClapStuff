@@ -863,6 +863,81 @@ void ClapAudioBuffer::allocateBuffers()
 }
 
 
+union ClapEvent
+{
+  clap_event_param_value paramValue;
+  clap_event_midi        midi;
+  // ...more to come...
+};
+
+class ClapEventBuffer
+{
+
+public:
+
+  uint32_t getNumEvents() { return (uint32_t) events.size(); }
+
+  const clap_event_header_t* getEventHeader(uint32_t index)
+  {
+    return &events[index].paramValue.header;
+
+    // This will cause an access violation when index >= numEvents, in particular, when numEvents
+    // is zero. Maybe in this case, we should return a pointer to some dummy header - as in the
+    // null-object pattern?.
+  }
+
+  void clear() { events.clear(); }
+
+private:
+
+  std::vector<ClapEvent> events;
+
+};
+
+
+class ClapInEventBuffer
+{
+
+  ClapInEventBuffer()
+  {
+    _inEvents.ctx  = &eventData;
+    _inEvents.size = ClapInEventBuffer::getSize;
+      
+    
+  }
+
+private:
+
+  clap_input_events _inEvents;
+
+  ClapEventBuffer eventData;
+
+  static uint32_t getSize(const struct clap_input_events *list);
+
+  static const clap_event_header_t* getEvent(const struct clap_input_events* list, uint32_t index);
+
+};
+
+uint32_t ClapInEventBuffer::getSize(const struct clap_input_events* list)
+{
+  ClapEventBuffer* data = (ClapEventBuffer*) list->ctx;
+  return data->getNumEvents();
+}
+
+const clap_event_header_t* ClapInEventBuffer::getEvent(
+  const struct clap_input_events* list, uint32_t index)
+{
+  ClapEventBuffer* data = (ClapEventBuffer*) list->ctx;
+  return data->getEventHeader(index);
+}
+
+
+
+
+
+
+
+
 bool runProcessingTest2()
 {
   bool ok = true;
@@ -871,6 +946,7 @@ bool runProcessingTest2()
   ClapAudioBuffer inBuf(2, N), outBuf(2, N);  // The 2 is the number of channels
 
 
+  ClapEventBuffer events;
 
 
 
