@@ -49,8 +49,12 @@ inspection in the debugger. In the process(...) function, you can just add a lin
 and then you can inspect the event list. */
 inline std::vector<clap_event_header_t> extractInEvents(const clap_process* p)
 {
+  std::vector<clap_event_header_t> inEvents;
+  if(p->in_events == nullptr)  // Should not occur in normal use, but may in the unit tests
+    return inEvents;
+
   const uint32_t numEvents = p->in_events->size(p->in_events);
-  std::vector<clap_event_header_t> inEvents(numEvents);
+  inEvents.resize(numEvents);
   for(int i = 0; i < numEvents; i++)
     inEvents[i] = *(p->in_events->get(p->in_events, i));
   return inEvents;

@@ -385,7 +385,7 @@ bool ClapPluginStereo32Bit::audioPortsInfo(
 clap_process_status ClapPluginStereo32Bit::process(const clap_process *p) noexcept
 {
   // DEBUG-STUFF:
-  //auto inEvents = RobsClapHelpers::extractInEvents(p); // For inspection in debugger
+  auto inEvents = RobsClapHelpers::extractInEvents(p); // For inspection in debugger
 
 
   // Check number of input and output ports/busses:

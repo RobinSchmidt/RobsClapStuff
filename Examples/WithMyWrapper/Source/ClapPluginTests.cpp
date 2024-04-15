@@ -749,10 +749,11 @@ bool runProcessingTest()
   // Now we are all set up. Whatever the content we put into our inEventVec, it will be received as
   // events in the process calls. We first start with a single event with sample offset 0. It sets
   // the dB-gain to -20.
-  gain.setAllParametersToDefault();  // Do a reset first
   gainDb = -20.0;
   inEventVec.push_back(createParamValueEvent(ID::kGain, gainDb, 0));
 
+  // Compute output:
+  gain.setAllParametersToDefault();  // Do a reset first
   status = gain.process(&p);
   ok &= status == CLAP_PROCESS_CONTINUE;
 
@@ -766,7 +767,35 @@ bool runProcessingTest()
   ok &= tgtL == outL;
   ok &= tgtR == outR;
 
+  // No add a second parameter change event in the middle of the buffer (the old one is still 
+  // there):
+  double gainDb2 = -10.0;
+  inEventVec.push_back(createParamValueEvent(ID::kGain, gainDb2, N/2));
 
+  // Compute the output again, now with 2 events in the event buffer:
+  gain.setAllParametersToDefault();
+  status = gain.process(&p);
+  ok &= status == CLAP_PROCESS_CONTINUE;
+
+  // Compute target signal and compare:
+  gainLin = (float) dbToAmp(gainDb);      // 1st half of buffer should have gainDb applied
+  for(int n = 0; n < N/2; n++)
+  {
+    tgtL[n] = gainLin * inL[n];
+    tgtR[n] = gainLin * inR[n];
+  }
+  gainLin = (float) dbToAmp(gainDb2);     // 2nd half of buffer should have gainDb2 applied
+  for(int n = N/2; n < N; n++)
+  {
+    tgtL[n] = gainLin * inL[n];
+    tgtR[n] = gainLin * inR[n];
+  }
+  ok &= tgtL == outL;
+  ok &= tgtR == outR;
+
+
+  // ...suprisingly, that seems to work. I actually wanted to expose the crash. Does it happen only
+  // with midi events? 
 
   // Maybe have an uint32_t time as 3rd parameter
 
@@ -786,6 +815,7 @@ bool runProcessingTest()
   // -Maybe factor out the whole tedious process of setting up the clap_process object into a 
   //  function. Maybe make a class ClapProcessBuffer that allocates all the required buffers. It 
   //  may also be useful for writing a clap host
+  // -Check what happens when we have more than one event at one time instant
 }
 
 
