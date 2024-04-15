@@ -15,7 +15,7 @@ bool runAllClapTests(/*bool printResults*/)
   ok &= runNumberToStringTest();
   ok &= runIndexIdentifierMapTest();
   ok &= runWaveShaperTest();
-  ok &= runProcessingTest();
+  ok &= runProcessingTest1();
   ok &= runProcessingTest2();
 
   return ok;
@@ -118,7 +118,6 @@ bool runDescriptorReadTest()
 {
   bool ok = true;
 
-
   // Create a ClapGain object:
   clap_plugin_descriptor_t desc = ClapGain::descriptor;
   ClapGain gain(&desc, nullptr);
@@ -145,7 +144,7 @@ bool runDescriptorReadTest()
 bool runNumberToStringTest()
 {
   bool ok = true;
-
+  using namespace RobsClapHelpers;
 
   static const int bufSize = 20;
   char buf[bufSize];                // Character buffer into which we write the strings.
@@ -160,9 +159,6 @@ bool runNumberToStringTest()
 
   // Abbreviation for the constructor of std::string from a C-string:
   auto Str = [](const char *cStr) { return std::string(cStr); };
-
-  using namespace RobsClapHelpers;
-
   int pos;  // Maybe rename to len or length
 
   // Buffer more than long enough:
@@ -367,7 +363,7 @@ bool runWaveShaperTest()
 //-------------------------------------------------------------------------------------------------
 // Processing
 
-bool runProcessingTest()
+bool runProcessingTest1()
 {
   // In this test, we test the actual audio processing function "process" fo the gain demo plugin
   // and check, if it produces the expected outputs. Before being ready to call process() on a
@@ -377,7 +373,6 @@ bool runProcessingTest()
   // this setup can be done on a low level.
 
   bool ok = true;
-
   using namespace RobsClapHelpers;
 
   // Create and set up a ClapGain object:
@@ -585,85 +580,14 @@ bool runProcessingTest()
   //  wrapped C-struct and let it do the processing
 }
 
-//=================================================================================================
-// Processing, using helper classes for the tedious buffer setup
-
-
-
-/** A processing buffer with one input and one output port for audio signals. A port can have 
-multiple channles, though. ...TBC... */
-
-/*
-class ClapProcessBuffer_1In_1Out
-{
-
-public:
-
-  ClapProcessBuffer_1In_1Out(uint32_t numChannels, uint32_t numFrames)
-    : inBuf(numChannels, numFrames), outBuf(numChannels, numFrames)
-  {
-    updateWrappee();
-  }
-
-
-  void addInputParamValueEvent(clap_id paramId, double value, uint32_t time)
-  {
-    inEvs.addParamValueEvent(paramId, value, time);
-  }
-
-  void clearInputEvents() { inEvs.clear(); }
-
-
-  float* getInChannelPointer(uint32_t index) { return inBuf.getChannelPointer(index); }
-
-  float* getOutChannelPointer(uint32_t index) { return outBuf.getChannelPointer(index); }
-
-
-  clap_process* getWrappee() { return &_process; }
-  // Maybe try to return a const pointer?
-
-
-private:
-
-  void updateWrappee(); // rename to updateWrappee
-
-  clap_process _process;         // The wrapped C-struct
-
-  ClapAudioBuffer    inBuf;
-  ClapAudioBuffer    outBuf;
-  ClapInEventBuffer  inEvs;
-  ClapOutEventBuffer outEvs;
-
-  // ToDo: 
-  // -Maybe make non-copyable, etc.
-  // -Maybe make a more general class that has multiple I/O ports
-};
-*/
-
-/*
-void ClapProcessBuffer_1In_1Out::updateWrappee()
-{
-  _process.audio_inputs        = inBuf.getWrappee();
-  _process.audio_inputs_count  = 1;
-  _process.audio_outputs       = outBuf.getWrappee();
-  _process.audio_outputs_count = 1;
-  _process.frames_count        = inBuf.getNumFrames();    // == outBuf.getNumFrames()
-  _process.in_events           = inEvs.getWrappee();
-  _process.out_events          = outEvs.getWrappee();
-
-  // Maybe we have to do something more elaborate here later:
-  _process.steady_time = 0;
-  _process.transport   = nullptr;
-}
-*/
-
-
-
-
 bool runProcessingTest2()
 {
-  bool ok = true;
+  // This test is quite similar to the one before just that here, we do not do all the tedious 
+  // allocation and pointer setup work ourselves but instead use the convenience class
+  // ClapProcessBuffer_1In_1Out which encapsulates the whole mumbo-jumbo. The setup overhead is
+  // therefore much simplified here. ...TBC...
 
+  bool ok = true;
   using namespace RobsClapHelpers;
 
   // Create and set up a ClapGain object:
@@ -711,7 +635,13 @@ bool runProcessingTest2()
   ok &= equals(&tgtL[0], outL, N);
   ok &= equals(&tgtR[0], outR, N);
 
-  // Create some gain-change events:
+
+  // OK - so far so good. This was a process buffer without any events. Next, we create 3 events
+  // at indices 0, N/3 and 2*N/3 to change the gain (in dB) to +1, +3, -2 respectively. We expect 
+  // to see the 1st 3rd of the buffer with +1 dB, etc. We verify that this is actually the case.
+
+
+  // Create the 3 gain-change events and put them into the input event list for the process buffer:
   double   gainDb0 = 1.0;
   uint32_t n0      = 0;
   double   gainDb1 = 3.0;
@@ -749,12 +679,9 @@ bool runProcessingTest2()
   ok &= equals(&tgtL[0], outL, N);
   ok &= equals(&tgtR[0], outR, N);
 
-
   // Plot outputs and target signals:
   //GNUPlotter plt;
   //plt.plotArrays(N, &tgtL[0], outL, &tgtR[0], outR);
-
-
 
   return ok;
 
@@ -774,6 +701,5 @@ bool runProcessingTest2()
 
 ToDo:
 
-- Make files ClapTestHelpers.h/cpp where all the mocking stuff goes into
 
 */

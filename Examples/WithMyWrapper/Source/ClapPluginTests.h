@@ -16,5 +16,5 @@ bool runDescriptorReadTest();
 bool runNumberToStringTest();
 bool runIndexIdentifierMapTest();
 bool runWaveShaperTest();
-bool runProcessingTest();
+bool runProcessingTest1();           // Maybe rename to runProcessTestGain1
 bool runProcessingTest2();
