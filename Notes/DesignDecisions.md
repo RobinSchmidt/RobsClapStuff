@@ -39,8 +39,9 @@ The list of ids must be a permutation of the list of indices.
 ### Consequences
 
 - We can cause the host to re-order the knobs on the generated GUI when we publish an update for a
-  plugin. That includes inserting knobs at arbitrary positions. Using index == id (like in VST2), 
-  that would be impossible.
+  plugin. That includes inserting knobs at arbitrary positions. When using the naive identity 
+  mapping `index == id` (like we implicitly did in VST2 where an id was not a thing), that would be 
+  impossible.
 
 - The back-and-forth mapping between index and id can simply be implemented by a pair of 
   `std::vector<clap_id>`, `std::vector<uint32_t>` of length N where N is the number of parameters. 
@@ -50,6 +51,7 @@ The list of ids must be a permutation of the list of indices.
 - I guess, that obviates the "cookie" facility as well which, I suppose, has the purpose of 
   allowing plugins to speed up the lookup of a parameter (object) by id (by avoiding the lookup
   altogether).
+
 
 
 
@@ -66,7 +68,14 @@ They can be different from the indices, though.
 
 
 
+### Conclusion
 
+In my opinion, the main advantage of the id system over just using indices directly as VST2 did is 
+the ability to change the apparent order of the parameters presented to the user. The permutation
+mapping retains this ability and that's really all I care about. I don't really see how using 
+totally "random" numbers would buy us any more flexibility for things that matter. So, the 
+restriction to permutation maps seems to not give up anything of value while buying us a simple
+implementation of the mapping. That's why I opted for it.
 
 
 
