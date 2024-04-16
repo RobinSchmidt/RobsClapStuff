@@ -33,20 +33,36 @@ location of its value. The value of a parameter is a `double`.
 
 ### Decision:
 
-The class ClapPluginWithParams has a `std::vector<clap_param_info>` where it stores all the parameter
-infos. The storage index in that vector *is* the index of the paramter that the host uses when 
-requesting the plugin to fill out thet struct. The class has also a `std::vector<double>` in which 
-it stores the values of the parameters. In this vector, the id (*not* the index) is used to address 
-a particular parameter. The ids must also be numbers in 0...N-1. They can be different from the 
-indices, though. That means: the list of ids must be a permutation of the list of indices. That is 
-the decision that I have made for assigning the ids. 
+The list of ids must be a permutation of the list of indices.
+
 
 ### Consequences
 
+- We can cause the host to re-order the knobs on the generated GUI when we publish an update for a
+  plugin. That includes inserting knobs at arbitrary positions. Using index == id (like in VST2), 
+  that would be impossible.
+
+- The back-and-forth mapping between index and id can simply be implemented by a pair of 
+  std::vector<clap_id>, std::vector<uint32_t> of length N where N is the number of parameters. 
+  Using the permutation map, accessing parameters by id or index is simple and fast - O(1) in both 
+  directions. No need to pull in a hash table or anything complicated like that.
+
+- I guess, that obviates the "cookie" facility as well (which, I suppose, has the purpose of 
+  allowing plugins to speed up the lookup of a parameter (object) by id (by avoiding the lookup
+  altogether))
 
 
 
 
+### Implementation
+
+The class ClapPluginWithParams has a `std::vector<clap_param_info>` where it stores all the 
+parameter infos. The storage index in that vector *is* the index of the paramter that the host uses 
+when requesting the plugin to fill out thet struct. The class has also a `std::vector<double>` in 
+which it stores the values of the parameters. In this vector, the id (*not* the index) is used to 
+address a particular parameter. When we want to index our parameter value array by the id and we 
+want to use a length N array for the values as well, then the ids must also be numbers in 0...N-1. 
+They can be different from the indices, though.
 
 
 
