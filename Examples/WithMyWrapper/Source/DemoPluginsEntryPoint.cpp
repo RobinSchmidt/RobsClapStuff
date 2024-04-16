@@ -13,6 +13,8 @@ static const clap_plugin_factory_t pluginFactory =
 .get_plugin_count = [] (const clap_plugin_factory *factory) -> uint32_t 
 {  
   return 3; // 3 plugins in this library: StereoGainDemo, WaveShaperDemo, ToneGeneratorDemo
+
+  // ToDo: use an enum PluginIndex = { kGain, kWaveShaper, kToneGenerator, numPlugins }
 },
 
 .get_plugin_descriptor = [] (const clap_plugin_factory *factory, uint32_t index) 

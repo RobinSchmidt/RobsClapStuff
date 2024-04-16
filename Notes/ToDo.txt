@@ -8,6 +8,14 @@ Make one .clap with several plugins
 -TestTones: Tune, Type (Sine, Saw (Naive), Saw (Clean), Noise, Impulse), Gain. Should respond to 
  midi, i.e. be of the instrument category
 
+-Transposer: A simple note effect that let's the user transpose incoming note events. It may be a 
+ bit tricky not match a noteOff to a noteOn when the transpose has been modified in between. But 
+ maybe for a demo plugin, we can just ignore this and put a disclaimer somewhere. Possible solutions
+ could involve using note-ids (if the host supports that) or keeping a list of original incoming and
+ modified outgoing noteOn events and when a noteOff is received, scan the list to find the matching
+ incoming noteOn and spit out a noteOff for the corresponding outgoing noteOn. Alternatively to the
+ outgoing note, we could also just store its modifier, if that's less data.
+
 
 -Use CMake for the build system. Maybe try a .sln to cmake converter like this:
  https://cmakeconverter.readthedocs.io/en/latest/use.html

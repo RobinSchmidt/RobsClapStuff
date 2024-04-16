@@ -255,6 +255,9 @@ bool runNumberToStringTest()
   // ToDo:
   // -Check if automatic switch to exponential notation works as intended
   // -Use an empty string as suffix
+  // -Check if numbers are correctly rounded for display with limited precision.
+  // -Test double-string-double and float-string-float roundtrips with toStringExact and atof. The
+  //  clap-validator already does such things, but it would be nice to have it here, too.
 }
 
 bool runIndexIdentifierMapTest()
