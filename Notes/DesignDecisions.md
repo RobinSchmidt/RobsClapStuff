@@ -178,3 +178,25 @@ the implementations of the state save and load functions.
 
 Event Handling
 --------------
+
+...TBC...
+
+----------------------------------------------------------------------------------------------------
+
+Parameter Formatting
+--------------------
+
+### Background
+
+To display the parameter values of GUI-less plugins on the host generated GUI, we must somehow 
+translate them into strings (and back). ...TBC...
+
+
+### Decision
+
+Currently, the class `ClapPluginWithParams` implements two member functions `paramsTextToValue` and
+`paramsValueToText` which do some crude and very simple default formatting. For anything more 
+sophisticated, client code needs to override them. That can actually mean to have to write a lot of
+boilerplate code for repetitive things because we tend to need very similarv formatting strategies
+over and over again. It could be argued that asking client code to "do it yourself" amounts to 
+having *not* yet made any decision how to handle it once and for all....TBC...
