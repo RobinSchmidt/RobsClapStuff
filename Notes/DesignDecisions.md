@@ -134,7 +134,23 @@ the plugin.
 ### Decision
 
 To store and recall the state of a CLAP whose state is given by the values of all of its parameters,
-I use a simple textual format...
+I use a simple, human readable textual format that I invented ad hoc for this specific purpose. An 
+example state could look ass follows:
+
+```
+CLAP Plugin State
+
+Identifier: RS-MET.WaveShaperDemo
+Version: 2024.04.03
+Vendor: RS-MET
+Parameters: [0:Shape:1,1:Drive:7,2:DC:0.25,3:Gain:-5]
+```
+
+
+
+### Consequnces
+
+
 
 ...TBC...
 

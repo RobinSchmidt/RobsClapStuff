@@ -7,7 +7,7 @@ bool runAllClapTests(/*bool printResults*/)
   bool ok = true;
 
   // Currently debugged test:
-  //ok &= runProcessingTest2();
+  ok &= runWaveShaperTest();
 
   // All tests in order:
   ok &= runStateRecallTest();
@@ -351,6 +351,24 @@ bool runWaveShaperTest()
   ok &= checkShapeString(Shape::kAtan, "Atan");
   ok &= checkShapeString(Shape::kErf,  "Erf");
 
+
+  // Test state recall:
+  Shape  shape = Shape::kTanh;
+  double drive = 7.0;
+  double dc    = 0.25;
+  double gain  = -5.0;
+
+  ws.setParameter(ID::kShape, shape);
+  ws.setParameter(ID::kDrive, drive);
+  ws.setParameter(ID::kDC,    dc);
+  ws.setParameter(ID::kGain,  gain);
+
+
+  std::string stateString = ws.getStateAsString();
+
+  // ...more to do....
+
+
   return ok;
 
   // ToDo:
@@ -359,6 +377,8 @@ bool runWaveShaperTest()
   //    ws.paramsValueToText(ClapWaveShaper::Params::kShape, ...
   //  The desired behavior is that it behaves like rounding, i.e. 0..0.5 should give the same 
   //  result as the integer 0, 0.5..1.5 the same result as 1, etc.
+  // -Check that the waveshaper prodcues the correct outputs, i.e. that we we really get a
+  //  tanh shaping when we select tanh, etc.
 }
 
 //-------------------------------------------------------------------------------------------------
