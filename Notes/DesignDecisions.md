@@ -44,7 +44,7 @@ The list of ids must be a permutation of the list of indices.
 
 - We can cause the host to re-order the knobs on the generated GUI when we publish an update for a
   plugin. That includes inserting knobs at arbitrary positions. When using the naive identity 
-  mapping `index == id` (like we implicitly did in VST2 where an id was not a thing), that would be 
+  mapping `index == id` like we implicitly did in VST2 where an id was not a thing, that would be 
   impossible.
 
 - The back-and-forth mapping between index and id can simply be implemented by a pair of 
@@ -61,7 +61,7 @@ The list of ids must be a permutation of the list of indices.
 
 The class ClapPluginWithParams has a `std::vector<clap_param_info>` where it stores all the 
 parameter infos. The storage index in that vector *is* the index of the paramter that the host uses 
-when requesting the plugin to fill out thet struct. The class has also a `std::vector<double>` in 
+when requesting the plugin to fill out the struct. The class has also a `std::vector<double>` in 
 which it stores the values of the parameters. In this vector, the id (*not* the index) is used to 
 address a particular parameter. When we want to index our parameter value array by the id and we 
 want to use a length N array for the values as well, then the ids must also be numbers in 0...N-1. 
@@ -79,7 +79,7 @@ generated GUI.
 
 The way is reordering works is as follows: The order in which the hosts generates the knobs is 
 determined by the parameter's index, not by its id. The index, in turn, is determined by the order 
-in which the parameters are added in the constructor of the plugin class. And is therefore 
+in which the parameters are added in the constructor of the plugin class and is therefore 
 independent from the order of the ids in our enum. Maybe the enum becomes an unordered jumbled mess
 after a couple of updates but the user won't ever see any of that.
 
@@ -109,8 +109,9 @@ by id (like min/max values) in which case we can pull in the IndexIdentifierMap.
 
 ### Conclusion
 
-In my opinion, the main advantage of the id system over just using the raw indices directly as VST2 
-did is the ability to change the apparent order of the parameters presented to the user. The 
+In my opinion, the main advantage of the id system over just using the raw indices directly (as VST2 
+did) is the ability to have freedom over the way in which the host orders the parameters on its 
+generated GUI and the ability to change that apparent order in updated vesriosn of plugins. The 
 permutation mapping retains this ability and that's really all I care about. I don't really see how 
 using totally "random" numbers would buy us any more flexibility for things that matter. So, the 
 restriction to permutation maps seems to not give up anything of value while buying us a simple
