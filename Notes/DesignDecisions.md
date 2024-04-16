@@ -135,7 +135,7 @@ the plugin.
 
 To store and recall the state of a CLAP whose state is given by the values of all of its parameters,
 I use a simple, human readable textual format that I invented ad hoc for this specific purpose. An 
-example state could look as follows:
+example state string could look as follows:
 ```
 CLAP Plugin State
 
@@ -152,14 +152,18 @@ version of the plugin with which the state was produced as well as some addition
 ### Consequences
 
 This format is easy to write and read with a very small amount of code without needing to pull in 
-any serialization library. A human readble format is generally nice for debugging. Storing the 
-plugin identifier allows to check, if this is really the right kind of state. Storing the version 
-number allows to change the format later. The format is reasonably compact
+any serialization library. Storing the plugin identifier allows to check, if this is really the 
+right kind of state within the load function. Storing the version number allows to change the format 
+in later versions of plugins. The format is reasonably compact such that the amount of data produced 
+is not too extensive while also being readable enough such that humand can just inspect a state and 
+understand it immediately. This may be helpful for trouble shooting and debugging purposes.
 ...TBC...
 
 
 ToDo:
+
 -Explain what happens in version updates with more parameters (the additional parameters will be set
  to default values)
+
 -One could have left out the names and store only the id. That would make the size smaller but the 
  format would be less readable.
