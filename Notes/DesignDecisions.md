@@ -155,7 +155,7 @@ This format is easy to write and read with a very small amount of code without n
 any serialization library. Storing the plugin identifier allows to check, if this is really the 
 right kind of state within the load function. Storing the version number allows to change the format 
 in later versions of plugins. The format is reasonably compact such that the amount of data produced 
-is not too extensive while also being readable enough such that humand can just inspect a state and 
+is not too extensive while also being readable enough such that humans can just inspect a state and 
 understand it immediately. This may be helpful for trouble shooting and debugging purposes.
 ...TBC...
 

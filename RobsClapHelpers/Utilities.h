@@ -134,9 +134,10 @@ implementation of the state save/load functionality. */
 template<class T>
 inline std::string toStringExact(T x)
 {
-  std::ostringstream os;
-  os << std::setprecision(std::numeric_limits<T>::max_digits10) << x;
-  return os.str();
+  std::ostringstream oss;
+  //oss.imbue(std::locale("C")); // Figure out, if we need that!
+  oss << std::setprecision(std::numeric_limits<T>::max_digits10) << x;
+  return oss.str();
 
   // Notes:
   //
@@ -147,6 +148,10 @@ inline std::string toStringExact(T x)
   //
   // -The function needs some unit tests with some more extreme values (close to 0, near the 
   //  range-max, denormals, etc.)
+  // -Check, if the formatting depends on the std::locale settings. If it does, we need to do 
+  //  something about it because this function is used for double-string-double roundtrips. See
+  //  https://github.com/surge-synthesizer/clap-saw-demo/blob/main/src/clap-saw-demo.cpp#L924
+  //  https://www.gnu.org/software/libc/manual/html_node/Standard-Locales.html
 }
 
 /** Function to convert a double to a string with a suffix (for a physical unit) for display on 
