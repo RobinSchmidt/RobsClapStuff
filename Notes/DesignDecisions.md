@@ -10,6 +10,7 @@ informed way that makes our lives as easy as possible without taking away too mu
 flexibility consumes a considerable part of the development process. Here, I document the design 
 decisions that I made for this "mini-framework" and explain their rationale.
 
+----------------------------------------------------------------------------------------------------
 
 Parameter Identifiers
 ---------------------
@@ -173,3 +174,7 @@ performance critical in the context of audio plugins anyway.
 or consume a std::string in the simple format explained above and these functions are used within 
 the implementations of the state save and load functions. 
 
+----------------------------------------------------------------------------------------------------
+
+Event Handling
+--------------
