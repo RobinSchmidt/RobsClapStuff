@@ -70,10 +70,10 @@ They can be different from the indices, though.
 
 ### Conclusion
 
-In my opinion, the main advantage of the id system over just using indices directly as VST2 did is 
-the ability to change the apparent order of the parameters presented to the user. The permutation
-mapping retains this ability and that's really all I care about. I don't really see how using 
-totally "random" numbers would buy us any more flexibility for things that matter. So, the 
+In my opinion, the main advantage of the id system over just using the raw indices directly as VST2 
+did is the ability to change the apparent order of the parameters presented to the user. The 
+permutation mapping retains this ability and that's really all I care about. I don't really see how 
+using totally "random" numbers would buy us any more flexibility for things that matter. So, the 
 restriction to permutation maps seems to not give up anything of value while buying us a simple
 implementation of the mapping. That's why I opted for it.
 
