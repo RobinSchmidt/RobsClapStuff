@@ -8,7 +8,7 @@ CLAP plugins
 Parameter Identifiers
 ---------------------
 
-Background:
+# Background:
 
 The CLAP API allows (or rather requires) the plugin to assign an identifier (short: id) to each of 
 its parameters. This identifier is of type clap_id which is just a typedef for uint32_t. The plugin
@@ -24,7 +24,10 @@ All subsequent accesses will be done via the id. For the plugin implementor, tha
 able to quickly (preferably in O(1)) map from the paramter id to the storage location of its value.
 The value of a parameter is a double precision floating point number.
 
+
 Decision:
+
+The class ClapPluginWithParams
 
 
 If the parameter values are stored in an array of dou
