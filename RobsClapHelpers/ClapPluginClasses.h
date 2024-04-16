@@ -321,7 +321,11 @@ public:
     clap_note_port_info *info) const noexcept override;
 
   /** This is hook function that subclasses should override to respond to noteOn events. The key is
-  in 0..127 like in MIDI 1.0, the velocity in 0..1 */
+  in 0..127 like in MIDI 1.0, the velocity in 0..1 because this is the way, the CLAP_EVENT_NOTE_ON
+  dialect communicates velocity via the clap_event_note struct. MIDI velocities in 1..127 can be
+  easily translated by dividing by 127.0 but the CLAP velocity has higher resolution which we may 
+  want to take advantage of someday.
+  */
   virtual void noteOn(int key, double velocity) = 0;
   // Maybe have also optional parameters for channel, port_index, note_id (defaulting to -1 
   // indicating "unspecified" or "all")
@@ -336,7 +340,7 @@ public:
   // ...so maybe I should also use int. I already do in most of my other midi handling code anyway
   // so for easy compatibility, this would be the best type anyway.
   // ...maybe use int32_t instead of int to make it the same on all platforms?
-  // Ahh - it was in clap_event_note - the note-key filed there is of type int16_t
+  // Ahh - it was in clap_event_note - the note-key field there is of type int16_t
   // ...maybe settle for another format that is compatible with midi 1 and midi 2. Is that even
   // possible? Maybe we can support the microtuning extension somehow? That would be very cool!
   // Maybe note on events should have an additional data field for the frequency. We'll see...

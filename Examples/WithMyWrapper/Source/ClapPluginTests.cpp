@@ -355,7 +355,7 @@ bool runWaveShaperTest()
   // -Check also what happens when we use double inputs for 
   //    ws.paramsValueToText(ClapWaveShaper::Params::kShape, ...
   //  The desired behavior is that it behaves like rounding, i.e. 0..0.5 should give the same 
-  //  result as the integer 0, 0.5..1.5 the same result as 2, etc.
+  //  result as the integer 0, 0.5..1.5 the same result as 1, etc.
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -404,7 +404,7 @@ bool runProcessingTest1()
   ok &= status == CLAP_PROCESS_ERROR;
 
   // Create the actual stereo input and output buffers as std::vectors and create length-2 arrays
-  // of pointers to float pointing to the beginning of these vectors
+  // of pointers to float pointing to the beginning of these vectors:
   int N = 60;   // Processing buffer size
   std::vector<float> inL(N), inR(N), outL(N), outR(N);
   float *ins[2], *outs[2];
@@ -441,7 +441,7 @@ bool runProcessingTest1()
   };
   inEvents.get = inEventsGet0;
 
-  // Set up the in_events and out_events fields in the process buffer
+  // Set up the in_events and out_events fields in the process buffer:
   p.in_events  = &inEvents;
   p.out_events = &outEvents;
 
@@ -457,7 +457,7 @@ bool runProcessingTest1()
   // zero, too. We now try to do some actual processing...
 
 
-  // Create a test input signal - we use a sinusoid:
+  // Create a test input signal - we use a sine/cosine pair, i.e. a "quadrature oscillator":
   float w = 0.2f;  // Normalized radian freq of input sine
   for(int n = 0; n < N; n++)
   {

@@ -320,8 +320,8 @@ void ClapToneGenerator::noteOff(int key)
 {
   if(key == currentKey)
   {
-    reset();            // Sets currentKey = 0 and phasor = 0.0
-    increment  =  0.0;  // Not really relevant but for tidiness
+    reset();          // Sets currentKey = -1 and phasor = 0.0
+    increment = 0.0;  // Not really relevant (I think) but let's be tidy
   }
 }
 

@@ -246,7 +246,7 @@ public:
 
 private:
 
-  void updateWrappee(); // rename to updateWrappee
+  void updateWrappee();
 
   clap_process _process;         // The wrapped C-struct
 

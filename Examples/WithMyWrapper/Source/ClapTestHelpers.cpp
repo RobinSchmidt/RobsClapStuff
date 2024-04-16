@@ -67,7 +67,7 @@ void initClapInEventBuffer(clap_input_events* b)
   // Notes:
   //
   // -Looks like these function pointers take as first argument a pointer to the struct itself. 
-  //  This looks like th C-way of passing explicitly the "this" pointer that is the implicit first
+  //  This looks like the C-way of passing explicitly the "this" pointer that is the implicit first
   //  parameter of C++ classes in member functions. So, they are basically "member-functions" of 
   //  the struct
 }
@@ -130,7 +130,7 @@ void initClapAudioBuffer(clap_audio_buffer* b)
 
 void initClapProcess(clap_process* p)
 {
-  p->steady_time         = 0;        // int64_t
+  p->steady_time         = 0;        // int64_t ...why not uin64_t? Can it be negative? 
   p->frames_count        = 0;        // uint32_t
   p->transport           = nullptr;  // const clap_event_transport_t *
   p->audio_inputs        = nullptr;  // const clap_audio_buffer_t *
