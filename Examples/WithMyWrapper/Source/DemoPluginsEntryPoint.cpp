@@ -4,6 +4,19 @@
 
 #include "DemoPlugins.h"
 
+// Enumeration of the plugins that are compiled into this library. Using an enum avoids error prone 
+// usage of "magic numbers" in the code below.
+enum PluginIndex
+{
+  kGain,
+  kWaveShaper,
+  kToneGenerator,
+
+  numPlugins
+};
+// It looks like the clap-validator runs the tests for the plugins not in the order given here. 
+// Figure out why. Maybe it uses alphabetical order? Does the order actually matter for anything?
+// Probably not. -> Figure out and document!
 
 // This is the plugin factory. It is responsible to inform the host about the number of plugins 
 // present in this .clap plugin library, to deliver (pointers to) the plugin-descriptors for all 
@@ -12,9 +25,7 @@ static const clap_plugin_factory_t pluginFactory =
 {  
 .get_plugin_count = [] (const clap_plugin_factory *factory) -> uint32_t 
 {  
-  return 3; // 3 plugins in this library: StereoGainDemo, WaveShaperDemo, ToneGeneratorDemo
-
-  // ToDo: use an enum PluginIndex = { kGain, kWaveShaper, kToneGenerator, numPlugins }
+  return numPlugins; 
 },
 
 .get_plugin_descriptor = [] (const clap_plugin_factory *factory, uint32_t index) 
@@ -22,9 +33,9 @@ static const clap_plugin_factory_t pluginFactory =
 { 
   switch(index)
   {
-  case 0:  return &ClapGain::descriptor;
-  case 1:  return &ClapWaveShaper::descriptor;
-  case 2:  return &ClapToneGenerator::descriptor;
+  case kGain:          return &ClapGain::descriptor;
+  case kWaveShaper:    return &ClapWaveShaper::descriptor;
+  case kToneGenerator: return &ClapToneGenerator::descriptor;
   default: return nullptr;
   }
 },
