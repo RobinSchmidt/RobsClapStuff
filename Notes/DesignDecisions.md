@@ -25,15 +25,22 @@ able to quickly (preferably in O(1)) map from the paramter id to the storage loc
 The value of a parameter is a double precision floating point number.
 
 
-Decision:
+### Decision:
 
-The class ClapPluginWithParams
+The class ClapPluginWithParams has a std::vector<clap_param_info> where it stores all the parameter
+infos. The storage index in that vector *is* the index of the paramter that the host uses when 
+requesting the plugin to fill out thet struct. The class has also a std::vector<double> in which it 
+stores the values of the parameters. In this vector, the id (*not* the index) is used to address a 
+particular parameter. The ids must also be numbers in 0...N-1. They can be different from the 
+indices, though. That means: the list of ids must be a permutation of the list of indices. That is 
+the decision that I have made for assigning the ids. 
+
+### Consequences
 
 
-If the parameter values are stored in an array of dou
 
 
-Mapping from arbitrary numbers 
+
 
 
 
