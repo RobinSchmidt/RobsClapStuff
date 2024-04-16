@@ -146,7 +146,13 @@ Parameters: [0:Shape:1,1:Drive:7,2:DC:0.25,3:Gain:-5]
 ```
 The values of the parameters are stored within square brackets in the format Identifier:Name:Value 
 separated by commas. The state also stores the identifier of the plugin and information about the 
-version of the plugin with which the state was produced as well as some additional info.
+version of the plugin with which the state was produced as well as some additional info. When 
+reading a state and it doesn't have a value stored for one of our parameters, then it means that the
+state was stored with a previous version of the plugin which had less parameters. Such additional 
+parameters for which the state has no values stored will be set to their respective deafult values 
+in the state recall. The rationale is that default values should be neutral values, i.e. values at
+which the respective parameter does not change to the sound at all (like a gain of 0 dB, a detune of
+0 semitones, a percentage of 100, etc.) .
 
 
 ### Consequences
@@ -156,14 +162,14 @@ any serialization library. Storing the plugin identifier allows to check, if thi
 right kind of state within the load function. Storing the version number allows to change the format 
 in later versions of plugins. The format is reasonably compact such that the amount of data produced 
 is not too extensive while also being readable enough such that humans can just inspect a state and 
-understand it immediately. This may be helpful for trouble shooting and debugging purposes.
-...TBC...
+understand it immediately. This may be helpful for trouble shooting and debugging purposes. I'm not 
+claiming that this is a particularly efficient way of doing it - but this functionality is not so
+performance critical in the context of audio plugins anyway.
 
 
-ToDo:
+### Implementation
 
--Explain what happens in version updates with more parameters (the additional parameters will be set
- to default values)
+`ClapPluginWithParams` has the functions `getStateAsString` and `setStateFromString` which produce 
+or consume a std::string in the simple format explained above and these functions are used within 
+the implementations of the state save and load functions. 
 
--One could have left out the names and store only the id. That would make the size smaller but the 
- format would be less readable.
