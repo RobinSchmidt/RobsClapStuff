@@ -1,8 +1,14 @@
 Design Decisions
 ================
 
-Here, I document the design decisions that I made when writing this "mini-framework" for building
-CLAP plugins
+When using the raw CLAP API, a plugin implementor has to make bunch of decisions for how to 
+handle various things. When making such decisions for a framework whose purpose is to make writing
+plugins easy, we must anticipate the consequences of such decisions for the plugins that we intend 
+to write on top of the framework. Decisions on the framework level will make writing plugins easier
+but will also put limitations on the ways we can write our plugins. Making such decisions in an 
+informed way that makes our lives as easy as possible without taking away too much of our 
+flexibility consumes a considerable part of the development process. Here, I document the design 
+decisions that I made for this "mini-framework" and explain their rationale.
 
 
 Parameter Identifiers
