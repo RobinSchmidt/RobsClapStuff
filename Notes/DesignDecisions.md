@@ -27,7 +27,7 @@ The value of a parameter is a double precision floating point number.
 
 ### Decision:
 
-The class ClapPluginWithParams has a std::vector<clap_param_info> where it stores all the parameter
+The class ClapPluginWithParams has a 'std::vector<clap_param_info>' where it stores all the parameter
 infos. The storage index in that vector *is* the index of the paramter that the host uses when 
 requesting the plugin to fill out thet struct. The class has also a std::vector\<double> in which it 
 stores the values of the parameters. In this vector, the id (*not* the index) is used to address a 
