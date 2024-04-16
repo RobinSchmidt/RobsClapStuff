@@ -179,3 +179,40 @@ There is potential for optimization in the waveshaper:
   plugin, the latency will change. How am I supposed to deal with that situation? Can I request a
   de/re-activation from the host? ...YES! In host.h, the clap_host struct has a request_restart 
   field (of type "function-pointer").
+
+
+
+Document the design decisions that were made and why:
+
+-How to assign parameter ids:
+ -Decision: 
+  -Let the ids be a permutation of the indices 
+  -The ids must remain stable but the corresponding indices are free to change from version to 
+   version
+ -Consequences:
+  -We can cause the host to re-order the knobs on the generated GUI when we publish an update for a
+   plugin. That includes inserting knobs at arbitrary positions. Using index == id (like in VST2), 
+   that would be impossible.
+  -The back-and-forth mapping between index and id can simply be implemented by a pair of 
+   std::vector<int> of length N where N is the number of parameters. No need to pull in a hash table 
+   or anything complicated like that (or, alternatively, using a linear search for each parameter 
+   lookup by id). Accessing parameters by id is therefore simple and fast. I guess, that obviates 
+   the "cookie" facility as well (which, I suppose, has the purpose of allwoing plugins to speed up 
+   the lookup of a parameter (object) by id (by avoiding the lookup altogether))
+ -Implementation:
+  -The ids are given in an enum whose initial section must remain stable in vesrion updates. Such
+   param-enums are already familiar from VST2. But now we are more flexible with the ordering of the
+   knobs on the generic GUI. Their order is determined by the index which we determine by the order
+   in which we add the parameters in our plugin class constructor (and is therefore independent from
+   the order of the ids in our enum).
+
+-How to represent state (Decision: use a simple ad-hoc string representation of the values of all
+ the parameters)
+
+-How to handle parameter value/string conversions for display (for this, I did not yet really make
+ a decision)
+
+-How to handle event processing (Decision: handle interleaving of event and audio processing in the
+ baseclass which then calls specific virtual methods that subclasses can override to respond to
+ specific kinds of events)
+
