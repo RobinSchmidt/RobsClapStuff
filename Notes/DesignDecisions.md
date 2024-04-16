@@ -66,7 +66,21 @@ address a particular parameter. When we want to index our parameter value array 
 want to use a length N array for the values as well, then the ids must also be numbers in 0...N-1. 
 They can be different from the indices, though.
 
+In the plugin code, I usually assign the ids by letting the plugin class have an enum that 
+enumerates all the parameters. The enum starts (implicitly) at zero and just counts up, i.e. I do 
+not assign any enum entries to arbitrary numbers. Such parameter enums are already familiar from 
+VST2. To facilitate correct state recall after version updates of the plugin, any published initial 
+section of the enum must remain stable. That means we can add new entries only at the end (not 
+somewhere in between existing ones), we cannot delete any entries and we can't reorder the entries. 
+Ability to reorder and insertion at arbitrary positions would be desirable though - however, as far 
+as user is concerned, we actually *can* reorder the way in which the hosts presents the knobs on the 
+generated GUI.
 
+The way is reordering works is as follows: The order in which the hosts generates the knobs is 
+determined by the parameter's index, not by its id. The index, in turn, is determined by the order 
+in which the parameters are added in the constructor of the plugin class. And is therefore 
+independent from the order of the ids in our enum. Maybe the enum becomes an unordered jumbled mess
+after a couple of updates but the user won't ever see any of that.
 
 ### Conclusion
 
