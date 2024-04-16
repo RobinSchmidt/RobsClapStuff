@@ -16,19 +16,23 @@ Parameter Identifiers
 
 ### Background:
 
-The CLAP API allows (or rather requires) the plugin to assign an identifier (short: id) to each of 
-its parameters. This identifier is of type `clap_id` which is just a typedef for `uint32_t`. The 
-plugin is free to choose any id it wishes as long as it is unique, i.e. allows unique identification 
-of the parameter. The host will use this id to identify the parameter whenever it wants to set or 
-get its value, translate it to/from a string, etc. Parameters also have an index which is just a 
-running number from 0 to N-1 where N is the number of parameters. When the host first wants to 
-inquire what parameters a plugin has, it will request the plugin to fill out a clap_param_info 
-struct. The id is just a field in this struct. Inquiring this info-struct is the only time where the 
-host will refer to the parameter by its index and it's done once at instantiation time (Well, 
-conceptually at least. Bitwig actually seems to call it twice at instantiation time and then again 
-once at destruction). All subsequent accesses will be done via the id. For the plugin implementor, 
-that means it must be able to quickly (preferably in O(1)) map from the paramter id to the storage 
-location of its value. The value of a parameter is a `double`.
+The `clap_plugin_params` extension allows a plugin to report a bunch of parameters to the host which
+the host can use to control the settings of the plugin. This can be done either live turning by 
+knobs or sliders on a host generated GUI or by drawing in automation data. The API requires the 
+plugin to assign an identifier (short: id) to each of its parameters. This identifier is of type 
+`clap_id` which is just a typedef for `uint32_t`. The plugin is free to choose any id it wishes as 
+long as it is unique, i.e. allows unique identification of the parameter. The host will use this id 
+to identify the parameter whenever it wants to set or get its value, translate it to/from a string, 
+etc. 
+
+Parameters also have an index which is just a running number from 0 to N-1 where N is the number of 
+parameters. When the host first wants to inquire what parameters a plugin has, it will request the 
+plugin to fill out a clap_param_info struct. The id is just a field in this struct. Inquiring this 
+info-struct is the only time where the host will refer to the parameter by its index and it's done 
+once at instantiation time (Well, conceptually at least. Bitwig actually seems to call it twice at 
+instantiation time and then again once at destruction). All subsequent accesses will be done via the 
+id. For the plugin implementor, that means it must be able to quickly (preferably in O(1)) map from 
+the paramter id to the storage location of its value. The value of a parameter is a `double`.
 
 
 ### Decision:
@@ -93,11 +97,11 @@ by id (like min/max values) in which case we can pull in the IndexIdentifierMap.
   https://github.com/surge-synthesizer/clap-saw-demo/blob/main/src/clap-saw-demo.h#L91  
   https://github.com/surge-synthesizer/clap-saw-demo/blob/main/src/clap-saw-demo.h#L355  
   That seems a bit like overkill to me. A std::unordered_map is already a (moderately) 
-  complex data structure. I don't really want to pull that kind of complexity in just to handle the 
+  complex data structure. I don't really want to pull in that kind of complexity just to handle the 
   humble parameter ids.
 
 - Alternatively, one could just store the ids in a unordered array and use a linear search for each 
-  parameter lookup by id. that would imply a O(N) lookup cost which is probably not acceptable 
+  parameter lookup by id. That would imply a O(N) lookup cost which is probably not acceptable 
   especially when a lot of automation is going on and/or there are a lot of parameters. Perhaps one 
   could sort them and then use binary search with O(log(N)) lookup cost - but that seems too 
   complicated as well. 
@@ -112,17 +116,17 @@ using totally "random" numbers would buy us any more flexibility for things that
 restriction to permutation maps seems to not give up anything of value while buying us a simple
 implementation of the mapping. That's why I opted for it.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ----------------------------------------------------------------------------------------------------
+
+State
+-----
+
+### Background:
+
+When a CLAP implements the `clap_plugin_state`
+
+extension, it can use it to allow the host to store the state of 
+the plugin and recall it later. To make that work, the plugin must implement a pair of functions
+
+
+
