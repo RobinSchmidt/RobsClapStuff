@@ -43,13 +43,13 @@ The list of ids must be a permutation of the list of indices.
   that would be impossible.
 
 - The back-and-forth mapping between index and id can simply be implemented by a pair of 
-  std::vector<clap_id>, std::vector<uint32_t> of length N where N is the number of parameters. 
+  `std::vector<clap_id>`, `std::vector<uint32_t>` of length N where N is the number of parameters. 
   Using the permutation map, accessing parameters by id or index is simple and fast - O(1) in both 
   directions. No need to pull in a hash table or anything complicated like that.
 
-- I guess, that obviates the "cookie" facility as well (which, I suppose, has the purpose of 
+- I guess, that obviates the "cookie" facility as well which, I suppose, has the purpose of 
   allowing plugins to speed up the lookup of a parameter (object) by id (by avoiding the lookup
-  altogether))
+  altogether).
 
 
 
