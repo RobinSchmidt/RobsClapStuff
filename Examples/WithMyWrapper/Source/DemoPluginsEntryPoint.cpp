@@ -15,8 +15,8 @@ enum PluginIndex
   numPlugins
 };
 // It looks like the clap-validator runs the tests for the plugins not in the order given here. 
-// Figure out why. Maybe it uses alphabetical order? Does the order actually matter for anything?
-// Probably not. -> Figure out and document!
+// Figure out why. Maybe it uses alphabetical order? Does the order in our enum actually matter for
+// anything? Probably not. -> Figure out and document!
 
 // This is the plugin factory. It is responsible to inform the host about the number of plugins 
 // present in this .clap plugin library, to deliver (pointers to) the plugin-descriptors for all 
@@ -77,14 +77,18 @@ static const clap_plugin_factory_t pluginFactory =
   // library, so we return a nullptr:
   return nullptr;
 
-
+  // Notes:
+  //
+  // -We create the C++ wrapper objects with "new" here and return a pointer to the embedded 
+  //  clap_plugin C-struct to the host. From that moment on, the host is responsible for the 
+  //  lifetime of the plugin. When the plugin gets plugged out, the host will usually destroy it
+  //  which causes ClapPlugin::clapDestroy() to be called. This has the line  delete &self;  at the
+  //  bottom which explicitly calls the destructor of the ClapPlugin class. If the subclass (e.g.
+  //  ClapGain, ClapWaveShaper, etc.) has its own destructor, that one gets called before the 
+  //  baseclass destructor as usual.
+  //
   // ToDo:
-  // 
-  // -Figure out and document how the objects get destructed. Maybe place a debug breakpoint into
-  //  the destructor. OK - when plugging a plugin out, ClapPlugin::clapDestroy() gets called. 
-  //  This has the line  delete &self;  at the bottom which explicitly calls the destructor of the 
-  //  ClapPlugin class. If the subclass has its own destructor, that one gets called before
-  //  the baseclass destructor.
+  //  
   // -Document why we need to pass a descriptor to the constructor. The plugin itself surely 
   //  already knows what kind of plugin it is. It feels a bit like writing code like: 
   //    Dog* dog = new Dog("Dog");  // Why do we need to tell the Dog() constructor that we are 
