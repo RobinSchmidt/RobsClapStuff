@@ -148,7 +148,7 @@ bool runNumberToStringTest()
   static const int bufSize = 20;
   char buf[bufSize];                // Character buffer into which we write the strings.
 
-  // Helper function to initilaize the buffer with some recognizable content which shall be 
+  // Helper function to initialize the buffer with some recognizable content which shall be 
   // overwritten by our number-to-string functions:
   auto initBuffer = [&]()
   {
@@ -278,7 +278,7 @@ bool runIndexIdentifierMapTest()
   map.addIndexIdentifierPair(4, 6); ok &= map.getNumEntries() == 7;
   map.addIndexIdentifierPair(6, 1); ok &= map.getNumEntries() == 7;
 
-  // During the creation process, the map may have been in an inconsisten state. But now that we 
+  // During the creation process, the map may have been in an inconsistent state. But now that we 
   // are finished with filling it, the state should be consistent. Check that:
   ok &= map.isConsistent();
 
@@ -363,7 +363,7 @@ bool runWaveShaperTest()
 
 bool runProcessingTest1()
 {
-  // In this test, we test the actual audio processing function "process" fo the gain demo plugin
+  // In this test, we test the actual audio processing function "process" of the gain demo plugin
   // and check, if it produces the expected outputs. Before being ready to call process() on a
   // plugin object, we need to prepare a clap_process struct. That is a quite tedious task which we
   // do here manually - allocating all the memory, setting up the pointers in the struct, etc. Most
@@ -419,7 +419,7 @@ bool runProcessingTest1()
   outBuf.data32        = outs;
   outBuf.channel_count = 2;
 
-  // We also need to set up the in/out event buffers or else we'll get an access violation
+  // We also need to set up the in/out event buffers or else we'll get an access violation:
   clap_input_events  inEvents;
   clap_output_events outEvents;
   initClapInEventBuffer(&inEvents);
@@ -640,12 +640,9 @@ bool runProcessingTest2()
 
 
   // Create the 3 gain-change events and put them into the input event list for the process buffer:
-  double   gainDb0 = 1.0;
-  uint32_t n0      = 0;
-  double   gainDb1 = 3.0;
-  uint32_t n1      = N/3;
-  double   gainDb2 = -2.0;
-  uint32_t n2      = 2*N/3;
+  double gainDb0 = +1.0; uint32_t n0 = 0;
+  double gainDb1 = +3.0; uint32_t n1 = N/3;
+  double gainDb2 = -2.0; uint32_t n2 = 2*N/3;
   procBuf.addInputParamValueEvent(ID::kGain, gainDb0, n0);
   procBuf.addInputParamValueEvent(ID::kGain, gainDb1, n1);
   procBuf.addInputParamValueEvent(ID::kGain, gainDb2, n2);
