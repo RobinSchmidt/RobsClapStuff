@@ -89,9 +89,9 @@ by id (like min/max values) in which case we can pull in the IndexIdentifierMap.
 
 ### Alternatives
 
-- The clap-saw-demo example uses "random" numbers for the ids with std::unordered_map:
-  https://github.com/surge-synthesizer/clap-saw-demo/blob/main/src/clap-saw-demo.h#L91
-  https://github.com/surge-synthesizer/clap-saw-demo/blob/main/src/clap-saw-demo.h#L355
+- The clap-saw-demo example uses "random" numbers for the ids with std::unordered_map:  
+  https://github.com/surge-synthesizer/clap-saw-demo/blob/main/src/clap-saw-demo.h#L91  
+  https://github.com/surge-synthesizer/clap-saw-demo/blob/main/src/clap-saw-demo.h#L355  
   That seems a bit like overkill to me. A std::unordered_map is already a (moderately) 
   complex data structure. I don't really want to pull that kind of complexity in just to handle the 
   humble parameter ids.
