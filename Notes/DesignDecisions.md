@@ -124,10 +124,19 @@ State
 
 ### Background:
 
-When a CLAP implements the `clap_plugin_state`
+When a CLAP implements the `clap_plugin_state` extension, it can use it to allow the host to store 
+the state of the plugin and recall it later. To make that work, the plugin must implement a pair of 
+`save` and `load` functions in which the hosts asks the plugin to produce or consume a stream of 
+bytes that represent the state. How that byte stream is formatted is entirely up the implementor of
+the plugin.
 
-extension, it can use it to allow the host to store the state of 
-the plugin and recall it later. To make that work, the plugin must implement a pair of functions
+
+### Decision
+
+To store and recall the state of a CLAP whose state is given by the values of all of its parameters,
+I use a simple textual format...
+
+...TBC...
 
 
 
