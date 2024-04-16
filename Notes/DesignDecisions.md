@@ -18,8 +18,8 @@ value, translate it to/from a string, etc. Parameters also have an index which i
 number from 0 to N-1 where N is the number of parameters. When the host first wants to inquire what
 parameters a plugin has, it will request the plugin to fill out a clap_param_info struct. The id is
 just a field in this struct. Inquiring this info-struct is the only time where the host will refer 
-to the parameter by its index and it's done once at instantiation time (well, conceptually at least 
-- Bitwig actually seems to call it twice at instantiation time and then again once at destruction). 
+to the parameter by its index and it's done once at instantiation time (Well, conceptually at least. 
+Bitwig actually seems to call it twice at instantiation time and then again once at destruction). 
 All subsequent accesses will be done via the id. For the plugin implementor, that means it must be 
 able to quickly (preferably in O(1)) map from the paramter id to the storage location of its value.
 The value of a parameter is a double precision floating point number.
