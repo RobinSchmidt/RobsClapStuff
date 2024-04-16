@@ -179,6 +179,38 @@ the implementations of the state save and load functions.
 Event Handling
 --------------
 
+### Background
+
+During its realtime operation, a plugin must deal with two streams of data: the audio inputs (and 
+outputs) and control data. The control data is received in the form of "events" that are passed to 
+the block processing function along with the current buffer of audio samples. The events have a time 
+stamp measured in samples, with respect to the start of the block. Plugins may use that time stamp
+to implement their responses to the events with sample-accurate timing. This requires interleaving
+of event processing and audio processing. Writing this interleaving code in each an every plugin 
+again and again produces a lot of boilerplate code.
+
+
+### Decision
+
+The interleaving of audio and event processing is done once and for all in the baseclass and 
+subclasses need to override certain virtual function to process one event at a time for the event 
+processing and one sub-block without any events at a a time for the audio processing.
+
+
+### Consequences
+
+Plugins can be blissfully oblivious of the whole messy interleaving. For the event processing, they 
+will just receive one event at a time in the form of a call to an overriden event-handler function 
+to which they can respond immediately. For the audio processing, they will receive event-free (sub)
+blocks, through which they can iterate in a simple loop of *pure* DSP code.
+
+
+
+
+
+
+
+
 ...TBC...
 
 ----------------------------------------------------------------------------------------------------
