@@ -408,7 +408,7 @@ bool runProcessingTest1()
 
   // Create the actual stereo input and output buffers as std::vectors and create length-2 arrays
   // of pointers to float pointing to the beginning of these vectors:
-  int N = 60;   // Processing buffer size
+  int N = 60;   // Processing buffer size.  ToDo: use uint32_t
   std::vector<float> inL(N), inR(N), outL(N), outR(N);
   float *ins[2], *outs[2];
   ins[0]  = &inL[0];

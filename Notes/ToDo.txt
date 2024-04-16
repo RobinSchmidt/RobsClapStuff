@@ -194,17 +194,35 @@ Document the design decisions that were made and why:
    plugin. That includes inserting knobs at arbitrary positions. Using index == id (like in VST2), 
    that would be impossible.
   -The back-and-forth mapping between index and id can simply be implemented by a pair of 
-   std::vector<int> of length N where N is the number of parameters. No need to pull in a hash table 
-   or anything complicated like that (or, alternatively, using a linear search for each parameter 
-   lookup by id). Accessing parameters by id is therefore simple and fast. I guess, that obviates 
-   the "cookie" facility as well (which, I suppose, has the purpose of allwoing plugins to speed up 
-   the lookup of a parameter (object) by id (by avoiding the lookup altogether))
+   std::vector<clap_id>, std::vector<uint32_t> of length N where N is the number of parameters. 
+   Using the permutation map, accessing parameters by id or index is simple and fast - O(1) in both 
+   directions. No need to pull in a hash table or anything complicated like that.
+  -I guess, that obviates the "cookie" facility as well (which, I suppose, has the purpose of 
+   allowing plugins to speed up the lookup of a parameter (object) by id (by avoiding the lookup
+   altogether))
  -Implementation:
   -The ids are given in an enum whose initial section must remain stable in vesrion updates. Such
    param-enums are already familiar from VST2. But now we are more flexible with the ordering of the
    knobs on the generic GUI. Their order is determined by the index which we determine by the order
    in which we add the parameters in our plugin class constructor (and is therefore independent from
    the order of the ids in our enum).
+ -Alternatives:
+  -clap-saw-demo uses "random" numbers for the ids with std::unordered_map:
+   https://github.com/surge-synthesizer/clap-saw-demo/blob/main/src/clap-saw-demo.h#L91
+   https://github.com/surge-synthesizer/clap-saw-demo/blob/main/src/clap-saw-demo.h#L355
+   That seems a bit like overkill to me. I mean, std::unordered_map is already a (moderately) 
+   complex data structure. I guess, it's a hash-table or something? ...yeah:
+   https://en.cppreference.com/w/cpp/container/unordered_map
+   ...hashing, buckets, collision-detection - I don't really want to pull that kind of complexity in 
+   just to handle the humble parameter ids.
+  -Alternatively, one could just store the ids in a unordered array and use a linear search for each 
+   parameter lookup by id. that would imply a O(N) lookup cost which is probably not acceptable 
+   especially when a lot of automation is going on and/or there are a lot of parameters. Perhaps one 
+   could sort them and then use binary search with O(log(N)) lookup cost - but that seems too 
+   complicated as well. 
+
+
+
 
 -How to represent state (Decision: use a simple ad-hoc string representation of the values of all
  the parameters)
