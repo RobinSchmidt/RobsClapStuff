@@ -8,7 +8,7 @@ CLAP plugins
 Parameter Identifiers
 ---------------------
 
-# Background:
+### Background:
 
 The CLAP API allows (or rather requires) the plugin to assign an identifier (short: id) to each of 
 its parameters. This identifier is of type clap_id which is just a typedef for uint32_t. The plugin
