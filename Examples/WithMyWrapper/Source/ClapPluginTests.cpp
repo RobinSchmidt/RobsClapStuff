@@ -352,20 +352,16 @@ bool runWaveShaperTest()
   ok &= checkShapeString(Shape::kErf,  "Erf");
 
 
-  // Test state recall:
+  // Under construction - Test audio processing:
   Shape  shape = Shape::kTanh;
   double drive = 7.0;
   double dc    = 0.25;
   double gain  = -5.0;
-
   ws.setParameter(ID::kShape, shape);
   ws.setParameter(ID::kDrive, drive);
   ws.setParameter(ID::kDC,    dc);
   ws.setParameter(ID::kGain,  gain);
-
-
-  std::string stateString = ws.getStateAsString();
-
+  //std::string stateString = ws.getStateAsString();
   // ...more to do....
 
 
