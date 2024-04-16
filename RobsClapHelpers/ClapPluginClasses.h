@@ -58,7 +58,7 @@ between the events. As the name suggests, this class is restricted to 32-bit-ste
 though. I'm still working on it... (ToDo: implement process and bring back the processSubBlock32/64
 functions from the private repo). */
 
-class ClapPluginWithParams : public ClapPlugin
+class ClapPluginWithParams : public ClapPlugin  // Maybe rename to ClapWithParams. The P in CLAP alreday stands for Plugin
 {
 
 public:

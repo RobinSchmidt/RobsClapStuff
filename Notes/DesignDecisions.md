@@ -49,11 +49,8 @@ The list of ids must be a permutation of the list of indices.
   directions. No need to pull in a hash table or anything complicated like that.
 
 - I guess, that obviates the "cookie" facility as well which, I suppose, has the purpose of 
-  allowing plugins to speed up the lookup of a parameter (object) by id (by avoiding the lookup
-  altogether).
-
-
-
+  allowing plugins to speed up the lookup of a parameter object by id by avoiding the lookup
+  altogether.
 
 
 ### Implementation
@@ -64,7 +61,7 @@ when requesting the plugin to fill out thet struct. The class has also a `std::v
 which it stores the values of the parameters. In this vector, the id (*not* the index) is used to 
 address a particular parameter. When we want to index our parameter value array by the id and we 
 want to use a length N array for the values as well, then the ids must also be numbers in 0...N-1. 
-They can be different from the indices, though.
+They can be different from the indices, though. 
 
 In the plugin code, I usually assign the ids by letting the plugin class have an enum that 
 enumerates all the parameters. The enum starts (implicitly) at zero and just counts up, i.e. I do 
@@ -81,6 +78,30 @@ determined by the parameter's index, not by its id. The index, in turn, is deter
 in which the parameters are added in the constructor of the plugin class. And is therefore 
 independent from the order of the ids in our enum. Maybe the enum becomes an unordered jumbled mess
 after a couple of updates but the user won't ever see any of that.
+
+There is a class IndexIdentifierMap that does the back-and-forth mapping between indices and their
+corresponding identifiers. It's not yet used though because for the currently implemented 
+functionality, we don't really need a mapping from id to index. The fact that the values array is 
+stored in the order of the ids (and not the order of the indices) let's us immediately acces the 
+right value by directly using the id. We may later want to retrieve other info about the parameter 
+by id (like min/max values) in which case we can pull in the IndexIdentifierMap.
+
+
+### Alternatives
+
+- The clap-saw-demo example uses "random" numbers for the ids with std::unordered_map:
+  https://github.com/surge-synthesizer/clap-saw-demo/blob/main/src/clap-saw-demo.h#L91
+  https://github.com/surge-synthesizer/clap-saw-demo/blob/main/src/clap-saw-demo.h#L355
+  That seems a bit like overkill to me. A std::unordered_map is already a (moderately) 
+  complex data structure. I don't really want to pull that kind of complexity in just to handle the 
+  humble parameter ids.
+
+- Alternatively, one could just store the ids in a unordered array and use a linear search for each 
+  parameter lookup by id. that would imply a O(N) lookup cost which is probably not acceptable 
+  especially when a lot of automation is going on and/or there are a lot of parameters. Perhaps one 
+  could sort them and then use binary search with O(log(N)) lookup cost - but that seems too 
+  complicated as well. 
+
 
 ### Conclusion
 
