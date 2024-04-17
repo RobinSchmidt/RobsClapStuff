@@ -57,6 +57,15 @@ The list of ids must be a permutation of the list of indices.
   allowing plugins to speed up the lookup of a parameter object by id by avoiding the lookup
   altogether.
 
+### Discussion
+
+Mathematically, the situation that we are dealing with here is that of defining a bijective map 
+between two sets. In our case, these sets are the set of indices which is given (namely the set of 
+integer numbers 0..N-1) and the set of the N identifiers (which are under the hood also integers)
+which we can freely choose as long as each element is unique (which is actually already implied 
+anyway when we talk about sets). When we want to implement a map between the integers 0..N-1 and N 
+other integers of our own choice, the most obvious and natural choice surely seems to be to use also
+0...N-1. That choice allows us to implement the map by a simple pair of arrays of length N.
 
 ### Implementation
 
@@ -75,8 +84,8 @@ VST2. To facilitate correct state recall after version updates of the plugin, an
 section of the enum must remain stable. That means we can add new entries only at the end (not 
 somewhere in between existing ones), we cannot delete any entries and we can't reorder the entries. 
 Ability to reorder and insertion at arbitrary positions would be desirable though - however, as far 
-as user is concerned, we actually *can* reorder the way in which the hosts presents the knobs on the 
-generated GUI.
+as the user is concerned, we actually *can* reorder the way in which the hosts presents the knobs on 
+the generated GUI.
 
 The way is reordering works is as follows: The order in which the hosts generates the knobs is 
 determined by the parameter's index, not by its id. The index, in turn, is determined by the order 
@@ -112,7 +121,7 @@ by id (like min/max values) in which case we can pull in the IndexIdentifierMap.
 
 In my opinion, the main advantage of the id system over just using the raw indices directly (as VST2 
 did) is the ability to have freedom over the way in which the host orders the parameters on its 
-generated GUI and the ability to change that apparent order in updated vesriosn of plugins. The 
+generated GUI and the ability to change that apparent order in updated versions of plugins. The 
 permutation mapping retains this ability and that's really all I care about. I don't really see how 
 using totally "random" numbers would buy us any more flexibility for things that matter. So, the 
 restriction to permutation maps seems to not give up anything of value while buying us a simple
@@ -152,7 +161,7 @@ reading a state and it doesn't have a value stored for one of our parameters, th
 state was stored with a previous version of the plugin which had less parameters. Such additional 
 parameters for which the state has no values stored will be set to their respective deafult values 
 in the state recall. The rationale is that default values should be neutral values, i.e. values at
-which the respective parameter does not change to the sound at all (like a gain of 0 dB, a detune of
+which the respective parameter does not change the sound at all (like a gain of 0 dB, a detune of
 0 semitones, a percentage of 100, etc.) .
 
 
@@ -184,17 +193,17 @@ Event Handling
 During its realtime operation, a plugin must deal with two streams of data: the audio inputs (and 
 outputs) and control data. The control data is received in the form of "events" that are passed to 
 the block processing function along with the current buffer of audio samples. The events have a time 
-stamp measured in samples, with respect to the start of the block. Plugins may use that time stamp
+stamp measured in samples with respect to the start of the block. Plugins may use that time stamp
 to implement their responses to the events with sample-accurate timing. This requires interleaving
-of event processing and audio processing. Writing this interleaving code in each an every plugin 
+of event processing and audio processing. Writing this interleaving code in each and every plugin 
 again and again produces a lot of boilerplate code.
 
 
 ### Decision
 
-The interleaving of audio and event processing is done once and for all in the baseclass and 
-subclasses need to override certain virtual function to process one event at a time for the event 
-processing and one sub-block without any events at a a time for the audio processing.
+The interleaving of audio and event processing is done once and for all in the baseclass. Subclasses 
+need to override certain virtual functions to process one event at a time for the event processing. 
+They also need to override an audio processing function that operates on event-free sub-blocks.
 
 
 ### Consequences
@@ -202,7 +211,8 @@ processing and one sub-block without any events at a a time for the audio proces
 Plugins can be blissfully oblivious of the whole messy interleaving. For the event processing, they 
 will just receive one event at a time in the form of a call to an overriden event-handler function 
 to which they can respond immediately. For the audio processing, they will receive event-free (sub)
-blocks, through which they can iterate in a simple loop of *pure* DSP code.
+blocks, through which they can iterate in a simple loop of *pure* DSP code. We have separated the 
+two concerns of event processing and signal processing on the framework level.
 
 
 

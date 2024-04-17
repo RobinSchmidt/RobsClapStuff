@@ -7,5 +7,9 @@ both keys and values are strings. The plugin could tell the host a couple of key
 "FilePathOsc1", "TurtleString", etc. and the host could set the values like "tanh(a*x)", 
 "Waveforms/Saw.wav", "F=F+F--F+", etc.
 
+A way to delegate the GUI/DSP thread sync to the host by letting the plugin issue a call to 
+host->request_event(...) or something. Then plugins wouldn't have to maintain their own event queues
+and merge them with the events from the host in their process functions. 
+
 
 
