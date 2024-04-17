@@ -250,7 +250,35 @@ class ClapPluginWithAudio : public ClapPluginWithParams
 
 public:
 
+  /** Yes - we implement the audio ports extension. */
+  bool implementsAudioPorts() const noexcept { return true; }
 
+  /** Declares 1 input and 1 output port/bus. That's the most common case and therefore a good 
+  default. Subclasses can override this if they have a different configuration of I/O ports. */
+  uint32_t audioPortsCount(bool isInput) const noexcept override { return 1; }   // 1 in, 1 out
+
+
+  //bool audioPortsInfo(uint32_t index, bool isInput, clap_audio_port_info *info) 
+  //  const noexcept override;
+
+  bool audioPortsInfo(uint32_t index, bool isInput, clap_audio_port_info *info) 
+    const noexcept = 0;
+  // The method is actually inherited and not purely virtual in the baseclass - but we want 
+  // to declare it purely virtual here becuas subclasses with audio ports really need to override
+  // this. I'm not sure, if that's legal C++ but it seems to work in Visual Studio. If it doesn't
+  // work with other compilers, provide a default implementation, that returns false, writes
+  // error messages into the port names and triggers a debug-break - then the missing override will
+  // be caught at runtime which is the next best thing.
+
+
+  void parameterChanged(clap_id id, double newValue) override {} // just for a test
+
+  clap_process_status process(const clap_process *process) noexcept override;
+
+
+
+  //clap_process_status process(const clap_process *process) noexcept override;
+  // UNDER CONSTRUCTION - Nah - goes into ClapPluginWithAudio
 
 protected:
 
@@ -285,10 +313,10 @@ public:
   // \name Overrides
 
   /** Yes - we implement the audio ports extension. */
-  bool implementsAudioPorts() const noexcept { return true; }
+  //bool implementsAudioPorts() const noexcept { return true; }
 
   /** Declare 1 input and 1 output port/bus. */
-  uint32_t audioPortsCount(bool isInput) const noexcept override { return 1; }   // 1 in, 1 out
+  //uint32_t audioPortsCount(bool isInput) const noexcept override { return 1; }   // 1 in, 1 out
 
   /** Fills out the info declaring the in/out ports as having 2 channels, being the main ports and
   NOT supporting 64 bit processing. It also declares that in-place processing is allowed, assigns

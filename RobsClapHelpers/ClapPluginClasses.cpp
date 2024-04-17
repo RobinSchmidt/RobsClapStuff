@@ -318,16 +318,6 @@ bool ClapPluginWithParams::setStateFromString(const std::string& stateStr)
   // -Detect parse errors and return false in such cases
 }
 
-
-/*
-clap_process_status ClapPluginWithParams::process(const clap_process* process) noexcept
-{
-  return CLAP_PROCESS_ERROR;  // Not yet implemented
-}
-*/
-
-
-
 void ClapPluginWithParams::processEvent(const clap_event_header_t* hdr)
 {
   if(hdr->space_id != CLAP_CORE_EVENT_SPACE_ID)
@@ -358,6 +348,33 @@ void ClapPluginWithParams::processEvent(const clap_event_header_t* hdr)
   //
   // -When we handle more types of events, we should use a switch statement. See the 
   //  plugin-template.c. The nakst example also uses an if statement, though.
+}
+
+//=================================================================================================
+// class ClapPluginWithAudio
+
+/*
+bool ClapPluginWithAudio::audioPortsInfo(
+  uint32_t index, bool isInput, clap_audio_port_info* info) const noexcept
+{
+  info->channel_count = 0;
+  info->id            = 0;
+  info->in_place_pair = CLAP_INVALID_ID;   
+  info->port_type     = CLAP_PORT_MONO;
+  info->flags         = CLAP_AUDIO_PORT_IS_MAIN;
+
+  // Write the port names:
+  if(isInput) strcpy_s(info->name, CLAP_NAME_SIZE, "ERROR: You must override audioPortsInfo!");
+  else        strcpy_s(info->name, CLAP_NAME_SIZE, "ERROR: You must override audioPortsInfo!");
+
+  return false; 
+}
+*/
+
+clap_process_status ClapPluginWithAudio::process(const clap_process* process) noexcept
+{
+
+  return CLAP_PROCESS_ERROR;  // Not yet implemented
 }
 
 //=================================================================================================
