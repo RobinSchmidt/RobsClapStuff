@@ -192,7 +192,25 @@ There is potential for optimization in the waveshaper:
   field (of type "function-pointer").
 
 
+-Make some subclasses of ClapPluginWithAudio that have different configurations of the ports:
+ -2 In (2Ch, 1Ch), 1 Out. Example: Vocoder with stereo signal for carrier and mono for modulator
+ -1 In (2Ch), 4 Out (2Ch). Example: 4-band frequency crossover / band splitter
+ -0 In, 1 Out (1Ch). Example: Monophonic synth
 
+-Maybe move the ClapChannelMixer2In3Out into the DemoPlugins:
+ -Figure out an overall scaler to achieve constant power when assuming that the left and right
+  inputs are (1): uncorrelated, (2): equal (correlation = 1). Maybe we can find a general formula 
+  in terms of a given correlation c. 
+ -Try to find a higher level parametrization that uses only one single parameter which determines
+  by "how much" the center speaker should take over centered signals: 0: the center speaker is 
+  silent and we just have regular stereo, 1: centered signals shall be produced only by the center
+  speaker. This high-level parameter should be used to compute centerScaler, diffScaler. ...maybe
+  look it up on the internet - surely, someone has already solved that.
+ -Maybe make a 2 in, 5+1 out plugin. Maybe the real-speakers should use delayed and crossed L/R
+  signals, i.e. rearLeft = delay(frontRight), rearRight = delay(frontLeft) and the sub is given by
+  sub = lowpass(inL + inR). Maybe when using a sub-signal, the other speakers should be highpassed.
+  Maybe the frequency should be adjustable. ...yeah...well...looks like I'm trying to make that
+  thing actually useful...
 
 
 

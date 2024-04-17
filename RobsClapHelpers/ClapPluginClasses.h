@@ -242,6 +242,10 @@ private:
 
 //=================================================================================================
 
+/** 
+
+*/
+
 class ClapPluginWithAudio : public ClapPluginWithParams
 {
 

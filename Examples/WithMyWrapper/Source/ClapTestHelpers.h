@@ -306,3 +306,38 @@ public:
 
 };
 
+
+/** A simple plugin to distribute the 2 left/right channels (inL, inR) of a stereo signal into 3 
+left/center/right output channels (outL, outC, outR). It uses the rule:
+
+  outC = (inL + inR)  *  centerScaler
+  outL =  inL - diffScaler * outC
+  outR =  inR - diffScaler * outC
+
+where the centerScaler and diffScaler are user parameters. The purpose is to to test an uncommon
+channel configuration to verify that the framework can handle it correctly. */
+
+class ClapChannelMixer2In3Out : public RobsClapHelpers::ClapPluginWithAudio
+{
+
+
+public:
+
+  enum ParamId
+  {
+    kCenterScaler,
+    kDiffScaler,
+
+    numParams
+  };
+
+
+
+protected:
+
+
+
+};
+
+
+
