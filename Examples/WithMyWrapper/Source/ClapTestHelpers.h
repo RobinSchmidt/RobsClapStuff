@@ -11,7 +11,7 @@
 // Test Signal Creation
 
 template<class T>
-inline void createSinCosSignal(T* s, T* c, uint32_t N, double w)
+inline void createSinCosSignal(T* s, T* c, uint32_t N, T w)
 {
   for(uint32_t n = 0; n < N; n++)
   {

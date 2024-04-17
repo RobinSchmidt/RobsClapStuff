@@ -714,35 +714,43 @@ bool runChannelMixer2In3OutTest()
 {
   bool ok = true;
 
-  // Create and set up a ClapChannelMixer2In3Out object:
-  clap_plugin_descriptor_t desc = ClapChannelMixer2In3Out::descriptor;
-  ClapChannelMixer2In3Out mixer(&desc, nullptr);
-  using  ID  = ClapChannelMixer2In3Out::ParamId;       // For convenience
+  // Setup:
+  uint32_t numFrames = 60;   // Number of sample frames
+  float    w         = 0.3;  // Normalized radian freq of input sine
+  float    cs        = 0.7;  // CenterScale parameter
+  float    ds        = 0.2;  // DiffScaler parameter
 
-  // Create a processing buffer:
+  // Create a processing buffer and retrieve pointers to the actual signal buffers:
   uint32_t numInChannels  =  2;  // Stereo
   uint32_t numOutChannels =  3;  // Left, Center, Right
-  uint32_t numFrames      = 60;  // 60 is nice - has many divisors
   ClapProcessBuffer_1In_1Out procBuf(numInChannels, numOutChannels, numFrames);
-
-  // Retrieve pointers to the actual signal buffers:
   float* inL  = procBuf.getInChannelPointer(0);
   float* inR  = procBuf.getInChannelPointer(1);
   float* outL = procBuf.getOutChannelPointer(0);
   float* outC = procBuf.getOutChannelPointer(1);
   float* outR = procBuf.getOutChannelPointer(2);
 
+  // Create a test input signal - we use a sin/cos pair:
+  uint32_t N = numFrames;
+  createSinCosSignal(inL, inR, N, w);
 
-  // Create a test input signal - we use a sin/cos pair
-  uint32_t N = numFrames;  // Shorthand, because we need it often
-  float w = 0.2f;          // Normalized radian freq of input sine
-  uint32_t n;              // Sample index
-  for(n = 0; n < N; n++)
+  // Create the target signals:
+  std::vector<float> tL(N), tC(N), tR(N);
+  for(int n = 0; n < N; n++)
   {
-    inL[n] = sin(w*n);
-    inR[n] = cos(w*n);
+    tC[n] = cs * (inL[n] + inR[n]);
+    tL[n] = tL[n] - ds * tC[n];
+    tR[n] = tR[n] - ds * tC[n];
   }
-  // ToDo: use createSinCosSignal
+
+  // Create and set up a ClapChannelMixer2In3Out object:
+  clap_plugin_descriptor_t desc = ClapChannelMixer2In3Out::descriptor;
+  ClapChannelMixer2In3Out mixer(&desc, nullptr);
+  using  ID  = ClapChannelMixer2In3Out::ParamId;       // For convenience
+  mixer.setParameter(ID::kCenterScale, cs);
+  mixer.setParameter(ID::kDiffScale,   ds);
+
+
 
 
 
