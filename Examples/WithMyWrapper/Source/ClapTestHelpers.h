@@ -8,6 +8,20 @@
 // ToDo: add documentation
 
 //=================================================================================================
+// Test Signal Creation
+
+template<class T>
+inline void createSinCosSignal(T* s, T* c, uint32_t N, double w)
+{
+  for(uint32_t n = 0; n < N; n++)
+  {
+    s[n] = sin(w*n);
+    c[n] = cos(w*n);
+  }
+}
+
+
+//=================================================================================================
 // Streams
 //
 // Some helpers to mock the clap stream objects that will be provided by the host during state
