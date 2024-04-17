@@ -363,6 +363,24 @@ clap_process_status ClapPluginWithAudio::process(const clap_process* p) noexcept
   return CLAP_PROCESS_ERROR;  // Not yet implemented
 }
 
+void ClapPluginWithAudio::handleProcessEvents(const clap_process* p, uint32_t frameIndex, 
+  uint32_t numFrames, uint32_t& eventIndex, uint32_t numEvents, uint32_t& nextEventFrame)
+{
+  while(eventIndex < numEvents && nextEventFrame == frameIndex) {
+    const clap_event_header_t *hdr = p->in_events->get(p->in_events, eventIndex);
+    if (hdr->time != frameIndex) {
+      nextEventFrame = hdr->time; 
+      break;  
+    }
+    processEvent(hdr);              // Handle the event
+    ++eventIndex;
+    if(eventIndex == numEvents) {
+      nextEventFrame = numFrames; 
+      break;                        // We reached the end of the event list
+    } 
+  }
+}
+
 void ClapPluginWithAudio::processSubBlock32(const clap_process* p, uint32_t begin, uint32_t end)
 {
   // For 1 input and 1 output port with the same number of channels, the code to simply copy the 
@@ -441,6 +459,7 @@ clap_process_status ClapPluginStereo32Bit::process(const clap_process *p) noexce
   uint32_t       frameIndex     = 0;
   while(frameIndex < numFrames)
   {
+    /*
     // Handle all events that happen at the frame i:
     while(eventIndex < numEvents && nextEventFrame == frameIndex) {
       const clap_event_header_t *hdr = p->in_events->get(p->in_events, eventIndex);
@@ -455,11 +474,17 @@ clap_process_status ClapPluginStereo32Bit::process(const clap_process *p) noexce
         break;                        // We reached the end of the event list
       } 
     }
+    */
     // Can this be factored out? Maybe into something like
     // handleProcessEvents(p, frameIndex, numFrames, &eventIndex, numEvents, &nextEventFrame)
     // where eventIndex, nextEventFrame should be references or pointers because the function needs
     // to adjust them. Actually, numFrames and numEvents do not need to be passed because they
     // are also stored in the process
+
+    // OK - let's try it:
+    handleProcessEvents(p, frameIndex, numFrames, eventIndex, numEvents, nextEventFrame);
+
+
 
     // Process the sub-block until the next event. This is a call to the overriden implementation
     // in the subclass in a sort of "template method" pattern:

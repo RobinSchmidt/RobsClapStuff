@@ -268,9 +268,17 @@ public:
   // missing override will be caught at runtime which is the next best thing.
 
 
+  //void handleProcessEvents(const clap_process* process);
+
+
+
+
 
   clap_process_status process(const clap_process *process) noexcept override;
 
+
+  void handleProcessEvents(const clap_process* process, uint32_t frameIndex, uint32_t numFrames,
+    uint32_t &eventIndex, uint32_t numEvents, uint32_t &nextEventFrame);
 
 
   // To be overriden by subclasses
