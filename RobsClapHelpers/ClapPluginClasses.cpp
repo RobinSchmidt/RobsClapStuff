@@ -469,24 +469,6 @@ clap_process_status ClapPluginStereo32Bit::process(const clap_process *p) noexce
 {
   //auto inEvents = RobsClapHelpers::extractInEvents(p); // For inspection in debugger
 
-  /*
-  // Check number of input and output ports/busses:
-  if(  p->audio_inputs_count  != 1 
-    || p->audio_outputs_count != 1)
-    return CLAP_PROCESS_ERROR;
-
-  // Check number of input and output channels:
-  if(  p->audio_inputs[0].channel_count  != 2 
-    || p->audio_outputs[0].channel_count != 2)
-    return CLAP_PROCESS_ERROR;
-
-  // Check that we are asked for doing single precision:
-  if(isDoublePrecision(p))
-    return CLAP_PROCESS_ERROR;
-    */
-
-  // Maybe factor out into (inline) function bool hasRequiredFormat
-
   // Catch situations where the host asks us to process a buffer with an unsupported config:
   if(!isProcessConfigSupported(p))
     return CLAP_PROCESS_ERROR;
