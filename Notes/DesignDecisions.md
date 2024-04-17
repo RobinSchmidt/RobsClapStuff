@@ -101,7 +101,6 @@ stored in the order of the ids (and not the order of the indices) let's us immed
 right value by directly using the id. We may later want to retrieve other info about the parameter 
 by id (like min/max values) in which case we can pull in the IndexIdentifierMap.
 
-
 ### Alternatives
 
 - The clap-saw-demo example uses "random" numbers for the ids with std::unordered_map:  
@@ -116,7 +115,6 @@ by id (like min/max values) in which case we can pull in the IndexIdentifierMap.
   especially when a lot of automation is going on and/or there are a lot of parameters. Perhaps one 
   could sort them and then use binary search with O(log(N)) lookup cost - but that seems too 
   complicated as well. 
-
 
 ### Conclusion
 
@@ -141,7 +139,6 @@ the state of the plugin and recall it later. To make that work, the plugin must 
 bytes that represent the state. How that byte stream is formatted is entirely up the implementor of
 the plugin.
 
-
 ### Decision
 
 To store and recall the state of a CLAP whose state is given by the values of all of its parameters,
@@ -165,7 +162,6 @@ in the state recall. The rationale is that default values should be neutral valu
 which the respective parameter does not change the sound at all (like a gain of 0 dB, a detune of
 0 semitones, a percentage of 100, etc.) .
 
-
 ### Consequences
 
 This format is easy to write and read with a very small amount of code without needing to pull in 
@@ -176,7 +172,6 @@ is not too extensive while also being readable enough such that humans can just 
 understand it immediately. This may be helpful for trouble shooting and debugging purposes. I'm not 
 claiming that this is a particularly efficient way of doing it - but this functionality is not so
 performance critical in the context of audio plugins anyway.
-
 
 ### Implementation
 
@@ -199,13 +194,11 @@ to implement their responses to the events with sample-accurate timing. This req
 of event processing and audio processing inside the plugin's block processing callback. Writing this 
 interleaving code in each and every plugin again and again produces a lot of boilerplate code.
 
-
 ### Decision
 
 The interleaving of audio and event processing is done once and for all in the baseclass. Subclasses 
 need to override certain virtual functions to process one event at a time for the event processing. 
 They also need to override an audio processing function that operates on event-free sub-blocks.
-
 
 ### Consequences
 
@@ -219,7 +212,6 @@ never have to think about all this mess ever again.
 The calling of virtual functions for one event at a time may incur a runtime overhead - especially
 when there are a lot of densely packed events coming in. 
 
-
 ### Discussion
 
 I struck a trade-off here: I may have left some performance optimization on the table and bought 
@@ -228,7 +220,6 @@ convenience in return. If you really care about sqeezing out every possible bit 
 yourself and thereby get rid of the overhead. But you don't have to do that just to get a correctly 
 working plugin. If events are sparse, which they usually are, the cost/benefit calculation seems to 
 justify the decision.
-
 
 
 ...TBC...(ToDo: maybe explain the implementation a bit)
@@ -243,12 +234,13 @@ Parameter Formatting
 To display the parameter values of GUI-less plugins on the host generated GUI, we must somehow 
 translate them into strings (and back). ...TBC...
 
-
 ### Decision
 
 Currently, the class `ClapPluginWithParams` implements two member functions `paramsTextToValue` and
 `paramsValueToText` which do some crude and very simple default formatting. For anything more 
 sophisticated, client code needs to override them. That can actually mean to have to write a lot of
-boilerplate code for repetitive things because we tend to need very similarv formatting strategies
+boilerplate code for repetitive things because we tend to need very similar formatting strategies
 over and over again. It could be argued that asking client code to "do it yourself" amounts to 
-having *not* yet made any decision how to handle it once and for all....TBC...
+having *not* yet made any decision how to handle it once and for all. I have some ideas for handling
+the formatting stuff on the framework level but at the moment, client code needs to handle it itself 
+on a lower level...TBC...

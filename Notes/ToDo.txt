@@ -25,10 +25,21 @@ Make one .clap with several plugins
  https://learn.microsoft.com/en-us/cpp/build/cmake-projects-in-visual-studio?view=msvc-170
 
 Add the following stuff to Utilities.h/cpp:
--assertions that trigger debug breaks - then replace all occurrences of "assert" with this
 -memory leak checks
 -amp2db, db2amp, pitch2freq, freq2pitch, lin2lin, lin2exp, ...
--string conversion functions for the parameters
+-A formatting system for the parameters. Maybe make an abstract baseclass "ValueFormatter" with 
+ purely virtual member functions valueToString(double val, char* str, size_t len), stringToValue(..)
+-ClapPluginWithParams has an array of pointers to such objects, indexed by id.
+-There should be a general addParameter() function that takes a pointer to such an object as last
+ parameter. It can be a nullptr. In such a case, some default handling is invoked, i.e. the function
+ itself will create a default object and use that)
+-There should be certain special addParameter() functions for common special cases with simpler 
+ syntax - for example, one that takes a function pointer to a function that takes a double, an int 
+ for the precision and a string for the suffix/unit. Another one could take a double and a 
+ string-array to be used for enum parameters.
+-In the DemoPlugins, leave the WaveShaper nevertheless as is to have one example that uses the lower 
+ level API. Write comments that the WaveShaper deliberately does not use the higher level API for
+ demonstration purposes.
 
 
 
@@ -140,7 +151,7 @@ Or just:
 There is potential for optimization in the waveshaper: 
 -The branching could be done per block rather than per sample
 -We could also do way with the branching completely by using a function pointer to a waveshaping
- function.
+ function - but that would mean another indirection
 
 -Make a plugin that uses parameters that need some nonlinear mapping function like lin-to-exp for
  a frequency. Maybe we should use a normalized 0..1 range for host/plugin communication just like 
@@ -188,55 +199,5 @@ There is potential for optimization in the waveshaper:
 
 
 
-Document the design decisions that were made and why:
 
--How to assign parameter ids:
- -Decision: 
-  -Let the ids be a permutation of the indices 
-  -The ids must remain stable but the corresponding indices are free to change from version to 
-   version
- -Consequences:
-  -We can cause the host to re-order the knobs on the generated GUI when we publish an update for a
-   plugin. That includes inserting knobs at arbitrary positions. Using index == id (like in VST2), 
-   that would be impossible.
-  -The back-and-forth mapping between index and id can simply be implemented by a pair of 
-   std::vector<clap_id>, std::vector<uint32_t> of length N where N is the number of parameters. 
-   Using the permutation map, accessing parameters by id or index is simple and fast - O(1) in both 
-   directions. No need to pull in a hash table or anything complicated like that.
-  -I guess, that obviates the "cookie" facility as well (which, I suppose, has the purpose of 
-   allowing plugins to speed up the lookup of a parameter (object) by id (by avoiding the lookup
-   altogether))
- -Implementation:
-  -The ids are given in an enum whose initial section must remain stable in vesrion updates. Such
-   param-enums are already familiar from VST2. But now we are more flexible with the ordering of the
-   knobs on the generic GUI. Their order is determined by the index which we determine by the order
-   in which we add the parameters in our plugin class constructor (and is therefore independent from
-   the order of the ids in our enum).
- -Alternatives:
-  -clap-saw-demo uses "random" numbers for the ids with std::unordered_map:
-   https://github.com/surge-synthesizer/clap-saw-demo/blob/main/src/clap-saw-demo.h#L91
-   https://github.com/surge-synthesizer/clap-saw-demo/blob/main/src/clap-saw-demo.h#L355
-   That seems a bit like overkill to me. I mean, std::unordered_map is already a (moderately) 
-   complex data structure. I guess, it's a hash-table or something? ...yeah:
-   https://en.cppreference.com/w/cpp/container/unordered_map
-   ...hashing, buckets, collision-detection - I don't really want to pull that kind of complexity in 
-   just to handle the humble parameter ids.
-  -Alternatively, one could just store the ids in a unordered array and use a linear search for each 
-   parameter lookup by id. that would imply a O(N) lookup cost which is probably not acceptable 
-   especially when a lot of automation is going on and/or there are a lot of parameters. Perhaps one 
-   could sort them and then use binary search with O(log(N)) lookup cost - but that seems too 
-   complicated as well. 
-
-
-
-
--How to represent state (Decision: use a simple ad-hoc string representation of the values of all
- the parameters)
-
--How to handle parameter value/string conversions for display (for this, I did not yet really make
- a decision)
-
--How to handle event processing (Decision: handle interleaving of event and audio processing in the
- baseclass which then calls specific virtual methods that subclasses can override to respond to
- specific kinds of events)
 
