@@ -353,28 +353,33 @@ void ClapPluginWithParams::processEvent(const clap_event_header_t* hdr)
 //=================================================================================================
 // class ClapPluginWithAudio
 
-/*
-bool ClapPluginWithAudio::audioPortsInfo(
-  uint32_t index, bool isInput, clap_audio_port_info* info) const noexcept
+clap_process_status ClapPluginWithAudio::process(const clap_process* p) noexcept
 {
-  info->channel_count = 0;
-  info->id            = 0;
-  info->in_place_pair = CLAP_INVALID_ID;   
-  info->port_type     = CLAP_PORT_MONO;
-  info->flags         = CLAP_AUDIO_PORT_IS_MAIN;
+  bool useFloat64 = isDoublePrecision(p);
 
-  // Write the port names:
-  if(isInput) strcpy_s(info->name, CLAP_NAME_SIZE, "ERROR: You must override audioPortsInfo!");
-  else        strcpy_s(info->name, CLAP_NAME_SIZE, "ERROR: You must override audioPortsInfo!");
 
-  return false; 
-}
-*/
 
-clap_process_status ClapPluginWithAudio::process(const clap_process* process) noexcept
-{
-
+  
   return CLAP_PROCESS_ERROR;  // Not yet implemented
+}
+
+void ClapPluginWithAudio::processSubBlock32(const clap_process* p, uint32_t begin, uint32_t end)
+{
+  // For 1 input and 1 output port with the same number of channels, the code to simply copy the 
+  // data from input to output buffer could look something like:
+  //
+  // uint32_t numChannels = p->audio_inputs[0].channel_count;
+  // clapAssert(numChannels == p->audio_outputs[0].channel_count);
+  // for(uint32_t c = 0; c < numChannels; c++)
+  //   for(uint32_t n = begin; n < end; n++)
+  //     p->audio_outputs[0].data32[c][n] = p->audio_inputs[0].data32[c][n];
+  //
+  // ToDo: check, if this code actually works
+}
+
+void ClapPluginWithAudio::processSubBlock64(const clap_process* p, uint32_t begin, uint32_t end)
+{
+
 }
 
 //=================================================================================================

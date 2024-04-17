@@ -257,28 +257,29 @@ public:
   default. Subclasses can override this if they have a different configuration of I/O ports. */
   uint32_t audioPortsCount(bool isInput) const noexcept override { return 1; }   // 1 in, 1 out
 
-
-  //bool audioPortsInfo(uint32_t index, bool isInput, clap_audio_port_info *info) 
-  //  const noexcept override;
-
+  /** The method is actually inherited and not purely virtual in the baseclass - but we want 
+  to declare it purely virtual here because subclasses with audio ports really need to override
+  this. */
   bool audioPortsInfo(uint32_t index, bool isInput, clap_audio_port_info *info) 
     const noexcept = 0;
-  // The method is actually inherited and not purely virtual in the baseclass - but we want 
-  // to declare it purely virtual here becuas subclasses with audio ports really need to override
-  // this. I'm not sure, if that's legal C++ but it seems to work in Visual Studio. If it doesn't
-  // work with other compilers, provide a default implementation, that returns false, writes
-  // error messages into the port names and triggers a debug-break - then the missing override will
-  // be caught at runtime which is the next best thing.
+  // I'm not sure, if that's legal standard C++ but it seems to work in Visual Studio. If it 
+  // doesn't work with other compilers, we can provide a default implementation that returns 
+  // false, writes error messages into the port names and triggers a debug-break. Then the 
+  // missing override will be caught at runtime which is the next best thing.
 
 
-  void parameterChanged(clap_id id, double newValue) override {} // just for a test
 
   clap_process_status process(const clap_process *process) noexcept override;
 
 
 
-  //clap_process_status process(const clap_process *process) noexcept override;
-  // UNDER CONSTRUCTION - Nah - goes into ClapPluginWithAudio
+  // To be overriden by subclasses
+
+  virtual void processSubBlock32(const clap_process* process, uint32_t begin, uint32_t end);
+
+  virtual void processSubBlock64(const clap_process* process, uint32_t begin, uint32_t end);
+
+
 
 protected:
 
