@@ -238,3 +238,17 @@ ClapGain2::ClapGain2(const clap_plugin_descriptor* desc, const clap_host* host)
   // messed up. The state recall should nevertheless work - even for a state saved with the old 
   // version. A unit test verifies this...
 }
+
+
+/*=================================================================================================
+
+ToDo:
+
+-Make some subclasses of ClapPluginWithAudio that have different configurations of the ports:
+ -2 In (2Ch, 1Ch), 1 Out. Example: Vocoder with stereo signal for carrier and mono for modulator
+ -1 In (2Ch), 4 Out (2Ch). Example: 4-band frequency crossover / band splitter
+ -0 In, 1 Out (1Ch). Example: Monophonic synth
+
+
+
+*/

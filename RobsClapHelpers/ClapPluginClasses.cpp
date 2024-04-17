@@ -318,6 +318,16 @@ bool ClapPluginWithParams::setStateFromString(const std::string& stateStr)
   // -Detect parse errors and return false in such cases
 }
 
+
+/*
+clap_process_status ClapPluginWithParams::process(const clap_process* process) noexcept
+{
+  return CLAP_PROCESS_ERROR;  // Not yet implemented
+}
+*/
+
+
+
 void ClapPluginWithParams::processEvent(const clap_event_header_t* hdr)
 {
   if(hdr->space_id != CLAP_CORE_EVENT_SPACE_ID)

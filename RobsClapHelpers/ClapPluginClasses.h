@@ -217,7 +217,12 @@ public:
 
 
   //-----------------------------------------------------------------------------------------------
-  // \name Misc
+  // \name Processing
+
+
+  //clap_process_status process(const clap_process *process) noexcept override;
+  // UNDER CONSTRUCTION - Nah - goes into ClapPluginWithAudio
+
 
   /** This is called from within our implementation of process to handle one event at a time. In 
   our implementation here, we currently handle only parameter change events by calling 
@@ -235,6 +240,22 @@ private:
 
 };
 
+//=================================================================================================
+
+class ClapPluginWithAudio : public ClapPluginWithParams
+{
+
+  using Base = ClapPluginWithParams;  // For conveniently calling baseclass methods
+  using Base::Base;                   // For inheriting baseclass constructor(s)
+
+public:
+
+
+
+protected:
+
+
+};
 
 //=================================================================================================
 
@@ -246,13 +267,18 @@ sort of plugin.
 At the moment, it is recommended to derive your plugin class from this class and not from its 
 baseclass ClapPluginWithParams because the baseclass does not yet implement the event-handling. */
 
-class ClapPluginStereo32Bit : public ClapPluginWithParams
+class ClapPluginStereo32Bit : public ClapPluginWithAudio
 {
+
+  using Base = ClapPluginWithAudio;   // For conveniently calling baseclass methods
+  using Base::Base;                   // For inheriting baseclass constructor(s)
 
 public:
 
-  ClapPluginStereo32Bit(const clap_plugin_descriptor* desc, const clap_host* host)
-    : ClapPluginWithParams(desc, host) { }
+
+
+  //ClapPluginStereo32Bit(const clap_plugin_descriptor* desc, const clap_host* host)
+  //  : ClapPluginWithParams(desc, host) { }
 
 
   //-----------------------------------------------------------------------------------------------
