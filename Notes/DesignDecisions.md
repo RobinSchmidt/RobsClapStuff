@@ -217,20 +217,21 @@ two concerns of event processing and signal processing on the framework level. C
 never have to think about all this mess ever again.
 
 The calling of virtual functions for one event at a time may incur a runtime overhead - especially
-for buffers that have a lot of events. I struck a trade-off here: I may have left some performance
-optimization on the table and bought convenience in return. If you really care about sqeezing out 
-every possible bit of performance, you *can* still override the lower level `process` function and 
-(re)write the interleaving code there yourself and thereby get rid of the overhead. But you don't 
-have to do that just to get a correctly working plugin. If events are sparse, which they usually 
-are, the cost/benefit calculation seems to justify the decision.
+when there are a lot of densely packed events coming in. 
+
+
+### Discussion
+
+I struck a trade-off here: I may have left some performance optimization on the table and bought 
+convenience in return. If you really care about sqeezing out every possible bit of performance, you 
+*can* still override the lower level `process` function and (re)write the interleaving code there 
+yourself and thereby get rid of the overhead. But you don't have to do that just to get a correctly 
+working plugin. If events are sparse, which they usually are, the cost/benefit calculation seems to 
+justify the decision.
 
 
 
-
-
-
-
-...TBC...
+...TBC...(ToDo: maybe explain the implementation a bit)
 
 ----------------------------------------------------------------------------------------------------
 
