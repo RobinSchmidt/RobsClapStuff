@@ -306,6 +306,7 @@ public:
 
 };
 
+//-------------------------------------------------------------------------------------------------
 
 /** A simple plugin to distribute the 2 left/right channels (inL, inR) of a stereo signal into 3 
 left/center/right output channels (outL, outC, outR). It uses the rule:
@@ -330,6 +331,12 @@ public:
 
     numParams
   };
+
+  ClapChannelMixer2In3Out(const clap_plugin_descriptor* desc, const clap_host* host);
+
+
+  void parameterChanged(clap_id id, double newValue) override;
+
 
 
 

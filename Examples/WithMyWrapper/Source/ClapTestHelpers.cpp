@@ -239,6 +239,23 @@ ClapGain2::ClapGain2(const clap_plugin_descriptor* desc, const clap_host* host)
   // version. A unit test verifies this...
 }
 
+//-------------------------------------------------------------------------------------------------
+
+ClapChannelMixer2In3Out::ClapChannelMixer2In3Out(
+  const clap_plugin_descriptor* desc, const clap_host* host)
+  : RobsClapHelpers::ClapPluginWithAudio(desc, host)
+{
+
+}
+
+void ClapChannelMixer2In3Out::parameterChanged(clap_id id, double newValue)
+{
+
+}
+
+
+
+
 
 /*=================================================================================================
 
