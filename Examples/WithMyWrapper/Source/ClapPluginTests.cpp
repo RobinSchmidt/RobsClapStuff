@@ -720,6 +720,14 @@ bool runChannelMixer2In3OutTest()
   ClapChannelMixer2In3Out mixer(&desc, nullptr);
   using  ID  = ClapChannelMixer2In3Out::ParamId;       // For convenience
 
+  // Create a processing buffer:
+  uint32_t numChannels =  2;  // Stereo - rename to numInChannels
+  uint32_t numFrames   = 60;  // 60 is nice - has many divisors
+
+  ClapProcessBuffer_1In_1Out procBuf(numChannels, numFrames);
+  // ..it should take numInChannels, numOutChannels, numFrames
+
+
 
 
   return ok;
