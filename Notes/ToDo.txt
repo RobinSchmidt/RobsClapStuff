@@ -182,6 +182,12 @@ There is potential for optimization in the waveshaper:
 
 
 
+
+
+
+
+
+
 Document the design decisions that were made and why:
 
 -How to assign parameter ids:

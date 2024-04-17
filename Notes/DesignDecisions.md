@@ -17,14 +17,13 @@ Parameter Identifiers
 
 ### Background:
 
-The `clap_plugin_params` extension allows a plugin to report a bunch of parameters to the host which
-the host can use to control the settings of the plugin. This can be done either live turning by 
-knobs or sliders on a host generated GUI or by drawing in automation data. The API requires the 
-plugin to assign an identifier (short: id) to each of its parameters. This identifier is of type 
-`clap_id` which is just a typedef for `uint32_t`. The plugin is free to choose any id it wishes as 
-long as it is unique, i.e. allows unique identification of the parameter. The host will use this id 
-to identify the parameter whenever it wants to set or get its value, translate it to/from a string, 
-etc. 
+The `clap_plugin_params` extension allows a plugin to announce its parameters to the host which the 
+host can use to control the settings of the plugin. This can be done either live turning by knobs or 
+sliders on a host generated GUI or by drawing in automation data. The API requires the plugin to 
+assign an identifier (short: id) to each of its parameters. This identifier is of type `clap_id` 
+which is just a typedef for `uint32_t`. The plugin is free to choose any id it wishes as long as it 
+is unique, i.e. allows unique identification of the parameter. The host will use this id to identify 
+the parameter whenever it wants to set or get its value, translate it to/from a string, etc. 
 
 Parameters also have an index which is just a running number from 0 to N-1 where N is the number of 
 parameters. When the host first wants to inquire what parameters a plugin has, it will request the 
@@ -32,13 +31,14 @@ plugin to fill out a clap_param_info struct. The id is just a field in this stru
 info-struct is the only time where the host will refer to the parameter by its index and it's done 
 once at instantiation time (Well, conceptually at least. Bitwig actually seems to call it twice at 
 instantiation time and then again once at destruction). All subsequent accesses will be done via the 
-id. For the plugin implementor, that means it must be able to quickly (preferably in O(1)) map from 
-the paramter id to the storage location of its value. The value of a parameter is a `double`.
+id. For the plugin implementor, that means the plugin must be able to map quickly (i.e. in O(1) with 
+small constant factor) from the paramter id to the storage location of its value. The value of a 
+parameter is a `double`.
 
 
 ### Decision:
 
-The list of ids must be a permutation of the list of indices.
+The list of ids should be a permutation of the list of indices.
 
 
 ### Consequences
@@ -51,7 +51,8 @@ The list of ids must be a permutation of the list of indices.
 - The back-and-forth mapping between index and id can simply be implemented by a pair of 
   `std::vector<clap_id>`, `std::vector<uint32_t>` of length N where N is the number of parameters. 
   Using the permutation map, accessing parameters by id or index is simple and fast - O(1) in both 
-  directions. No need to pull in a hash table or anything complicated like that.
+  directions. It's a simple array access in both directions. No need to pull in a hash table or 
+  anything complicated like that.
 
 - I guess, that obviates the "cookie" facility as well which, I suppose, has the purpose of 
   allowing plugins to speed up the lookup of a parameter object by id by avoiding the lookup
@@ -159,7 +160,7 @@ separated by commas. The state also stores the identifier of the plugin and info
 version of the plugin with which the state was produced as well as some additional info. When 
 reading a state and it doesn't have a value stored for one of our parameters, then it means that the
 state was stored with a previous version of the plugin which had less parameters. Such additional 
-parameters for which the state has no values stored will be set to their respective deafult values 
+parameters for which the state has no values stored will be set to their respective deafault values 
 in the state recall. The rationale is that default values should be neutral values, i.e. values at
 which the respective parameter does not change the sound at all (like a gain of 0 dB, a detune of
 0 semitones, a percentage of 100, etc.) .
@@ -195,8 +196,8 @@ outputs) and control data. The control data is received in the form of "events" 
 the block processing function along with the current buffer of audio samples. The events have a time 
 stamp measured in samples with respect to the start of the block. Plugins may use that time stamp
 to implement their responses to the events with sample-accurate timing. This requires interleaving
-of event processing and audio processing. Writing this interleaving code in each and every plugin 
-again and again produces a lot of boilerplate code.
+of event processing and audio processing inside the plugin's block processing callback. Writing this 
+interleaving code in each and every plugin again and again produces a lot of boilerplate code.
 
 
 ### Decision
@@ -212,8 +213,15 @@ Plugins can be blissfully oblivious of the whole messy interleaving. For the eve
 will just receive one event at a time in the form of a call to an overriden event-handler function 
 to which they can respond immediately. For the audio processing, they will receive event-free (sub)
 blocks, through which they can iterate in a simple loop of *pure* DSP code. We have separated the 
-two concerns of event processing and signal processing on the framework level.
+two concerns of event processing and signal processing on the framework level. Client code will not
+have to think about this mess ever again.
 
+The calling of virtual functions for one event at a time may incurr a runtime overhead - especially
+for buffers that have a lot of events. I struck a trade-off here: I may have left some performance
+optimization on the table and bought convenience in return. If you really care about performance, 
+you *can* still override the lower level `process` function and (re)write the interleaving code 
+there yourself and thereby get rid of the overhead. But you don't have to. If events are sparse, 
+which they usually are, the cost/benefit calculation seems to justify the decision.
 
 
 
