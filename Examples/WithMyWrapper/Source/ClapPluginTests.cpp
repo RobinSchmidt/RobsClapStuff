@@ -713,6 +713,7 @@ bool runProcessingTest2()
 bool runChannelMixer2In3OutTest()
 {
   bool ok = true;
+  using namespace RobsClapHelpers;
 
   // Setup:
   uint32_t numFrames = 60;   // Number of sample frames
@@ -750,6 +751,12 @@ bool runChannelMixer2In3OutTest()
   mixer.setParameter(ID::kCenterScale, cs);
   mixer.setParameter(ID::kDiffScale,   ds);
 
+  // Let the mixer plugin compute its output and compare it to the targets:
+  clap_process_status status = mixer.process(procBuf.getWrappee());
+  ok &= status == CLAP_PROCESS_CONTINUE;
+  ok &= equals(&tL[0], outL, N);
+  ok &= equals(&tC[0], outC, N);
+  ok &= equals(&tR[0], outR, N);
 
 
 
