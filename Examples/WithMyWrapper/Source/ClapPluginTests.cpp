@@ -17,7 +17,7 @@ bool runAllClapTests(/*bool printResults*/)
   ok &= runWaveShaperTest();
   ok &= runProcessingTest1();
   ok &= runProcessingTest2();
-  ok %= runChannelMixer2In3OutTest();
+  ok &= runChannelMixer2In3OutTest();
 
   return ok;
 }
@@ -618,7 +618,7 @@ bool runProcessingTest2()
   // Create a processing buffer:
   uint32_t numChannels =  2;  // Stereo
   uint32_t numFrames   = 60;  // 60 is nice - has many divisors
-  ClapProcessBuffer_1In_1Out procBuf(numChannels, numFrames);
+  ClapProcessBuffer_1In_1Out procBuf(numChannels, numChannels, numFrames);
 
   // Retrieve pointers to the actual signal buffers:
   float* inL  = procBuf.getInChannelPointer(0);
@@ -721,10 +721,11 @@ bool runChannelMixer2In3OutTest()
   using  ID  = ClapChannelMixer2In3Out::ParamId;       // For convenience
 
   // Create a processing buffer:
-  uint32_t numChannels =  2;  // Stereo - rename to numInChannels
-  uint32_t numFrames   = 60;  // 60 is nice - has many divisors
+  uint32_t numInChannels  =  2;  // Stereo
+  uint32_t numOutChannels =  3;  // Left, Center, Right
+  uint32_t numFrames      = 60;  // 60 is nice - has many divisors
 
-  ClapProcessBuffer_1In_1Out procBuf(numChannels, numFrames);
+  ClapProcessBuffer_1In_1Out procBuf(numInChannels, numOutChannels, numFrames);
   // ..it should take numInChannels, numOutChannels, numFrames
 
 

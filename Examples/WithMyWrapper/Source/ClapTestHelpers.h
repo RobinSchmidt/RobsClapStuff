@@ -215,13 +215,20 @@ private:
 /** A processing buffer with one input and one output port for audio signals. A port can have 
 multiple channles, though. ...TBC... */
 
-class ClapProcessBuffer_1In_1Out
+class ClapProcessBuffer_1In_1Out  // Maybe remove the underscores ...but it looks ugly
 {
 
 public:
 
-  ClapProcessBuffer_1In_1Out(uint32_t numChannels, uint32_t numFrames)
-    : inBuf(numChannels, numFrames), outBuf(numChannels, numFrames)
+  //ClapProcessBuffer_1In_1Out(uint32_t numChannels, uint32_t numFrames)
+  //  : inBuf(numChannels, numFrames), outBuf(numChannels, numFrames)
+  //{
+  //  updateWrappee();
+  //}
+
+
+  ClapProcessBuffer_1In_1Out(uint32_t numInChannels, uint32_t numOutChannels, uint32_t numFrames)
+    : inBuf(numInChannels, numFrames), outBuf(numOutChannels, numFrames)
   {
     updateWrappee();
   }
