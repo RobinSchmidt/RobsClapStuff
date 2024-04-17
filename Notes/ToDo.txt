@@ -211,6 +211,11 @@ There is potential for optimization in the waveshaper:
   sub = lowpass(inL + inR). Maybe when using a sub-signal, the other speakers should be highpassed.
   Maybe the frequency should be adjustable. ...yeah...well...looks like I'm trying to make that
   thing actually useful...
+ -Maybe make a version that supports only 32 bit processing. Maybe also make plugins that really 
+  want 64 bit processing. I think, they must support 32 bit, too - so maybe we can factor out a 
+  baseclass that does the conversion/rebuffering. ...although maybe rebuffering isn't necessary when
+  we do the float -> double -> float conversion on the fly, i.e. directly *inside* the DSP loop. 
+  Yeah - that's probably the better solution for that.
 
 
 

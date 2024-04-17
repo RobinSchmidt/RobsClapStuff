@@ -241,21 +241,97 @@ ClapGain2::ClapGain2(const clap_plugin_descriptor* desc, const clap_host* host)
 
 //-------------------------------------------------------------------------------------------------
 
+const char* const ClapChannelMixer2In3Out::features[6] = 
+{ 
+  CLAP_PLUGIN_FEATURE_AUDIO_EFFECT,
+  CLAP_PLUGIN_FEATURE_UTILITY, 
+  CLAP_PLUGIN_FEATURE_MIXING, 
+  CLAP_PLUGIN_FEATURE_MASTERING,
+  CLAP_PLUGIN_FEATURE_SURROUND,
+  NULL 
+};
+
+const clap_plugin_descriptor_t ClapChannelMixer2In3Out::descriptor = 
+{
+  .clap_version = CLAP_VERSION_INIT,
+  .id           = "RS-MET.ChannelMixer2In3Out",
+  .name         = "Channel Mixer, 2 In, 3 Out",
+  .vendor       = "",
+  .url          = "",
+  .manual_url   = "",
+  .support_url  = "",
+  .version      = "0.0.0",
+  .description  = "Distribute stereo signal to 3 channels (left, center, right)",
+  .features     = ClapGain2::features,
+};
+
 ClapChannelMixer2In3Out::ClapChannelMixer2In3Out(
   const clap_plugin_descriptor* desc, const clap_host* host)
   : RobsClapHelpers::ClapPluginWithAudio(desc, host)
 {
+  clap_param_info_flags automatable = CLAP_PARAM_IS_AUTOMATABLE;
 
+  addParameter(kCenterScale, "CenterScale", -1.0, +1.0, 0.0, automatable);
+  addParameter(kDiffScale,   "DiffScale",   -1.0, +1.0, 0.0, automatable);
+}
+
+bool ClapChannelMixer2In3Out::audioPortsInfo(uint32_t index, bool isInput, 
+  clap_audio_port_info* info) const noexcept
+{
+  if(isInput)
+  {
+    info->channel_count = 2;    // 2 inputs
+    info->id            = 0;    // 
+    info->in_place_pair = 0;    // matches id -> allow in-place processing
+    info->port_type     = CLAP_PORT_STEREO;
+    info->flags         = CLAP_AUDIO_PORT_IS_MAIN;
+    strcpy_s(info->name, CLAP_NAME_SIZE, "Stereo In");
+  }
+  else
+  {
+    info->channel_count = 3;       // 3 outputs
+    info->id            = 0;       // 
+    info->in_place_pair = 0;       // matches id -> allow in-place processing
+    info->port_type     = nullptr;
+    info->flags         = CLAP_AUDIO_PORT_IS_MAIN;
+    strcpy_s(info->name, CLAP_NAME_SIZE, "Left/Center/Right Out");
+  }
+
+  return true; 
+
+  // Notes:
+  //
+  // -We allow in place processing, although the number of ins and out differs. We actually don't
+  //  care. If the host wants to use 2 of the 3 output channels in in-place mode, it can do so and
+  //  it doesn't really matter how the host uses the channels
+  //
+  // ToDo:
+  //
+  // -Maybe use CLAP_PORT_SURROUND for the output port_type. But that requires the surround 
+  //  extension. Can we just assign an arbitrary string? It's a cont char*. Maybe try it.
+
+  int dummy = 0;
 }
 
 void ClapChannelMixer2In3Out::parameterChanged(clap_id id, double newValue)
 {
-
+  centerScaler = (float) getParameter(kCenterScale);
+  diffScaler   = (float) getParameter(kDiffScale);
 }
 
+void ClapChannelMixer2In3Out::processSubBlock32(
+  const clap_process* process, uint32_t begin, uint32_t end)
+{
 
 
+  int dummy = 0;
+}
 
+void ClapChannelMixer2In3Out::processSubBlock64(
+  const clap_process* process, uint32_t begin, uint32_t end)
+{
+
+}
 
 /*=================================================================================================
 

@@ -326,23 +326,36 @@ public:
 
   enum ParamId
   {
-    kCenterScaler,
-    kDiffScaler,
+    kCenterScale,
+    kDiffScale,
 
     numParams
   };
 
   ClapChannelMixer2In3Out(const clap_plugin_descriptor* desc, const clap_host* host);
 
+  bool audioPortsInfo(uint32_t index, bool isInput, clap_audio_port_info *info) 
+    const noexcept override;
 
   void parameterChanged(clap_id id, double newValue) override;
+
+  void processSubBlock32(const clap_process* process, uint32_t begin, uint32_t end) override;
+
+  void processSubBlock64(const clap_process* process, uint32_t begin, uint32_t end) override;
+
+
+  static const char* const features[6];
+  static const clap_plugin_descriptor_t descriptor;
 
 
 
 
 protected:
 
-
+  // DSP coeffs:
+  float centerScaler = 0.f;
+  float diffScaler   = 0.f;
+  // Initial settings leave stereo signal as is
 
 };
 

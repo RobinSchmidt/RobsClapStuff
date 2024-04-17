@@ -16,5 +16,7 @@ bool runDescriptorReadTest();
 bool runNumberToStringTest();
 bool runIndexIdentifierMapTest();
 bool runWaveShaperTest();
-bool runProcessingTest1();           // Maybe rename to runProcessTestGain1
+bool runProcessingTest1();             // Maybe rename to runProcessTestGain1
 bool runProcessingTest2();
+bool runChannelMixer2In3OutTest();
+// Maybe scrap the "run" from the function names

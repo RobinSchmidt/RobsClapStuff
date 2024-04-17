@@ -275,10 +275,15 @@ public:
   clap_process_status process(const clap_process *process) noexcept override;
   // !!!NEEDS TESTS!!!
 
+
+protected:
+
   void handleProcessEvents(const clap_process* process, uint32_t frameIndex, uint32_t numFrames,
     uint32_t &eventIndex, uint32_t numEvents, uint32_t &nextEventFrame);
-  // ToDo: use pointers for the ouptut variables - not references. Rationale: It's obvious at the 
-  // call site that the values can be modified by the function.
+  // ToDo: 
+  // -Use pointers for the ouptut variables - not references. Rationale: It's obvious at the 
+  //  call site that the values can be modified by the function.
+  // -Make protected
 
 
   // To be overriden by subclasses. The default implementations here do nothing:

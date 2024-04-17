@@ -17,6 +17,7 @@ bool runAllClapTests(/*bool printResults*/)
   ok &= runWaveShaperTest();
   ok &= runProcessingTest1();
   ok &= runProcessingTest2();
+  ok %= runChannelMixer2In3OutTest();
 
   return ok;
 }
@@ -709,6 +710,20 @@ bool runProcessingTest2()
   //  "dialects")
 }
 
+bool runChannelMixer2In3OutTest()
+{
+  bool ok = true;
+
+
+  // Create and set up a ClapGain object:
+  clap_plugin_descriptor_t desc = ClapChannelMixer2In3Out::descriptor;
+  ClapChannelMixer2In3Out mixer(&desc, nullptr);
+  using  ID  = ClapChannelMixer2In3Out::ParamId;       // For convenience
+
+
+
+  return ok;
+}
 
 
 /*
