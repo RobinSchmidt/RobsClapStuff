@@ -259,12 +259,19 @@ public:
 
   /** Returns true, iff the "process" object wants the signals to be processed in double 
   precision. */
-  bool isDoublePrecision(const clap_process* process)
+  static bool isDoublePrecision(const clap_process* process)
   { return process->audio_inputs[0].data64 != nullptr; }
   // ToDo:
-  // -Rename to wantsDoublePrecision
+  // -Rename to wantsDoublePrecision ..or maybe hasDoublePrecision
   // -Verify if this is the right way to figure it out
   // -Maybe we should first ensure that process->audio_inputs is not a nullptr?
+
+  static bool hasSinglePrecision(const clap_process* process)
+  {
+    return process->audio_inputs[0].data32 != nullptr;
+  }
+
+
 
   /** Returns the plugin identifier. This is a string that uniquely identifies a plugin. Among 
   other things, it is used by DAWs to recall the plugin chains on their tracks. */

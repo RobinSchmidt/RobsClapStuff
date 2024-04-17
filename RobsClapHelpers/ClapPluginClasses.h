@@ -255,42 +255,44 @@ public:
 
   /** Declares 1 input and 1 output port/bus. That's the most common case and therefore a good 
   default. Subclasses can override this if they have a different configuration of I/O ports. */
-  uint32_t audioPortsCount(bool isInput) const noexcept override { return 1; }   // 1 in, 1 out
+  uint32_t audioPortsCount(bool isInput) const noexcept override { return 1; }
 
-  /** The method is actually inherited and not purely virtual in the baseclass - but we want 
-  to declare it purely virtual here because subclasses with audio ports really need to override
-  this. */
+  /** The method is actually inherited and not purely virtual in the baseclass. The baseclass 
+  implementation is empty and returns false. We re-declare it as purely virtual here because 
+  subclasses with audio ports will *really* need to override this. */
   bool audioPortsInfo(uint32_t index, bool isInput, clap_audio_port_info *info) 
     const noexcept = 0;
-  // I'm not sure, if that's legal standard C++ but it seems to work in Visual Studio. If it 
-  // doesn't work with other compilers, we can provide a default implementation that returns 
-  // false, writes error messages into the port names and triggers a debug-break. Then the 
-  // missing override will be caught at runtime which is the next best thing.
-
-
-  //void handleProcessEvents(const clap_process* process);
-
-
-
-
+  // I'm not sure, if it's legal standard C++ to "abstractify" an inherited method like that. It 
+  // seems to work in Visual Studio, though. If it doesn't work with other compilers, we can 
+  // provide a default implementation that returns false, writes error messages into the port 
+  // names and triggers a debug-break. Then the missing override will be caught at runtime which 
+  // is the next best thing.
 
   clap_process_status process(const clap_process *process) noexcept override;
-
+  // !!!NEEDS TESTS!!!
 
   void handleProcessEvents(const clap_process* process, uint32_t frameIndex, uint32_t numFrames,
     uint32_t &eventIndex, uint32_t numEvents, uint32_t &nextEventFrame);
+  // ToDo: use pointers for the ouptut variables - not references. Rationale: It's obvious at the 
+  // call site that the values can be modified by the function.
 
 
-  // To be overriden by subclasses
-
+  // To be overriden by subclasses. The default implementations here do nothing:
   virtual void processSubBlock32(const clap_process* process, uint32_t begin, uint32_t end);
-
   virtual void processSubBlock64(const clap_process* process, uint32_t begin, uint32_t end);
-
-
-
-protected:
-
+  // To iterate over the sample frames (typically in the innermost loop), you should use "begin" 
+  // as the first sample frame index to be processed and the "end" is *one after* the last
+  // sample frame index to be processed, so the "end" itself is excluded. The loop over the samples
+  // would look like:
+  //
+  //   for(uint32_t n = begin; n < end; n++)
+  //   {
+  //      // process sample frame with index n
+  //   }
+  //
+  // That's pretty much the same semantics of "end" as with standard library iterators. Of course,
+  // the processing functions will also need to iterate over the ports and channels (typically in
+  // outer loops around the loop over the sample frames)
 
 };
 
@@ -312,20 +314,8 @@ class ClapPluginStereo32Bit : public ClapPluginWithAudio
 
 public:
 
-
-
-  //ClapPluginStereo32Bit(const clap_plugin_descriptor* desc, const clap_host* host)
-  //  : ClapPluginWithParams(desc, host) { }
-
-
   //-----------------------------------------------------------------------------------------------
   // \name Overrides
-
-  /** Yes - we implement the audio ports extension. */
-  //bool implementsAudioPorts() const noexcept { return true; }
-
-  /** Declare 1 input and 1 output port/bus. */
-  //uint32_t audioPortsCount(bool isInput) const noexcept override { return 1; }   // 1 in, 1 out
 
   /** Fills out the info declaring the in/out ports as having 2 channels, being the main ports and
   NOT supporting 64 bit processing. It also declares that in-place processing is allowed, assigns
@@ -338,8 +328,6 @@ public:
   received we call processEvent with that event. In between the events we call processBlockStereo
   with the pointers and numFrames variables adjusted for the sub-buffer to be processed. */
   clap_process_status process(const clap_process *process) noexcept override;
-  // baseclass needs also an implementation of this
-
 
   //-----------------------------------------------------------------------------------------------
   // \name Callbacks to override by your subclass
@@ -349,12 +337,27 @@ public:
   virtual void processBlockStereo(const float* inL, const float* inR, float* outL, float* outR, 
     uint32_t numFrames) = 0;
 
-};
+  //-----------------------------------------------------------------------------------------------
+  // \name Inquiry
 
+  /** A function to sanity-check a process buffer. We do this check at the start of our process
+  function and return an error if it fails. This is a safety precaution just in case that some
+  misbehaving host requests us to process buffers in an unsupported format or that we ourselves 
+  falsely claimed to support a format which we actually can't handle. */
+  static inline bool isProcessConfigSupported(const clap_process* p) noexcept
+  {
+    return p->audio_inputs_count             == 1  // Number of input ports must be 1
+      &&   p->audio_outputs_count            == 1  // Number of output ports must be 1
+      &&   p->audio_inputs[0].channel_count  == 2  // Number of input channels must be 2
+      &&   p->audio_outputs[0].channel_count == 2  // Number of output channels must be 2
+      &&   hasSinglePrecision(p);
+  }
+
+};
 
 //=================================================================================================
 
-/** UNDER CONSTRUCTION. 
+/** UNDER CONSTRUCTION. ...seems to work already, though - needs some clean up and documentation
 
 This class can serve as baseclass for instrument plugins, provided that they want to work with 
 stereo I/O for audio in 32 bit. In addition to the baseclass ClapPluginStereo32Bit, this class

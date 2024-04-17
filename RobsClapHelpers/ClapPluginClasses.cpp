@@ -357,28 +357,60 @@ clap_process_status ClapPluginWithAudio::process(const clap_process* p) noexcept
 {
   bool useFloat64 = isDoublePrecision(p);
 
+  // Process the sub-blocks with interleaved event handling:
+  const uint32_t numFrames      = p->frames_count;
+  const uint32_t numEvents      = p->in_events->size(p->in_events);
+  uint32_t       frameIndex     = 0;
+  uint32_t       eventIndex     = 0;
+  uint32_t       nextEventFrame = numEvents > 0 ? 0 : numFrames;
+  while(frameIndex < numFrames)
+  {
+    // Handle all events that happen at the current frame:
+    handleProcessEvents(p, frameIndex, numFrames, eventIndex, numEvents, nextEventFrame);
 
+    // Process the sub-block until the next event. This is a call to the overriden implementation
+    // in the subclass in a sort of "template method" pattern:
+    if(useFloat64)
+      processSubBlock64(p, frameIndex, nextEventFrame);
+    else
+      processSubBlock32(p, frameIndex, nextEventFrame);
 
-  
-  return CLAP_PROCESS_ERROR;  // Not yet implemented
+    // Advance frameIndex by the length of the sub-block that we just processed:
+    frameIndex += nextEventFrame - frameIndex;
+  }
+
+  return CLAP_PROCESS_CONTINUE;
 }
 
 void ClapPluginWithAudio::handleProcessEvents(const clap_process* p, uint32_t frameIndex, 
   uint32_t numFrames, uint32_t& eventIndex, uint32_t numEvents, uint32_t& nextEventFrame)
 {
-  while(eventIndex < numEvents && nextEventFrame == frameIndex) {
+  // This event handling code originates from  plugin-template.c  from the CLAP repo:
+  while(eventIndex < numEvents && nextEventFrame == frameIndex) 
+  {
     const clap_event_header_t *hdr = p->in_events->get(p->in_events, eventIndex);
-    if (hdr->time != frameIndex) {
+    if(hdr->time != frameIndex) 
+    {
       nextEventFrame = hdr->time; 
       break;  
     }
-    processEvent(hdr);              // Handle the event
+    processEvent(hdr);              // Call to virtual event-handler function
     ++eventIndex;
-    if(eventIndex == numEvents) {
+    if(eventIndex == numEvents) 
+    {
       nextEventFrame = numFrames; 
       break;                        // We reached the end of the event list
     } 
   }
+
+  // Notes:
+  //
+  // -The call the virtual function processEvent() is where the actual event handling action 
+  //  happens. Unless subclasses override processEvent, the implementation from our baseclass
+  //  ClapPluginWithParams will be called. This implementation handles only parameter-change events
+  //  and the handling will spawn a callback to parameterChanged(). If subclasses wnat to handle 
+  //  other types of events as well, they will need to override processEvent.
+  // -This event handling code had been adapted from plugin-template.c from the CLAP repo
 }
 
 void ClapPluginWithAudio::processSubBlock32(const clap_process* p, uint32_t begin, uint32_t end)
@@ -397,7 +429,8 @@ void ClapPluginWithAudio::processSubBlock32(const clap_process* p, uint32_t begi
 
 void ClapPluginWithAudio::processSubBlock64(const clap_process* p, uint32_t begin, uint32_t end)
 {
-
+  // The exact same considerations as for processSubBlock32 apply just that here you would use
+  // the .data64[c][n] buffers instead of .data32[c][n] and do all the DSP in double precision.
 }
 
 //=================================================================================================
@@ -436,6 +469,7 @@ clap_process_status ClapPluginStereo32Bit::process(const clap_process *p) noexce
 {
   //auto inEvents = RobsClapHelpers::extractInEvents(p); // For inspection in debugger
 
+  /*
   // Check number of input and output ports/busses:
   if(  p->audio_inputs_count  != 1 
     || p->audio_outputs_count != 1)
@@ -449,42 +483,24 @@ clap_process_status ClapPluginStereo32Bit::process(const clap_process *p) noexce
   // Check that we are asked for doing single precision:
   if(isDoublePrecision(p))
     return CLAP_PROCESS_ERROR;
+    */
 
+  // Maybe factor out into (inline) function bool hasRequiredFormat
+
+  // Catch situations where the host asks us to process a buffer with an unsupported config:
+  if(!isProcessConfigSupported(p))
+    return CLAP_PROCESS_ERROR;
 
   // Process the sub-blocks with interleaved event handling:
   const uint32_t numFrames      = p->frames_count;
   const uint32_t numEvents      = p->in_events->size(p->in_events);
+  uint32_t       frameIndex     = 0;
   uint32_t       eventIndex     = 0;
   uint32_t       nextEventFrame = numEvents > 0 ? 0 : numFrames;
-  uint32_t       frameIndex     = 0;
   while(frameIndex < numFrames)
   {
-    /*
-    // Handle all events that happen at the frame i:
-    while(eventIndex < numEvents && nextEventFrame == frameIndex) {
-      const clap_event_header_t *hdr = p->in_events->get(p->in_events, eventIndex);
-      if (hdr->time != frameIndex) {
-        nextEventFrame = hdr->time; 
-        break;  
-      }
-      processEvent(hdr);              // Handle the event
-      ++eventIndex;
-      if(eventIndex == numEvents) {
-        nextEventFrame = numFrames; 
-        break;                        // We reached the end of the event list
-      } 
-    }
-    */
-    // Can this be factored out? Maybe into something like
-    // handleProcessEvents(p, frameIndex, numFrames, &eventIndex, numEvents, &nextEventFrame)
-    // where eventIndex, nextEventFrame should be references or pointers because the function needs
-    // to adjust them. Actually, numFrames and numEvents do not need to be passed because they
-    // are also stored in the process
-
-    // OK - let's try it:
+    // Handle all events that happen at the current frame:
     handleProcessEvents(p, frameIndex, numFrames, eventIndex, numEvents, nextEventFrame);
-
-
 
     // Process the sub-block until the next event. This is a call to the overriden implementation
     // in the subclass in a sort of "template method" pattern:
@@ -495,17 +511,8 @@ clap_process_status ClapPluginStereo32Bit::process(const clap_process *p) noexce
       &p->audio_outputs[0].data32[0][frameIndex],
       &p->audio_outputs[0].data32[1][frameIndex],
       subBlockLength);
-    frameIndex += subBlockLength;   // NEW - Needs more tests...
+    frameIndex += subBlockLength;
   }
-  // This code needs verification. I copy/pasted it from  plugin-template.c  and made some edits
-  // which I think, are appropriate. It gives reasonable results in Bitwig though - but that 
-  // doesn't replace unit testing.
-  // ...oookayy - the old version did indeed have an embarrassing bug that made it work only when
-  // the events are at the beginning of the block. The clap-validator did not catch these. Maybe
-  // the params-fuzz tests don't test sending multiple param-change events per block? Maybe check 
-  // the code (but it's in Rust) and if it indeed dos test pamaeter change events only for this
-  // very special case, make a feature request.
-
 
   return CLAP_PROCESS_CONTINUE;
 
@@ -518,7 +525,10 @@ clap_process_status ClapPluginStereo32Bit::process(const clap_process *p) noexce
   // -Maybe, if the number of inputs or outputs is less than 1, we should not return 
   //  CLAP_PROCESS_ERROR but rather CLAP_PROCESS_SLEEP like here:
   //  https://github.com/free-audio/clap-saw-demo-imgui/blob/main/src/clap-saw-demo.cpp#L349
+  // -We could actually also have implemented 
 }
+
+
 
 //=================================================================================================
 
@@ -535,7 +545,6 @@ bool ClapSynthStereo32Bit::notePortsInfo(
     return true;
   }
   return false;
-
 
   // ToDo:
   //
