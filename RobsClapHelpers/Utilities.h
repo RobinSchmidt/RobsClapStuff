@@ -252,4 +252,8 @@ protected:
 // -Add a reserve function to pre-allocate the desired memory upfront
 // -Add a clear function and maybe a removeIndexIdentifierPair function...although, we currently
 //  don't need that
-// -Maybe templatize on IndexType (uint32_t), IdentifierType (clap_id)
+// -Maybe make it more general:
+//  -Templatize on IndexType (uint32_t) and IdentifierType (clap_id)
+//  -Rename to PermutationMap (or better: BidirectionalMap, InvertibleMap, BijectiveMap) because
+//   a permutation assumes that "keys" and "values" are of the same type.
+//  and for usage in clap plugins, instantiate
