@@ -320,11 +320,34 @@ void ClapChannelMixer2In3Out::parameterChanged(clap_id id, double newValue)
 }
 
 void ClapChannelMixer2In3Out::processSubBlock32(
-  const clap_process* process, uint32_t begin, uint32_t end)
+  const clap_process* p, uint32_t begin, uint32_t end)
 {
+  // Retrieve pointers:
+  const float* inL = &(p->audio_inputs[0].data32[0][0]);
+  const float* inR = &(p->audio_inputs[0].data32[1][0]);
+  float* outL = &(p->audio_outputs[0].data32[0][0]);
+  float* outC = &(p->audio_outputs[0].data32[1][0]);
+  float* outR = &(p->audio_outputs[0].data32[2][0]);
 
+  // Do the channel mixing:
+  for(uint32_t n = begin; n < end; n++)
+  {
+    outC[n] = centerScaler * (inL[n] + outL[n]);  // Compute center signal
+    outL[n] = outL[n] - diffScaler * outC[n];     // Compute new left signal
+    outR[n] = outR[n] - diffScaler * outC[n];     // Compute new right signal
+  }
 
   int dummy = 0;
+
+  // ToDo:
+  //
+  // -Maybe check, if the data has the right format - but if we want to do that in every plugin, 
+  //  that means a lot of boilerplate
+  // -Check, if this code can really work in place in all cirmustances. I don't think so. We 
+  //  overwrite outC first and then read it again. If the host wants to use, for example,
+  //  outL == inL, outC == inR, outR == something else (which would be plausible), then it might 
+  //  not work. We may need to use a tmp variable for the outC[n] to make it work in place.
+  //
 }
 
 void ClapChannelMixer2In3Out::processSubBlock64(

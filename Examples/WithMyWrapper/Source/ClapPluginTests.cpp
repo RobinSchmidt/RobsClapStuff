@@ -757,13 +757,21 @@ bool runChannelMixer2In3OutTest()
   ok &= equals(&tL[0], outL, N);
   ok &= equals(&tC[0], outC, N);
   ok &= equals(&tR[0], outR, N);
-
+  // Fails! the output is too quiet! ...but looks similar to the target otherwise
 
 
 
   // Plot outputs and target signals:
   GNUPlotter plt;
-  plt.plotArrays(N, inL, inR);
+  plt.plotArrays(N, outL, outC, outR);
+  plt.initialize();
+  plt.plotArrays(N, &tL[0], &tC[0], &tR[0]);
+  // ToDo: Add to the GNUPlotCPP documentation that we need to call initilaize between the plots 
+  // when we want to use the same plotter object multiple times. This is because the plotArrays
+  // command will produce a dataFile and commandFile. They must be freshly initialized before 
+  // making another plot because otherwise, the data from the previous plot will still be in the 
+  // files. That's kinda inconvenient but it's the way it works.
+
 
 
 
