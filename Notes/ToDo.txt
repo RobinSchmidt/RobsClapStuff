@@ -12,7 +12,7 @@ Make one .clap with several plugins
  nothing out. This configuration can be usefaul for sidechain compression, vocoders or other kinds
  of "cross-synthesis". The stereo I/O is for the carrier, the mono in for the modulator. Maybe for 
  the demo, just let the modulator amplitude-modulate the input by an adjustable amount. Maybe the 
- amount could be also negative. Maybe somthing like:
+ amount could be also negative. Maybe something like:
    out = carrier * (1 + amount * modulator)^p 
  where amount is in -1..+1 and p in -2..+2. But we must be careful about 0^0 adn 0^(-1). Maybe make 
  sure that the base never gets zero...but the goal is actually not to write interesting DSP here...
