@@ -337,8 +337,6 @@ void ClapChannelMixer2In3Out::processSubBlock32(
     outR[n] = outR[n] - diffScaler * outC[n];     // Compute new right signal
   }
 
-  int dummy = 0;
-
   // ToDo:
   //
   // -Maybe check, if the data has the right format - but if we want to do that in every plugin, 
@@ -346,7 +344,9 @@ void ClapChannelMixer2In3Out::processSubBlock32(
   // -Check, if this code can really work in place in all cirmustances. I don't think so. We 
   //  overwrite outC first and then read it again. If the host wants to use, for example,
   //  outL == inL, outC == inR, outR == something else (which would be plausible), then it might 
-  //  not work. We may need to use a tmp variable for the outC[n] to make it work in place.
+  //  not work. We may need to use a tmp variable for the outC[n] to make it work in place. 
+  //  Generally, to make something work in place, we need to make sure that every variable that
+  //  we write into, is never again read-accessed after the write
   //
 }
 

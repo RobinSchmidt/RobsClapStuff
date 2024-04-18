@@ -342,7 +342,6 @@ channel configuration to verify that the framework can handle it correctly. */
 class ClapChannelMixer2In3Out : public RobsClapHelpers::ClapPluginWithAudio
 {
 
-
 public:
 
   enum ParamId
@@ -364,12 +363,8 @@ public:
 
   void processSubBlock64(const clap_process* process, uint32_t begin, uint32_t end) override;
 
-
   static const char* const features[6];
   static const clap_plugin_descriptor_t descriptor;
-
-
-
 
 protected:
 
@@ -377,6 +372,11 @@ protected:
   float centerScaler = 0.f;
   float diffScaler   = 0.f;
   // Initial settings leave stereo signal as is
+  // Maybe use double...actually - we already have the double parameters stored in the inherited
+  // array ....maybe use these in the double precision processing function. Generally, when a 
+  // plugin supports double, we should also use double precsison coeffs. But in order to not store
+  // the coeffs redundantly, we will then need to retrieve and convert the value to float in
+  // processSubBlock32
 
 };
 
