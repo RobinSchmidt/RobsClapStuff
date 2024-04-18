@@ -332,7 +332,7 @@ void ClapChannelMixer2In3Out::processSubBlock32(
   // Do the channel mixing:
   for(uint32_t n = begin; n < end; n++)
   {
-    outC[n] = centerScaler * (inL[n] + outL[n]);  // Compute center signal
+    outC[n] = centerScaler * (inL[n] + inR[n]);   // Compute center signal
     outL[n] = outL[n] - diffScaler * outC[n];     // Compute new left signal
     outR[n] = outR[n] - diffScaler * outC[n];     // Compute new right signal
   }
