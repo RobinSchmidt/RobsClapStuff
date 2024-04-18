@@ -347,7 +347,6 @@ void ClapChannelMixer2In3Out::processSubBlock32(
   //  not work. We may need to use a tmp variable for the outC[n] to make it work in place. 
   //  Generally, to make something work in place, we need to make sure that every variable that
   //  we write into, is never again read-accessed after the write
-  //
 }
 
 void ClapChannelMixer2In3Out::processSubBlock64(
