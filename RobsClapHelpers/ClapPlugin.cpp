@@ -411,7 +411,7 @@ ClapPlugin& ClapPlugin::from(const clap_plugin *plugin, bool requireInitialized)
 {
   clapAssert(plugin != nullptr);
   clapAssert(plugin->plugin_data != nullptr);  // The host must never change this pointer!
-                                           // It's owned by the plugin (I think)
+                                               // It's owned by the plugin (I think)
 
   auto &self = *static_cast<ClapPlugin*>(plugin->plugin_data);
   clapAssert(self._wasInitialized || requireInitialized == false);
@@ -456,8 +456,6 @@ void ClapPlugin::ensureParamThread(const char *method) const noexcept
   else
     ensureMainThread(method);
 }
-
-
 
 std::vector<std::string> ClapPlugin::getFeatures()
 {
