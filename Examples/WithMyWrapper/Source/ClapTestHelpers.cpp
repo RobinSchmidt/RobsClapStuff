@@ -309,8 +309,6 @@ bool ClapChannelMixer2In3Out::audioPortsInfo(uint32_t index, bool isInput,
   //
   // -Maybe use CLAP_PORT_SURROUND for the output port_type. But that requires the surround 
   //  extension. Can we just assign an arbitrary string? It's a cont char*. Maybe try it.
-
-  int dummy = 0;
 }
 
 void ClapChannelMixer2In3Out::parameterChanged(clap_id id, double newValue)
