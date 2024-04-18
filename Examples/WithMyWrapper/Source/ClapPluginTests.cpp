@@ -716,10 +716,10 @@ bool runChannelMixer2In3OutTest()
   using namespace RobsClapHelpers;
 
   // Setup:
-  uint32_t numFrames = 60;   // Number of sample frames
-  float    w         = 0.3;  // Normalized radian freq of input sine
-  float    cs        = 0.7;  // CenterScale parameter
-  float    ds        = 0.2;  // DiffScaler parameter
+  uint32_t numFrames = 60;    // Number of sample frames
+  float    w         = 0.3f;  // Normalized radian freq of input sine
+  float    cs        = 0.7f;  // CenterScale parameter
+  float    ds        = 0.2f;  // DiffScaler parameter
 
   // Create a processing buffer and retrieve pointers to the actual signal buffers:
   uint32_t numInChannels  =  2;  // Stereo
@@ -737,7 +737,7 @@ bool runChannelMixer2In3OutTest()
 
   // Create the target signals:
   std::vector<float> tL(N), tC(N), tR(N);
-  for(int n = 0; n < N; n++)
+  for(uint32_t n = 0; n < N; n++)
   {
     tC[n] = cs * (inL[n] + inR[n]);
     tL[n] = tL[n] - ds * tC[n];
