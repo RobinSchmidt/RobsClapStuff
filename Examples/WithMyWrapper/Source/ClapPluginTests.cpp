@@ -775,6 +775,7 @@ bool runChannelMixer2In3OutTest()
   //
   // -Test the mixer with parameter change events. Maybe we can use the test here to also check the
   //  handling of similtnaeous events (of same and different type)
+  // -Test double-precision processing
 }
 
 

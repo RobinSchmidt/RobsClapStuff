@@ -369,14 +369,31 @@ public:
 protected:
 
   // DSP coeffs:
-  float centerScaler = 0.f;
-  float diffScaler   = 0.f;
+  float centerScaler = 0.f;  // get rid - use parameters directly - especially in the double
+  float diffScaler   = 0.f;  // ...precision implementation
   // Initial settings leave stereo signal as is
   // Maybe use double...actually - we already have the double parameters stored in the inherited
   // array ....maybe use these in the double precision processing function. Generally, when a 
   // plugin supports double, we should also use double precsison coeffs. But in order to not store
   // the coeffs redundantly, we will then need to retrieve and convert the value to float in
   // processSubBlock32
+
+};
+
+//-------------------------------------------------------------------------------------------------
+
+/** Plugin with one stereo in/out for a "carrier" and one mono input (without any output) for the 
+"modulator". Tests an I/O port configuration that can be useful in practice for various forms of
+cross-synthesis such as vocoders, sidechain-compressors (aka duckers), etc.. We do a simple 
+amplitude modulation here. Left and right channels of the carrier get amp-modulated by the same
+monophonic modulation signal by an adjustable amount. */
+
+class ClapAmplitudeModulator : public RobsClapHelpers::ClapPluginWithAudio
+{
+
+public:
+
+protected:
 
 };
 

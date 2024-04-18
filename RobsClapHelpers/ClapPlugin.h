@@ -270,7 +270,16 @@ public:
   {
     return process->audio_inputs[0].data32 != nullptr;
   }
-
+  // NO! That's wrong! We should not assume that all the buffers have the same sample format. CLAP
+  // allows to mix buffers with single and double precision. See audio-ports.h. It has a special
+  // flag CLAP_AUDIO_PORT_REQUIRES_COMMON_SAMPLE_SIZE. I guess, only when we set the flag is set, 
+  // we we can be sure to be called with buffers with consistent sample format. Allowing to mix
+  // sample formats makes it quite flexible but it's also quite complicated. Maybe we should 
+  // implement functions isPureFloat32/isPureFloat64. The check will be quite complicated. We must
+  // iterate over all input and output ports and over all their channels. Maybe we want to do that 
+  // only in debug builds and in release builds just assume that the host doesn't misbehave
+  // Maybe move into class ClapPluginWithAudio. ...and we should really set that flag there, too.
+  // We don't want to deal with mixed buffers!
 
 
   /** Returns the plugin identifier. This is a string that uniquely identifies a plugin. Among 

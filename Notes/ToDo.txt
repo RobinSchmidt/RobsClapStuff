@@ -8,6 +8,15 @@ Make one .clap with several plugins
 -TestTones: Tune, Type (Sine, Saw (Naive), Saw (Clean), Noise, Impulse), Gain. Should respond to 
  midi, i.e. be of the instrument category
 
+-Plugin with 2 input ports, 1 output port. 1st in/out ports are stereo I/O, 2nd port is mono in, 
+ nothing out. This configuration can be usefaul for sidechain compression, vocoders or other kinds
+ of "cross-synthesis". The stereo I/O is for the carrier, the mono in for the modulator. Maybe for 
+ the demo, just let the modulator amplitude-modulate the input by an adjustable amount. Maybe the 
+ amount could be also negative. Maybe somthing like:
+   out = carrier * (1 + amount * modulator)^p 
+ where amount is in -1..+1 and p in -2..+2. But we must be careful about 0^0 adn 0^(-1). Maybe make 
+ sure that the base never gets zero...but the goal is actually not to write interesting DSP here...
+
 -Transposer: A simple note effect that let's the user transpose incoming note events. It may be a 
  bit tricky not match a noteOff to a noteOn when the transpose has been modified in between. But 
  maybe for a demo plugin, we can just ignore this and put a disclaimer somewhere. Possible solutions
@@ -77,7 +86,13 @@ Add the following stuff to Utilities.h/cpp:
  https://stackoverflow.com/questions/33270731/error-c4576-in-vs2015-enterprise
  https://github.com/swig/swig/issues/1851
  https://en.cppreference.com/w/c/language/struct_initialization
- ...just removing "(const char *[])" gives a "too many initializers" error.
+ ...just removing "(const char *[])" gives a "too many initializers" error. Apparently the syntax 
+ used in the nakst example is C syntax which is not allowed in C++. Damn! I'd really like to use a 
+ simpler syntax. The way I have to write it now is very verbose
+
+ https://stackoverflow.com/questions/18869282/initialize-char
+
+
 
 -Figure out if in the constructors ClapGain(), ClapWaveShaper(), etc one of these checks could make
  sense:

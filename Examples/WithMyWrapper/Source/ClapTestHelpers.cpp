@@ -262,7 +262,7 @@ const clap_plugin_descriptor_t ClapChannelMixer2In3Out::descriptor =
   .support_url  = "",
   .version      = "0.0.0",
   .description  = "Distribute stereo signal to 3 channels (left, center, right)",
-  .features     = ClapGain2::features,
+  .features     = ClapChannelMixer2In3Out::features,
 };
 
 ClapChannelMixer2In3Out::ClapChannelMixer2In3Out(
@@ -309,6 +309,10 @@ bool ClapChannelMixer2In3Out::audioPortsInfo(uint32_t index, bool isInput,
   //
   // -Maybe use CLAP_PORT_SURROUND for the output port_type. But that requires the surround 
   //  extension. Can we just assign an arbitrary string? It's a cont char*. Maybe try it.
+  // -We may need to set more flags: CLAP_AUDIO_PORT_SUPPORTS_64BITS, 
+  //  CLAP_AUDIO_PORT_REQUIRES_COMMON_SAMPLE_SIZE ...apparently, clap can mix different sample 
+  //  formats in a single buffer
+  //
 }
 
 void ClapChannelMixer2In3Out::parameterChanged(clap_id id, double newValue)
