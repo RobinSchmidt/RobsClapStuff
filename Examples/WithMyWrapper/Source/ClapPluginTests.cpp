@@ -763,13 +763,18 @@ bool runChannelMixer2In3OutTest()
   //plt.plotArrays(N, outL, outC, outR);
   //plt.initialize();
   //plt.plotArrays(N, &tL[0], &tC[0], &tR[0]);
-  // ToDo: Add to the GNUPlotCPP documentation that we need to call initilaize between the plots 
+  // ToDo: Add to the GNUPlotCPP documentation that we need to call initialize between the plots 
   // when we want to use the same plotter object multiple times. This is because the plotArrays
   // command will produce a dataFile and commandFile. They must be freshly initialized before 
   // making another plot because otherwise, the data from the previous plot will still be in the 
-  // files. That's kinda inconvenient but it's the way it works.
+  // files. That's kinda inconvenient but it's the way it works. Maybe rename the function to init.
 
   return ok;
+
+  // ToDo:
+  //
+  // -Test the mixer with parameter change events. Maybe we can use the test here to also check the
+  //  handling of similtnaeous events (of same and different type)
 }
 
 
