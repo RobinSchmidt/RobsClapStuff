@@ -370,7 +370,6 @@ void ClapChannelMixer2In3Out::processSubBlock32(
   //  plausible), then it would not work without the temporary [I think - verify this 
   //  experimenatlly! Make a unit test that tests in-place processing an tempoarily modify the code
   //  to assign outC[n] first and use it instead of "center" to compute outL[n], outR[n]].
-
   //
   // ToDo:
   //
