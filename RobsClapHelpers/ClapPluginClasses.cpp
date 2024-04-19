@@ -278,7 +278,8 @@ bool ClapPluginWithParams::setStateFromString(const std::string& stateStr)
   start = stateStr.find("Parameters: [", 0) + 13;
   end   = stateStr.find(']', start);
   std::string paramsStr = stateStr.substr(start, end-start+1);
-  paramsStr[paramsStr.size()-1] = ',';  
+  paramsStr[paramsStr.size()-1] = ',';         // Replace closing bracket with comma to avoid 
+                                               // special case for last parameter
 
   uint32_t numParamsFound = 0;
   size_t i = 0;                                // Index into paramsStr
@@ -405,7 +406,7 @@ void ClapPluginWithAudio::handleProcessEvents(const clap_process* p, uint32_t fr
 
   // Notes:
   //
-  // -The call the virtual function processEvent() is where the actual event handling action 
+  // -The call to virtual function processEvent() is where the actual event handling action 
   //  happens. Unless subclasses override processEvent, the implementation from our baseclass
   //  ClapPluginWithParams will be called. This implementation handles only parameter-change events
   //  and the handling will spawn a callback to parameterChanged(). If subclasses wnat to handle 
@@ -531,6 +532,7 @@ bool ClapSynthStereo32Bit::notePortsInfo(
   // ToDo:
   //
   // -Maybe support MIDI 2.0 later
+  // -Maybe use midi as preferred dialect...not sure about this, though
   // -Figure out if there is a reason why clap-saw-demo uses 1 rather than 0 for the id, see here:
   //  https://github.com/free-audio/clap-saw-demo-imgui/blob/main/src/clap-saw-demo.h#L152
   //  https://github.com/free-audio/clap-saw-demo-imgui/blob/main/src/clap-saw-demo.cpp#L318

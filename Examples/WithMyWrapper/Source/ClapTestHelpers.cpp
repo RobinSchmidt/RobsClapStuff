@@ -289,9 +289,9 @@ bool ClapChannelMixer2In3Out::audioPortsInfo(uint32_t index, bool isInput,
   }
   else
   {
-    info->channel_count = 3;       // 3 outputs
-    info->id            = 0;       // 
-    info->in_place_pair = 0;       // matches id -> allow in-place processing
+    info->channel_count = 3;    // 3 outputs
+    info->id            = 0;    // 
+    info->in_place_pair = 0;    // matches id -> allow in-place processing
     info->port_type     = nullptr;
     info->flags         = CLAP_AUDIO_PORT_IS_MAIN;
     strcpy_s(info->name, CLAP_NAME_SIZE, "Left/Center/Right Out");
@@ -303,7 +303,25 @@ bool ClapChannelMixer2In3Out::audioPortsInfo(uint32_t index, bool isInput,
   //
   // -We allow in place processing, although the number of ins and out differs. We actually don't
   //  care. If the host wants to use 2 of the 3 output channels in in-place mode, it can do so and
-  //  it doesn't really matter how the host uses the channels
+  //  it doesn't really matter how the host uses the channels.
+  // -I think, the way in-place processing with different numbers of ins and outs should work is:
+  //  Let there be m input and n output channels and let k = min(m,n). Then, in-place processing 
+  //  means that out[0] == in[0], out[1] == in[1], ..., out[k-1] == in[k-1]. When there are more
+  //  ins than outs, i.e. m > n, then not all of the in channels will be used for output, i.e. 
+  //  some I/O buffers (from k upwards) remain unmodified and still contain the input after process
+  //  returns. When there are more outs then ins, i.e. m < n, then all inputs will be replaced and 
+  //  there will also be additional outputs. This is the situation here.
+  // -However, although this might be the most obvious way to do in-place processing with m != n, 
+  //  we should never depend on that. We should be able to handle other strategies as well. For a
+  //  2 in, 2 out plugin, we should also be able to handle weird stuff like out[0] == in[1] and
+  //  out[1] == in[0], etc. I actually think, when doing this, my current implementation of the
+  //  StereoGainDemo would fail. The general way to do this safely is to just use temp variables. 
+  //  Never use any of the outputs for an intermediate result that is used in subsequent output 
+  //  compuations - and it doesn't matter if that "intermediate" also happens to be one of the 
+  //  outputs as is the case here. ...but wait - that would imply that for an in-place "Bypass" 
+  //  plugin, we would actually have to do some copying...hmmm....yeah...well, the example actually
+  //  do that: they first do a "fetch the inputs", then "compute", then "write the outputs". Maybe
+  //  bring this topic up on KVR or GitHub.
   //
   // ToDo:
   //
@@ -332,30 +350,45 @@ void ClapChannelMixer2In3Out::processSubBlock32(
   float* outR = &(p->audio_outputs[0].data32[2][0]);
 
   // Do the channel mixing:
+  float center;                                   // Temporary to facilitate in-place operation.
   for(uint32_t n = begin; n < end; n++)
   {
-    outC[n] = centerScaler * (inL[n] + inR[n]);   // Compute center signal
-    outL[n] = outL[n] - diffScaler * outC[n];     // Compute new left signal
-    outR[n] = outR[n] - diffScaler * outC[n];     // Compute new right signal
+    center  = centerScaler * (inL[n] + inR[n]);   // Compute center signal
+    outL[n] = outL[n] - diffScaler * center;      // Compute new left signal
+    outR[n] = outR[n] - diffScaler * center;      // Compute new right signal
+    outC[n] = center;
   }
 
+  // Notes:
+  //
+  // -The reason why we introduce the temporary "center" variable instead of just assigning outC[n]
+  //  as first step and then reading from it again in the computation of outL, outR is that we 
+  //  announce in our audioPortsInfo implementation that we allow in-place processing. When the 
+  //  host indeed decides to make use of that capability, then we should not write to any output
+  //  when we intend to read from it again in the computation of some other output. If the host 
+  //  wants to use, for example, outL == inL, outC == inR, outR == something else (which would be 
+  //  plausible), then it would not work without the temporary [I think - verify this 
+  //  experimenatlly! Make a unit test that tests in-place processing an tempoarily modify the code
+  //  to assign outC[n] first and use it instead of "center" to compute outL[n], outR[n]].
+
+  //
   // ToDo:
   //
   // -Maybe check, if the data has the right format - but if we want to do that in every plugin, 
   //  that means a lot of boilerplate
-  // -Check, if this code can really work in place in all cirmustances. I don't think so. We 
-  //  overwrite outC first and then read it again. If the host wants to use, for example,
-  //  outL == inL, outC == inR, outR == something else (which would be plausible), then it might 
-  //  not work. We may need to use a tmp variable for the outC[n] to make it work in place. 
-  //  Generally, to make something work in place, we need to make sure that every variable that
-  //  we write into, is never again read-accessed after the write
+  // -Maybe make a corresponding 3 in, 2 out mixer. It should distribute the center signal equally
+  //  to left and right with some gain factor - maybe 0.5 could be appropriate. Figure out the 
+  //  required scaling factors for a 2 Ch -> 3 Ch -> 2 Ch roundtrip that ensure an identity 
+  //  roundtrip. I guess, there should be a 1-parametric familiy of solutions?
 }
 
 void ClapChannelMixer2In3Out::processSubBlock64(
   const clap_process* process, uint32_t begin, uint32_t end)
 {
-
+  RobsClapHelpers::clapError("Not yet implemented");
 }
+
+
 
 /*=================================================================================================
 

@@ -400,7 +400,7 @@ bool runProcessingTest1()
   double gainDb = -10.0;
   gain.setParameter(ID::kGain, gainDb);
 
-  // Create an initialize the clap processing buffer:
+  // Create and initialize the clap processing buffer:
   clap_process p;
   initClapProcess(&p);
 
@@ -583,6 +583,7 @@ bool runProcessingTest1()
   ok &= tgtL == outL;
   ok &= tgtR == outR;
 
+
   return ok;
 
   // ToDo:
@@ -590,6 +591,8 @@ bool runProcessingTest1()
   // -Check, what happens if both the float and double buffers are non-nullptrs. I think, this 
   //  should not occur and counts as host misbehavior
   // -Test in place processing by using  outBuf.data32 = ins;
+  // -Test in place processing with swapped channel buffers such that the left input is the same as
+  //  the right output and the right input is the same as the left output.
   // -Maybe factor out the whole tedious process of setting up the clap_process object into a 
   //  function. Maybe make a class ClapProcessBuffer that allocates all the required buffers. It 
   //  may also be useful for writing a clap host
@@ -774,7 +777,7 @@ bool runChannelMixer2In3OutTest()
   // ToDo:
   //
   // -Test the mixer with parameter change events. Maybe we can use the test here to also check the
-  //  handling of similtnaeous events (of same and different type)
+  //  handling of simultaneous events (of same and different type)
   // -Test double-precision processing
 }
 

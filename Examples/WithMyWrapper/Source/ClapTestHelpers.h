@@ -54,11 +54,21 @@ clap_event_param_value createParamValueEvent(clap_id paramId, double value, uint
 
 union ClapEvent
 {
-  clap_event_param_value paramValue;
   clap_event_midi        midi;
   clap_event_note        note;
+  clap_event_param_value paramValue;
+
   // ...more to come...
 };
+
+
+/** Returns the type of the given event. The return value is one of the values in the unnamed enum
+in events.h - for example CLAP_EVENT_NOTE_ON, CLAP_EVENT_PARAM_VALUE, CLAP_EVENT_MIDI, etc. */
+inline uint16_t getEventType(const ClapEvent* ev) { return ev->midi.header.type; }
+// Needs test.
+// Why has the enum no name? Wouldn't it make sense if it would be named clap_event_type?
+
+
 
 //-------------------------------------------------------------------------------------------------
 
@@ -71,9 +81,9 @@ public:
 
   const clap_event_header_t* getEventHeader(uint32_t index)
   {
-    return &events[index].paramValue.header; 
+    return &events[index].midi.header; 
     // It should not matter which field of the union we use. The header has always the same 
-    // meaning. We use paramValue here, but midi or note should work just as well.
+    // meaning. We use mid here, but paramValue or note should work just as well.
 
     // This will cause an access violation when index >= numEvents, in particular, when numEvents
     // is zero. Maybe in this case, we should return a pointer to some dummy header - as in the
@@ -222,14 +232,18 @@ private:
 
   uint32_t numChannels = 1;   // Should be at least 1. Redundant - stored already in _buffer.channel_count
   uint32_t numFrames   = 1;   // Should be at least 1
+
+  // ToDo:
+  //
+  // -Maybe templatize such that it can be used for float and double.
 };
 
 //-------------------------------------------------------------------------------------------------
 
 /** A processing buffer with one input and one output port for audio signals. A port can have 
-multiple channles, though. ...TBC... */
+multiple channels, though. ...TBC... */
 
-class ClapProcessBuffer_1In_1Out  // Maybe remove the underscores ...but it looks ugly
+class ClapProcessBuffer_1In_1Out  // Maybe remove the underscores ...but it looks ugly without them
 {
 
 public:
@@ -248,37 +262,73 @@ public:
   }
 
 
-  void addInputParamValueEvent(clap_id paramId, double value, uint32_t time)
-  {
-    inEvs.addParamValueEvent(paramId, value, time);
-  }
+  //-----------------------------------------------------------------------------------------------
+  // \name Setup
 
+  /** Adds a parameter value change event to our buffer of input events. */
+  void addInputParamValueEvent(clap_id paramId, double value, uint32_t time)
+  { inEvs.addParamValueEvent(paramId, value, time); }
+
+
+  /** Cleasr out buffer of input events. */
   void clearInputEvents() { inEvs.clear(); }
 
+  /** Sets up the map that determines how the input buffers are mapped to output buffers in case of 
+  in-place processing. In general, we should not assume that ins[i] == outs[i] in case of in-place 
+  processing but just that in[i] == outs[j] for some permutation map i -> j where i,j = 0..k-1 and
+  k = min(m,n) where m,n are numbers of inputs and outputs respectively. We want to be able to do 
+  tests in which we mock arbitrary layouts. This function can be used for this purpose. */
+  void setInPlaceBufferLayout(const std::vector<uint32_t>& newInOutMap) 
+  { inPlaceLayout = newInOutMap; }
+  // Convention: when this vector is empty, we do out of place processing, i.e. input and output 
+  // buffers have their own memory.
 
+
+  //-----------------------------------------------------------------------------------------------
+  // \name Inquiry
+
+  /** Returns true, iff this process buffer uses in-place audio buffers, i.e. the same memory 
+  buffers are used for input and for output simultaneously. */
+  bool usesInPlaceAudioBuffers() const { return !inPlaceLayout.empty(); }
+
+  /** Returns the pointer to the input buffer for the channel with given index. */
   float* getInChannelPointer(uint32_t index) { return inBuf.getChannelPointer(index); }
 
+  /** Returns the pointer to the output buffer for the channel with given index. */
   float* getOutChannelPointer(uint32_t index) { return outBuf.getChannelPointer(index); }
 
+  /** Returns the number of input channels. */
+  uint32_t getNumInChannels() const { return inBuf.getNumChannels(); }
 
+  /** Returns the number of output channels. */
+  uint32_t getNumOutChannels() const { return outBuf.getNumChannels(); }
+
+  /** Returns a pointer to the wrapped clap_process struct. */
   clap_process* getWrappee() { return &_process; }
   // Maybe try to return a const pointer?
 
 
 private:
 
-  void updateWrappee();
+  void updateWrappee(); // ToDo: add documentation
 
-  clap_process _process;         // The wrapped C-struct
-
-  ClapAudioBuffer    inBuf;
-  ClapAudioBuffer    outBuf;
-  ClapInEventBuffer  inEvs;
-  ClapOutEventBuffer outEvs;
+  // Data members:
+  clap_process          _process;       // The wrapped C-struct
+  ClapAudioBuffer       inBuf;          // Input audio buffer
+  ClapAudioBuffer       outBuf;         // Output audio buffer
+  ClapInEventBuffer     inEvs;          // Input event buffer
+  ClapOutEventBuffer    outEvs;         // Output event buffer
+  std::vector<uint32_t> inPlaceLayout;  // Map betwen in and out buffers for in-place mode
 
   // ToDo: 
   // -Maybe make non-copyable, etc.
   // -Maybe make a more general class that has multiple I/O ports
+  // -Allow usage of in-place buffers. Allow the channels to be shuffled/permuted arbitrarily for 
+  //  making tests with "weird" in-place buffer layouts.
+  // -Allow 64 bit buffers. Maybe even allow an arbitrary mix of 32 and 64 bit buffers. CLAP allows
+  //  such a thing.
+  // -When this is done, getIn/OutChannelPointer to getIn/OutChannelPointer32Bit and have analogous
+  //  function for the 64 bit pointers.
 };
 
 //=================================================================================================
@@ -392,6 +442,17 @@ class ClapAmplitudeModulator : public RobsClapHelpers::ClapPluginWithAudio
 {
 
 public:
+
+  enum ParamId
+  {
+    kAmpMod,
+
+    numParams
+  };
+
+  ClapAmplitudeModulator(const clap_plugin_descriptor* desc, const clap_host* host);
+
+
 
 protected:
 

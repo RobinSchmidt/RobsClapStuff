@@ -131,6 +131,14 @@ public:
   //-----------------------------------------------------------------------------------------------
   // \name WaveShaper specific stuff
 
+  /** The indices for the shapes. Note that unlike the ParamId enum, this here does not use any 
+  sort of id-system. Such a thing would not work in the context of an automatable parameter (I 
+  think). The id system for the parameters allows us to change the apparent, user-facing order of 
+  the parameters. But for an automatbale enum/choice parameter, we really need to keep the 
+  user-facing order of the choices stable as well if we don't want to break automation in updates. 
+  That's why it's not called "ShapeId" but just "Shape". I think, we can add shapes at the end of 
+  the enum, though because CLAP uses plain (rather than normalized) values for transmitting 
+  parameter changes. */
   enum Shape
   {
     kClip,        // Hard clipper at -1, +1.

@@ -233,6 +233,12 @@ There is potential for optimization in the waveshaper:
   Yeah - that's probably the better solution for that.
 
 
+Potential pitfalls:
+-Should in-place processing should work even when the host shuffles ins and outs, i.e. does 
+ something weird like letting the first output equal the second input and the second output equal
+ the first input? Is this why the example uses this fetch -> process -> store strategy?
+-We must be aware that the process buffers my be mixed precision unless we explicitly set the flag
+ CLAP_AUDIO_PORT_REQUIRES_COMMON_SAMPLE_SIZE in audioPortsInfo
 
 
 
