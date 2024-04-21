@@ -127,6 +127,12 @@ public:
   //  never a nullptr - but of course, we could also check, if it's a nullptr and if so, create
   //  the object ourselves with new
 
+  void addFloatParameter(clap_id identifier, const std::string& name, double minValue, 
+    double maxValue, double defaultValue, clap_param_info_flags flags, int precision, 
+    const std::string& suffix);
+
+
+
   /** Sets all the parameters to their default values by calling setParameter for each. */
   void setAllParametersToDefault();
 

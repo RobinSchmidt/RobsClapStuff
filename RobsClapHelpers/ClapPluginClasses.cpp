@@ -193,6 +193,17 @@ void ClapPluginWithParams::addParameter(clap_id id, const std::string& name, dou
   //  pointer-to-ValueFormatter and instead of assigning a nullptr, use the passed object.
 }
 
+void ClapPluginWithParams::addFloatParameter(clap_id id, const std::string& name, 
+  double minVal, double maxVal, double defaultVal, clap_param_info_flags flags, 
+  int precision, const std::string& suffix)
+{
+  addParameter(id, name, minVal, maxVal, defaultVal, flags, 
+    new ValueFormatterWithSuffix(precision, suffix));
+}
+
+
+
+
 
 
 void ClapPluginWithParams::setParameter(clap_id id, double newValue)
