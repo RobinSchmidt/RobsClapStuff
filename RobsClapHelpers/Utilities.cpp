@@ -126,10 +126,28 @@ bool IndexIdentifierMap::isConsistent() const
   return true;  // All consistency checks passed
 }
 
+//=================================================================================================
+
+bool ValueFormatter::valueToText(double value, char* text, uint32_t size)
+{
+  return toStringWithSuffix(value, text, size, 2) > 0;
+}
+
+bool ValueFormatter::textToValue(const char* text, double* value)
+{
+  *value = strtod(text, nullptr);
+  return true;
+}
+
+
+bool ValueFormatterWithSuffix::valueToText(double value, char* text, uint32_t size)
+{
+  return toStringWithSuffix(value, text, size, precision, suffix.c_str()) > 0;
+}
 
 
 
-/*
+/*=================================================================================================
 
 ToDo:
 

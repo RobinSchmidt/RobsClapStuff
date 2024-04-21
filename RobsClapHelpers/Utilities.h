@@ -256,4 +256,45 @@ protected:
 //  -Templatize on IndexType (uint32_t) and IdentifierType (clap_id)
 //  -Rename to PermutationMap (or better: BidirectionalMap, InvertibleMap, BijectiveMap) because
 //   a permutation assumes that "keys" and "values" are of the same type.
-//  and for usage in clap plugins, instantiate
+//   and for usage in clap plugins, instantiate
+
+//=================================================================================================
+
+/** Baseclass for objects that convert from parameter values to strinsg and back. An array of 
+pointers to those shall be used in ClapPluginWithParams to reduce the boilerplate in plugins for
+the standard conversions. The baseclass implementation just uses toStringWithSuffix and strtod.
+...TBC... */
+
+class ValueFormatter
+{
+
+public:
+
+  virtual bool valueToText(double value, char *text, uint32_t size);
+
+  virtual bool textToValue(const char *text, double *value);
+
+};
+
+
+/** Subclass of ValueFormatter that prints the number with an adjustable number of decimal digits
+after the dot and a suffix for the physical unit. */
+
+class ValueFormatterWithSuffix : public ValueFormatter
+{
+
+  ValueFormatterWithSuffix(
+    int numDigitsAfterDot = 2, const std::string& unitSuffix = std::string())
+    : precision(numDigitsAfterDot), suffix(unitSuffix) {}
+
+  bool valueToText(double value, char *text, uint32_t size) override;
+  
+
+protected:
+
+  std::string suffix;
+  int precision = 2;
+
+};
+
+
