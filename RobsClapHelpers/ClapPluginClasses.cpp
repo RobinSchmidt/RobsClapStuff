@@ -156,28 +156,26 @@ void ClapPluginWithParams::addParameter(clap_id id, const std::string& name, dou
   values.resize(newSize);
   values[id] = defaultValue;
 
-  // Insert the passed formatter in our array - or create a new one if none was passed.
+  // Insert the passed formatter in our array - or create a new one if none was passed:
   formatters.resize(newSize);
   if(formatter != nullptr)
     formatters[id] = formatter;
   else
     formatters[id] = new ValueFormatter;
 
-
-
-  // ToDo: 
+  // Notes:
   //
-  // -Instead of a single addParameter function have 2. One for numerical params that are to be
-  //  displayed with precision and suffix and one for choice params. Maybe use:
-  //  addFloatParameter, addChoiceParameter - just like juce::AudioProcessor
-  // -But maybe keep this function and augment it with a parameter of type 
-  //  pointer-to-ValueFormatter and instead of assigning a nullptr, use the passed object.
+  // -We either take ownership of the passed formatter object here or, if none is passed, we create
+  //  our own. In any case, we now own the formatter object and will destroy it in our destructor.
+  //  Maybe we could use something like a juce::OwnedArray? Does the standard library have 
+  //  something like that?
 }
 
 void ClapPluginWithParams::addFloatParameter(clap_id id, const std::string& name, 
   double minVal, double maxVal, double defaultVal, clap_param_info_flags flags, 
   int precision, const std::string& suffix)
 {
+  // Add a parameter with a new ValueFormatterWithSuffix using the given precision and suffix:
   addParameter(id, name, minVal, maxVal, defaultVal, flags, 
     new ValueFormatterWithSuffix(precision, suffix));
 }
@@ -186,14 +184,17 @@ void ClapPluginWithParams::addChoiceParameter(clap_id id, const std::string& nam
   double minVal, double maxVal, double defaultVal, clap_param_info_flags flags,
   const std::vector<std::string>& choices)
 {
-  flags |=  CLAP_PARAM_IS_STEPPED | CLAP_PARAM_IS_ENUM;   // These should always be set for choice
+  // Sanity checks for the range:
+  clapAssert(minVal == 0.0);
+  clapAssert(maxVal == choices.size() - 1.0);
+
+  // Some flags should always be set for choice params, so we set them here just in case the caller
+  // forgot to set them:
+  flags |=  CLAP_PARAM_IS_STEPPED | CLAP_PARAM_IS_ENUM;  
+
+  // Add a parameter with a new ValueFormatterForChoice using the given choices:
   addParameter(id, name, minVal, maxVal, defaultVal, flags, 
     new ValueFormatterForChoice(choices));
-
-  // ToDo:
-  //
-  // -We should perhaps automatically add the flas CLAP_PARAM_IS_STEPPED | CLAP_PARAM_IS_ENUM. For
-  //  choice parameters, these are always needed ...OK - done
 }
 
 void ClapPluginWithParams::setParameter(clap_id id, double newValue)

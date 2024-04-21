@@ -126,14 +126,16 @@ ClapWaveShaper::ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_ho
   //clap_param_info_flags choice      = flags | CLAP_PARAM_IS_STEPPED | CLAP_PARAM_IS_ENUM;
 
   //reserveParameters(numParams);
-  addChoiceParameter(kShape, "Shape", 0, numShapes-1, 0, flags, { "Clip", "Tanh", "Atan", "Erf" });
-  addFloatParameter( kDrive, "Drive", -20.0, +60.0,       0.0, flags, 2, " dB");
-  addFloatParameter( kDC,    "DC",    -10.0, +10.0,       0.0, flags, 3, "");
-  addFloatParameter( kGain,  "Gain",  -60.0, +20.0,       0.0, flags, 2, " dB");
+  addChoiceParameter(kShape, "Shape", 0, numShapes-1, 0, flags, 
+    { "Clip", "Tanh", "Atan", "Erf" });
+  addFloatParameter( kDrive, "Drive", -20.0, +60.0, 0.0, flags, 2, " dB");
+  addFloatParameter( kDC,    "DC",    -10.0, +10.0, 0.0, flags, 3, "");
+  addFloatParameter( kGain,  "Gain",  -60.0, +20.0, 0.0, flags, 2, " dB");
   RobsClapHelpers::clapAssert(areParamsConsistent());
  
   // We would actually like to call it like this:
   //addChoiceParameter(kShape, "Shape", "Clip", automatable, { "Clip", "Tanh", "Atan", "Erf" });
+  // ...or maybe not?
 
   // Notes:
   //
