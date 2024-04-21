@@ -113,11 +113,12 @@ public:
 
   void parameterChanged(clap_id id, double newValue) override;
 
+  /*
   bool paramsValueToText(clap_id paramId, double value, char *display, 
     uint32_t size) noexcept override;
 
   bool paramsTextToValue(clap_id paramId, const char *display, double *value) noexcept override;
-
+  */
 
   void processBlockStereo(const float* inL, const float* inR, float* outL, float* outR, 
     uint32_t numFrames) override;
@@ -169,7 +170,7 @@ protected:
   float dc     = 0.f;
 
   // Holds the strings for the shape names for GUI display:
-  std::vector<std::string> shapeNames;
+  //std::vector<std::string> shapeNames;
 
 };
 

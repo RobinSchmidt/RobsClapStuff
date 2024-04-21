@@ -139,6 +139,7 @@ ClapWaveShaper::ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_ho
   clap_param_info_flags automatable = CLAP_PARAM_IS_AUTOMATABLE;
   clap_param_info_flags choice      = automatable | CLAP_PARAM_IS_STEPPED | CLAP_PARAM_IS_ENUM;
 
+  /*
   // OLD:
   //reserveParameters(numParams);
   addParameter(kShape, "Shape",   0.0, numShapes-1, 0.0, choice);        // Clip, Tanh, etc.
@@ -147,9 +148,11 @@ ClapWaveShaper::ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_ho
   addParameter(kDC,    "DC",    -10.0, +10.0,       0.0, automatable);   // As raw offset
   addParameter(kGain,  "Gain",  -60.0, +20.0,       0.0, automatable);   // In dB
   RobsClapHelpers::clapAssert(areParamsConsistent());
+  */
  
 
-  /*
+
+  
   // NEW - makes the unit tests fail!:
   //reserveParameters(numParams);
   addChoiceParameter(kShape, "Shape", 0, numShapes-1, 0, choice, { "Clip", "Tanh", "Atan", "Erf" });
@@ -157,7 +160,7 @@ ClapWaveShaper::ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_ho
   addFloatParameter( kDC,    "DC",    -10.0, +10.0,       0.0, automatable, 3, "");
   addFloatParameter( kGain,  "Gain",  -60.0, +20.0,       0.0, automatable, 2, " dB");
   RobsClapHelpers::clapAssert(areParamsConsistent());
-  */
+ 
 
 
 
@@ -194,6 +197,7 @@ void ClapWaveShaper::parameterChanged(clap_id id, double newValue)
   }
 }
 
+/*
 bool ClapWaveShaper::paramsValueToText(clap_id id, double val, char *buf, uint32_t len) noexcept
 {
   switch(id)
@@ -218,6 +222,7 @@ bool ClapWaveShaper::paramsTextToValue(
   //  a value. I don't really know what the use-case for this mapping is in the case of choice 
   //  parameters, but to satisfy the validator, we need to implement it.
 }
+*/
 
 void ClapWaveShaper::processBlockStereo(
   const float* inL, const float* inR, float* outL, float* outR, uint32_t numFrames)

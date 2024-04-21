@@ -365,6 +365,13 @@ bool runWaveShaperTest()
   //std::string stateString = ws.getStateAsString();
   // ...more to do....
 
+  // Check the string conversions of the float parameters:
+  static const int bufSize = 20;
+  char buf[bufSize];
+  ws.paramsValueToText(ID::kDrive, 3.25, buf, bufSize);
+  std::string target = "3.25 dB";
+  ok &= strcmp(target.c_str(), buf) == 0;
+
 
   return ok;
 
