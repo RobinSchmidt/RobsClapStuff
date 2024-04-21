@@ -63,8 +63,14 @@ class ClapPluginWithParams : public ClapPlugin  // Maybe rename to ClapWithParam
 
 public:
 
+  //-----------------------------------------------------------------------------------------------
+  // \name Lifetime
+
   ClapPluginWithParams(const clap_plugin_descriptor* desc, const clap_host* host)
     : ClapPlugin(desc, host) { }
+
+
+  virtual ~ClapPluginWithParams();
 
 
   //-----------------------------------------------------------------------------------------------
@@ -240,8 +246,8 @@ private:
   std::vector<double>          values;       // Current values, indexed by id
   std::vector<clap_param_info> infos;        // Parameter informations, indexed by index
 
-  // ToDo:
-  //std::vector<ValueFormatter*> formatters;   // Formatters, indexed by id
+  // Under construction:
+  std::vector<ValueFormatter*> formatters;   // Formatters, indexed by id
 
 };
 

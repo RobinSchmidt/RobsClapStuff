@@ -2,6 +2,12 @@
 //=================================================================================================
 // class ClapPluginWithParams
 
+ClapPluginWithParams::~ClapPluginWithParams()
+{
+  for(size_t i = 0; i < formatters.size(); i++)
+    delete formatters[i];
+}
+
 bool ClapPluginWithParams::paramsInfo(uint32_t index, clap_param_info* info) const noexcept
 {
   if(index >= (uint32_t) infos.size())
@@ -145,13 +151,27 @@ void ClapPluginWithParams::addParameter(clap_id id, const std::string& name, dou
   strcpy_s(info.name,   CLAP_NAME_SIZE, name.c_str());
   strcpy_s(info.module, CLAP_PATH_SIZE, "");
   infos.push_back(info);
+  // Factor out into a private pushParamInfo(id, name, minValue, maxValue, defaulValue, flags)
 
   // Adjust the size of values array if needed and initialize the new parameter with its default
   // value:
   size_t newSize = std::max((size_t) id+1, values.size());
   values.resize(newSize);
   values[id] = defaultValue;
+
+  formatters.resize(newSize);
+  formatters[id] = nullptr;
+
+  // ToDo: 
+  //
+  // -Instead of a single addParameter function have 2. One for numerical params that are to be
+  //  displayed with precision and suffix and one for choice params. Maybe use:
+  //  addFloatParameter, addChoiceParameter - just like juce::AudioProcessor
+  // -But maybe keep this function and augment it with a parameter of type 
+  //  pointer-to-ValueFormatter and instead of assigning a nullptr, use the passed object.
 }
+
+
 
 void ClapPluginWithParams::setParameter(clap_id id, double newValue)
 {
