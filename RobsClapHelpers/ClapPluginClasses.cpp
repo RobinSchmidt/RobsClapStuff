@@ -54,41 +54,23 @@ bool ClapPluginWithParams::paramsValue(clap_id id, double* value) const noexcept
 bool ClapPluginWithParams::paramsValueToText(
   clap_id id, double value, char* text, uint32_t size) noexcept
 {
-  if(!isParamIdValid(id))
+  if(!isParamIdValid(id) || formatters[id] == nullptr)
+  {
+    clapError("Error in ClapPluginWithParams::paramsValueToText");
     return false;
-
-  if(formatters[id] != nullptr)
-    return formatters[id]->valueToText(value, text, size);
-  else
-    return false;
-
-  // ToDo: 
-  //
-  // -Remove the "if...". The pointers should never be nullptr. We should *always* assign some 
-  //  valid object. Delete the toDisplay function. It's obsolete when we have the system with the 
-  //  formatter finished
-  // -Rename "display" to "text"
+  }
+  return formatters[id]->valueToText(value, text, size);
 }
 
 bool ClapPluginWithParams::paramsTextToValue(
   clap_id id, const char *text, double *value) noexcept
 {
-  if(!isParamIdValid(id))
-    return false;
-
-  if(formatters[id] != nullptr)
-    return formatters[id]->textToValue(text, value);
-  else
+  if(!isParamIdValid(id) || formatters[id] == nullptr)
   {
+    clapError("Error in ClapPluginWithParams::paramsTextToValue");
     return false;
-
-    //*value = strtod(text, nullptr);
-    //return true;
   }
-
-  // ToDo:
-  //
-  // -Like in ...ValueToText: remove "if..", rename "display"
+  return formatters[id]->textToValue(text, value);
 }
 
 void ClapPluginWithParams::paramsFlush(
