@@ -52,12 +52,15 @@ bool ClapPluginWithParams::paramsValue(clap_id id, double* value) const noexcept
 }
 
 bool ClapPluginWithParams::paramsValueToText(
-  clap_id id, double value, char* display, uint32_t size) noexcept
+  clap_id id, double value, char* text, uint32_t size) noexcept
 {
+  if(!isParamIdValid(id))
+    return false;
+
   if(formatters[id] != nullptr)
-    return formatters[id]->valueToText(value, display, size);
+    return formatters[id]->valueToText(value, text, size);
   else
-    return toDisplay(value, display, size, 2);
+    return false;
 
   // ToDo: 
   //
@@ -68,19 +71,19 @@ bool ClapPluginWithParams::paramsValueToText(
 }
 
 bool ClapPluginWithParams::paramsTextToValue(
-  clap_id id, const char *display, double *value) noexcept
+  clap_id id, const char *text, double *value) noexcept
 {
-  //// Old:
-  //*value = strtod(display, nullptr);
-  //return true;
+  if(!isParamIdValid(id))
+    return false;
 
-  // New:
   if(formatters[id] != nullptr)
-    return formatters[id]->textToValue(display, value);
+    return formatters[id]->textToValue(text, value);
   else
   {
-    *value = strtod(display, nullptr);
-    return true;
+    return false;
+
+    //*value = strtod(text, nullptr);
+    //return true;
   }
 
   // ToDo:
@@ -171,12 +174,8 @@ void ClapPluginWithParams::addParameter(clap_id id, const std::string& name, dou
   values.resize(newSize);
   values[id] = defaultValue;
 
+  // Insert the passed formatter in our array - or create a new one if none was passed.
   formatters.resize(newSize);
-
-  // Old:
-  //formatters[id] = nullptr;
-
-  // New:
   if(formatter != nullptr)
     formatters[id] = formatter;
   else
@@ -254,9 +253,12 @@ void ClapPluginWithParams::setAllParametersToDefault()
     setParameter(infos[i].id, infos[i].default_value);
 }
 
-bool ClapPluginWithParams::areParamsConsistent()
+bool ClapPluginWithParams::areParamsConsistent() const
 {
   if(infos.size() != values.size())
+    return false;
+
+  if(infos.size() != formatters.size())
     return false;
 
   // Check, if each id in 0...numParams-1 occurs exactly once in our infos array:

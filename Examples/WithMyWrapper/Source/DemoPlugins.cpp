@@ -47,26 +47,24 @@ const clap_plugin_descriptor_t ClapGain::descriptor =
 ClapGain::ClapGain(const clap_plugin_descriptor *desc, const clap_host *host) 
   : ClapPluginStereo32Bit(desc, host) 
 {
-  // Flags for our parameters - they are automatable:
-  clap_param_info_flags automatable = CLAP_PARAM_IS_AUTOMATABLE;
+  clap_param_info_flags flags = CLAP_PARAM_IS_AUTOMATABLE;
 
-  // OLD:
-  // Add the parameters:
-  //addParameter(kGain, "Gain", -40.0, +40.0, 0.0, automatable);  // in dB
-  //addParameter(kPan,  "Pan",   -1.0,  +1.0, 0.0, automatable);  // -1: left, 0: center, +1: right
-  //RobsClapHelpers::clapAssert(areParamsConsistent());
+  //reserveParameters(numParams);
 
-  // NEW:
-  addFloatParameter(kGain, "Gain", -40.0, +40.0, 0.0, automatable, 2, " dB");
-  addFloatParameter(kPan,  "Pan",   -1.0,  +1.0, 0.0, automatable, 3, "");
+  addFloatParameter(kGain, "Gain", -40.0, +40.0, 0.0, flags, 2, " dB");
+  addFloatParameter(kPan,  "Pan",   -1.0,  +1.0, 0.0, flags, 3, "");
+
   RobsClapHelpers::clapAssert(areParamsConsistent());
-
 
   // Notes:
   //
   // -If the "automatable" flag is not set, Bitwig will not show a knob for the respective 
   //  parameter on the generated GUI. Apparently, knobs are only provided for automatable 
   //  parameters.
+  // -The 2 and 3 argumens after the "flags" give the number of decimal digits after the dot 
+  // -The strings " dB" and "" give a suffix for a physical unit to be appended to the formatted
+  //  value. It can be empty, of course. You can also pass nothing at all in this case instead of
+  //  an empty string.
   // -The areParamsConsistent assertion checks that my convention for mapping back and forth 
   //  between parameter-index and parameter-identifier is obeyed. This will be ensured, if you use
   //  each of the identifiers from the ParamId enum once and only once in a call to addParameter.
@@ -97,18 +95,6 @@ void ClapGain::parameterChanged(clap_id id, double newValue)
   ampR = 2.f * (amp * pan01);
 }
 
-/*
-bool ClapGain::paramsValueToText(clap_id id, double val, char *buf, uint32_t len) noexcept
-{
-  switch(id)
-  {
-  case kGain: { return toDisplay(val, buf, len, 2, " dB"); }
-  case kPan:  { return toDisplay(val, buf, len, 3       ); }
-  }
-  return Base::paramsValueToText(id, val, buf, len);
-}
-*/
-
 //=================================================================================================
 // WaveShaperDemo
 
@@ -136,37 +122,18 @@ const clap_plugin_descriptor_t ClapWaveShaper::descriptor =
 ClapWaveShaper::ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_host *host) 
   : ClapPluginStereo32Bit(desc, host) 
 {
-  clap_param_info_flags automatable = CLAP_PARAM_IS_AUTOMATABLE;
-  clap_param_info_flags choice      = automatable | CLAP_PARAM_IS_STEPPED | CLAP_PARAM_IS_ENUM;
+  clap_param_info_flags flags = CLAP_PARAM_IS_AUTOMATABLE;
+  //clap_param_info_flags choice      = flags | CLAP_PARAM_IS_STEPPED | CLAP_PARAM_IS_ENUM;
 
-  /*
-  // OLD:
   //reserveParameters(numParams);
-  addParameter(kShape, "Shape",   0.0, numShapes-1, 0.0, choice);        // Clip, Tanh, etc.
-  shapeNames = { "Clip", "Tanh", "Atan", "Erf" };
-  addParameter(kDrive, "Drive", -20.0, +60.0,       0.0, automatable);   // In dB
-  addParameter(kDC,    "DC",    -10.0, +10.0,       0.0, automatable);   // As raw offset
-  addParameter(kGain,  "Gain",  -60.0, +20.0,       0.0, automatable);   // In dB
-  RobsClapHelpers::clapAssert(areParamsConsistent());
-  */
- 
-
-
-  
-  // NEW:
-  //reserveParameters(numParams);
-  addChoiceParameter(kShape, "Shape", 0, numShapes-1, 0, choice, { "Clip", "Tanh", "Atan", "Erf" });
-  addFloatParameter( kDrive, "Drive", -20.0, +60.0,       0.0, automatable, 2, " dB");
-  addFloatParameter( kDC,    "DC",    -10.0, +10.0,       0.0, automatable, 3, "");
-  addFloatParameter( kGain,  "Gain",  -60.0, +20.0,       0.0, automatable, 2, " dB");
+  addChoiceParameter(kShape, "Shape", 0, numShapes-1, 0, flags, { "Clip", "Tanh", "Atan", "Erf" });
+  addFloatParameter( kDrive, "Drive", -20.0, +60.0,       0.0, flags, 2, " dB");
+  addFloatParameter( kDC,    "DC",    -10.0, +10.0,       0.0, flags, 3, "");
+  addFloatParameter( kGain,  "Gain",  -60.0, +20.0,       0.0, flags, 2, " dB");
   RobsClapHelpers::clapAssert(areParamsConsistent());
  
-
   // We would actually like to call it like this:
   //addChoiceParameter(kShape, "Shape", "Clip", automatable, { "Clip", "Tanh", "Atan", "Erf" });
-
-
-
 
   // Notes:
   //
@@ -198,33 +165,6 @@ void ClapWaveShaper::parameterChanged(clap_id id, double newValue)
   }
   }
 }
-
-/*
-bool ClapWaveShaper::paramsValueToText(clap_id id, double val, char *buf, uint32_t len) noexcept
-{
-  switch(id)
-  {
-  case kShape: { return toDisplay(val, buf, len, shapeNames); }
-  case kDrive: { return toDisplay(val, buf, len, 2, " dB");   }
-  case kGain:  { return toDisplay(val, buf, len, 2, " dB");   }
-  }
-  return Base::paramsValueToText(id, val, buf, len);  // Fall back to default if not yet handled
-}
-
-bool ClapWaveShaper::paramsTextToValue(
-  clap_id id, const char* display, double* value) noexcept
-{
-  if(id == kShape)
-    return toValue(display, value, shapeNames);
-  return Base::paramsTextToValue(id, display, value);
-
-  // Notes:
-  //
-  // -The clap-validator app requires that we can also correctly map from a display-string back to
-  //  a value. I don't really know what the use-case for this mapping is in the case of choice 
-  //  parameters, but to satisfy the validator, we need to implement it.
-}
-*/
 
 void ClapWaveShaper::processBlockStereo(
   const float* inL, const float* inR, float* outL, float* outR, uint32_t numFrames)
@@ -354,4 +294,3 @@ void ClapToneGenerator::noteOff(int key)
     increment = 0.0;  // Not really relevant (I think) but let's be tidy
   }
 }
-

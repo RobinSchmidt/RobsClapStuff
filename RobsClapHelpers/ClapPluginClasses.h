@@ -101,7 +101,7 @@ public:
   /** Provides a default implementation of mapping parameter values to strings. The default 
   implementation will show the value with 2 decimal digits after the dot. If you want a different
   formatting, you will need to override this function in your subclass. */
-  bool paramsValueToText(clap_id paramId, double value, char *display, 
+  bool paramsValueToText(clap_id paramId, double value, char *text, 
     uint32_t size) noexcept override;
 
   /** This override implements a default implementation for mapping a parameter string to a value
@@ -111,7 +111,7 @@ public:
   particular in the case of choice/enum parameters, you really will need to override this if you 
   want these tests to pass (for continuous numeric parameters, you may get away with using the 
   default implementation). */
-  bool paramsTextToValue(clap_id paramId, const char *display, double *value) noexcept override;
+  bool paramsTextToValue(clap_id paramId, const char *text, double *value) noexcept override;
 
   /** Overrides the paramsFlush method to call processEvent for all the passed input events. */
   void paramsFlush(const clap_input_events *in, const clap_output_events *out) noexcept override;
@@ -125,7 +125,8 @@ public:
   // -Include a path/module string (e.g. Osc2/WaveTable/Spectrum/ )
   // -Remove the default value for the formatter - eventually, we wnat to make sure that this is 
   //  never a nullptr - but of course, we could also check, if it's a nullptr and if so, create
-  //  the object ourselves with new
+  //  the object ourselves with new ..ok - that's we currently do
+  // -Document how the plugin takes over ownership over the passed formatter (if any)
 
   void addFloatParameter(clap_id identifier, const std::string& name, double minValue, 
     double maxValue, double defaultValue, clap_param_info_flags flags, 
@@ -134,8 +135,13 @@ public:
   void addChoiceParameter(clap_id identifier, const std::string& name, double minValue, 
     double maxValue, double defaultValue, clap_param_info_flags flags, 
     const std::vector<std::string>& choices);
-    // We should perhaps infer the min/max value from the choices array as 0...choices.size()-1
-    // and pass the defaultValue as string or maybe as int.
+  // We should perhaps infer the min/max value from the choices array as 0...choices.size()-1
+  // and pass the defaultValue as string or maybe as int.
+  // We need documenatation. Also explain hwo the general addParameter function can directly be 
+  // called by client code if it wants to use a custom subclass of ValueFormatter. ...an example
+  // could be a Dry/Wet constrol that goes like  100/0  ->  50/50  ->  0/100. We can also have some
+  // predefined classes for commonly used formatting styles - like for frequencies with 5 total
+  // digits.
 
 
   /** Sets all the parameters to their default values by calling setParameter for each. */
@@ -164,11 +170,13 @@ public:
   suffix which can be used for displaying a physical unit such as " Hz" or " dB". If you want a 
   space between the number and the unit, you need to explicitly include that space in the suffix. 
   It returns a bool to report success or failure. */
+  /*
   bool toDisplay(double value, char* destination, int size, int precision,
     const char* suffix = nullptr)
   {
     return toStringWithSuffix(value, destination, size, precision, suffix) > 0;
   }
+  */
   // ToDo: Explain how it could fail and why the CLAP-API cares and what is supposed to happen in
   // case of a failure. I think, it fails when the "size" is insufficient to hold the formatted 
   // string, etc.
@@ -177,11 +185,13 @@ public:
   assuming that you keep a string-array with the textual representations of the choices around. The
   convention to convert the value into a strings is as follows: the "value" will be rounded to an
   integer and the result is used as index into the "strings" array. */
+  /*
   bool toDisplay(double value, char* destination, int size,
     const std::vector<std::string>& strings)
   {
     return copyString(strings, (int) round(value), destination, size);
   }
+  */
 
   /** Tries to find the "displayString" in the array of "strings". If it was found, the index where
   it was found will be assigned to the "value" and "true" will be returned. If it was not found,
@@ -192,22 +202,28 @@ public:
   numeric values and their display strings. It's not enough to go one way, i.e. from value to 
   string. The clap-validator app will also check roundtrips. For enum/choice parameters, that 
   requires finding an index of a string. */
+  /*
   bool toValue(const char* displayString, double* value, const std::vector<std::string>& strings)
   {
     int i = findString(strings, displayString);
     if(i == -1) { *value = 0.0;        return false; }
     else        { *value = (double) i; return true;  }
   }
+  */
   // ToDo: Replace these value/text conversion functions with ValueFormatter. We should keep an
   // array of pointers to such formatters as member...
 
   /** This is a self-check for internal consistency. It is recommended to verify this after all 
   your addParameter calls in some sort of assertion in debug builds to catch bugs in your parameter
   setup code. */
-  bool areParamsConsistent();
+  bool areParamsConsistent() const;
   // Maybe try to find a more descriptive name - "consistent" is a bit too general and vague. On 
   // the other hand, client code should probably not really have to care about what exactly 
   // "consistency" means. 
+
+
+  bool isParamIdValid(clap_id id) const { return id >= 0 && id < values.size(); }
+
 
 
   //-----------------------------------------------------------------------------------------------
