@@ -309,6 +309,9 @@ class ValueFormatterForChoice : public ValueFormatter
 
 public:
 
+  ValueFormatterForChoice(const std::vector<std::string>& theChoices)
+    : choices(theChoices) {}
+
   bool valueToText(double value, char *text, uint32_t size) override;
 
   bool textToValue(const char *text, double *value) override;

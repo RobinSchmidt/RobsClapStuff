@@ -128,9 +128,12 @@ public:
   //  the object ourselves with new
 
   void addFloatParameter(clap_id identifier, const std::string& name, double minValue, 
-    double maxValue, double defaultValue, clap_param_info_flags flags, int precision, 
-    const std::string& suffix);
+    double maxValue, double defaultValue, clap_param_info_flags flags, 
+    int precision, const std::string& suffix);
 
+  void addChoiceParameter(clap_id identifier, const std::string& name, double minValue, 
+    double maxValue, double defaultValue, clap_param_info_flags flags, 
+    const std::vector<std::string>& choices);
 
 
   /** Sets all the parameters to their default values by calling setParameter for each. */

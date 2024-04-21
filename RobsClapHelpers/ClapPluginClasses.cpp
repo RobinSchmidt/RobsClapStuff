@@ -201,10 +201,13 @@ void ClapPluginWithParams::addFloatParameter(clap_id id, const std::string& name
     new ValueFormatterWithSuffix(precision, suffix));
 }
 
-
-
-
-
+void ClapPluginWithParams::addChoiceParameter(clap_id id, const std::string& name, 
+  double minVal, double maxVal, double defaultVal, clap_param_info_flags flags,
+  const std::vector<std::string>& choices)
+{
+  addParameter(id, name, minVal, maxVal, defaultVal, flags, 
+    new ValueFormatterForChoice(choices));
+}
 
 void ClapPluginWithParams::setParameter(clap_id id, double newValue)
 {
