@@ -15,11 +15,16 @@ https://github.com/free-audio/clap/tree/main
 Example plugin using the C-API:
 https://github.com/free-audio/clap/blob/main/src/plugin-template.c
 
+A distortion example:
+https://github.com/baconpaul/clap-c99-distortion/blob/main/src/clap-c99-distortion.c
+
 A C++ wrapper:
 https://github.com/free-audio/clap-helpers/blob/main/include/clap/helpers/plugin.hh
 
-..hmm..I'm actually looking for a simple example using the C++ wrapper. But I find none. Looks like 
-I have to figure it out myself.
+Micro CLAP Host:
+https://github.com/baconpaul/micro-clap-host
+
+
 
 
 Database of software supporting clap (hosts and plugins):

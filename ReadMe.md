@@ -105,3 +105,11 @@ Open303 was a subclass of AudioEffectX. The CLAP version will be a subclass of s
 to CLAP. The plugins should all live in a single library such that their common code is shared. That 
 will be very space efficient. But that will probably happen in my main repo where I have access to 
 my full DSP library.
+
+
+Links
+-----
+
+Here is a forum thread on kvraudio.com about this:  
+https://www.kvraudio.com/forum/viewtopic.php?t=609166  
+For feedback, you can use this thread or the issue tracker here on GitHub.

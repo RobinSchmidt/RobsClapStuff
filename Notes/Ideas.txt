@@ -9,7 +9,20 @@ both keys and values are strings. The plugin could tell the host a couple of key
 
 A way to delegate the GUI/DSP thread sync to the host by letting the plugin issue a call to 
 host->request_event(...) or something. Then plugins wouldn't have to maintain their own event queues
-and merge them with the events from the host in their process functions. 
+and merge them with the events from the host in their process functions. The plugin could piggyback
+on the hosts thread-sync implementation which would simplify plugin development.
+
+An extension to support variable I/O in the sense of: numOutputFrames != numInputFrames. This is 
+needed for things like seen in realtime time-stretchers like soundtouch or elastique. It could also 
+be used for sample rate conversion applications. The host should inquire the plugin, how many input 
+samples it needs to produce a given number of output samples before calling the actual block 
+processing function. Or: the host just passes a given number of input frames to the plugin and the 
+plugin just produces the corresponding number of output samples and returns the number of samples
+produced in the return value. Oh - but that requires the output buffer to have enough space 
+pre-allocated - the number of produced samples may be (much) larger than the number of input samples
+and is assumed to be unknown to the host in this scheme.
+
+An extension for offline procesing - like ARA (audio random access). 
 
 
 

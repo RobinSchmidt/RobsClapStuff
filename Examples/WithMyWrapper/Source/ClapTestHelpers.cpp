@@ -393,6 +393,13 @@ void ClapChannelMixer2In3Out::processSubBlock64(
 
 ToDo:
 
+-Write a test function  bool testInPlaceProcessing(clap_plugin* plugin, int numSamples)  that takes 
+ a pointer to a plugin and a number of samples for the test buffers. Let the plugin have one input 
+ port with m channels and one output port with n channels. Generate an m-channel noise input 
+ signal. Record the n-channel output signal using out-of-place buffers. That is the reference 
+ signal. Now process the same block with all possible ways in which ins and outs could overlap and
+ after each process call, compare the result to the reference signal.
+
 
 
 */
