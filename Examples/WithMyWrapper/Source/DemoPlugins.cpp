@@ -144,6 +144,8 @@ ClapWaveShaper::ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_ho
   //  only knobs for automatable parameters. Why? Is this intentional? Probably not. Maybe report 
   //  this here:
   //  https://github.com/free-audio/interop-tracker/issues
+  // -The addChoiceParameter function will automatically also set the flags CLAP_PARAM_IS_STEPPED, 
+  //  CLAP_PARAM_IS_ENUM so we don't need to do it here.
   // -It is important that the order of the shape strings ("Clip", "Tanh", ...) matches the order 
   //  of the corresponding entries in the Shapes enum. There is a unit test that verifies this. If 
   //  we make the choices for enum parameters automatable, then the order of the initial section of 

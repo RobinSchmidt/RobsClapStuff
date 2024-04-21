@@ -258,11 +258,6 @@ public:
   //-----------------------------------------------------------------------------------------------
   // \name Processing
 
-
-  //clap_process_status process(const clap_process *process) noexcept override;
-  // UNDER CONSTRUCTION - Nah - goes into ClapPluginWithAudio
-
-
   /** This is called from within our implementation of process to handle one event at a time. In 
   our implementation here, we currently handle only parameter change events by calling 
   setParameter which in turn will trigger a call to the purely virtual parameterChanged() callback
@@ -276,8 +271,6 @@ private:
 
   std::vector<double>          values;       // Current values, indexed by id
   std::vector<clap_param_info> infos;        // Parameter informations, indexed by index
-
-  // Under construction:
   std::vector<ValueFormatter*> formatters;   // Formatters, indexed by id
 
 };

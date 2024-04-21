@@ -57,11 +57,6 @@ public:
   needs to override to take appropriate actions like recalculating internal DSP coefficients. */
   void parameterChanged(clap_id id, double newValue) override;
 
-  /** Converts a parameter value to text for display on the generic GUI that the host provides for
-  GUI-less plugins. */
-  //bool paramsValueToText(clap_id paramId, double value, char *display, 
-  //  uint32_t size) noexcept override;
-
   /** Overrides the sub-block processing function to do the actual signal processing. */
   void processBlockStereo(const float* inL, const float* inR, float* outL, float* outR, 
     uint32_t numFrames) override;
@@ -74,7 +69,6 @@ public:
 
 
 protected:
-
 
   // Internal algorithm coefficients:
   float ampL = 1.f, ampR = 1.f;          // Gain factors for left and right channel
@@ -112,13 +106,6 @@ public:
   ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_host *host);
 
   void parameterChanged(clap_id id, double newValue) override;
-
-  /*
-  bool paramsValueToText(clap_id paramId, double value, char *display, 
-    uint32_t size) noexcept override;
-
-  bool paramsTextToValue(clap_id paramId, const char *display, double *value) noexcept override;
-  */
 
   void processBlockStereo(const float* inL, const float* inR, float* outL, float* outR, 
     uint32_t numFrames) override;
@@ -168,9 +155,6 @@ protected:
   float inAmp  = 1.f;
   float outAmp = 1.f;
   float dc     = 0.f;
-
-  // Holds the strings for the shape names for GUI display:
-  //std::vector<std::string> shapeNames;
 
 };
 
