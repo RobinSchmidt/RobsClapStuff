@@ -146,6 +146,20 @@ bool ValueFormatterWithSuffix::valueToText(double value, char* text, uint32_t si
 }
 
 
+bool ValueFormatterForChoice::valueToText(double value, char* text, uint32_t size)
+{
+  return copyString(choices, (int) round(value), text, size);
+}
+
+bool ValueFormatterForChoice::textToValue(const char* text, double* value)
+{
+  int i = findString(choices, text);
+  if(i == -1) { *value = 0.0;        return false; }
+  else        { *value = (double) i; return true;  }
+}
+
+
+
 
 /*=================================================================================================
 

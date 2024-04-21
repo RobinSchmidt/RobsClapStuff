@@ -177,6 +177,8 @@ public:
     if(i == -1) { *value = 0.0;        return false; }
     else        { *value = (double) i; return true;  }
   }
+  // ToDo: Replace these value/text conversion functions with ValueFormatter. We should keep an
+  // array of pointers to such formatters as member...
 
   /** This is a self-check for internal consistency. It is recommended to verify this after all 
   your addParameter calls in some sort of assertion in debug builds to catch bugs in your parameter
@@ -235,8 +237,11 @@ public:
 
 private:
 
-  std::vector<double>          values;  // Current values, indexed by id
-  std::vector<clap_param_info> infos;   // Parameter informations, indexed by index
+  std::vector<double>          values;       // Current values, indexed by id
+  std::vector<clap_param_info> infos;        // Parameter informations, indexed by index
+
+  // ToDo:
+  //std::vector<ValueFormatter*> formatters;   // Formatters, indexed by id
 
 };
 
