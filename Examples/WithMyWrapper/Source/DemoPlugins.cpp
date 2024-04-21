@@ -153,7 +153,7 @@ ClapWaveShaper::ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_ho
 
 
   
-  // NEW - makes the unit tests fail!:
+  // NEW:
   //reserveParameters(numParams);
   addChoiceParameter(kShape, "Shape", 0, numShapes-1, 0, choice, { "Clip", "Tanh", "Atan", "Erf" });
   addFloatParameter( kDrive, "Drive", -20.0, +60.0,       0.0, automatable, 2, " dB");
@@ -162,6 +162,8 @@ ClapWaveShaper::ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_ho
   RobsClapHelpers::clapAssert(areParamsConsistent());
  
 
+  // We would actually like to call it like this:
+  //addChoiceParameter(kShape, "Shape", "Clip", automatable, { "Clip", "Tanh", "Atan", "Erf" });
 
 
 

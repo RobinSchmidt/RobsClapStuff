@@ -385,8 +385,11 @@ bool runWaveShaperTest()
   //    ws.paramsValueToText(ClapWaveShaper::Params::kShape, ...
   //  The desired behavior is that it behaves like rounding, i.e. 0..0.5 should give the same 
   //  result as the integer 0, 0.5..1.5 the same result as 1, etc.
-  // -Check that the waveshaper prodcues the correct outputs, i.e. that we we really get a
+  // -Check that the waveshaper produces the correct outputs, i.e. that we we really get a
   //  tanh shaping when we select tanh, etc.
+  // -Check that the parameters have the right flags. Add tests like
+  //  ok &= ws.isParameterAutomatable(kDrive), etc.  ...but to implement this, we will indeed need
+  //  the IndexIdentifierMap to achieve an O(1) access.
 }
 
 //-------------------------------------------------------------------------------------------------

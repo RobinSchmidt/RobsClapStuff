@@ -161,6 +161,12 @@ bool ValueFormatterForChoice::textToValue(const char* text, double* value)
   int i = findString(choices, text);
   if(i == -1) { *value = 0.0;        return false; }
   else        { *value = (double) i; return true;  }
+
+  // Notes:
+  //
+  // -The clap-validator app requires that we can also correctly map from a display-string back to
+  //  a value. I don't really know what the use-case for this mapping is in the case of choice 
+  //  parameters, but to satisfy the validator, we need to implement it.
 }
 
 
