@@ -283,6 +283,8 @@ after the dot and a suffix for the physical unit. */
 class ValueFormatterWithSuffix : public ValueFormatter
 {
 
+public:
+
   ValueFormatterWithSuffix(
     int numDigitsAfterDot = 2, const std::string& unitSuffix = std::string())
     : precision(numDigitsAfterDot), suffix(unitSuffix) {}
@@ -297,4 +299,24 @@ protected:
 
 };
 
+
+/** Subclass of ValueFormatter for choice parameters, i.e. parameters that use an enum of choices
+for the value (such as "Lowpass", "Highpass", "Bandpass" for example). The enum entries must be 
+contiguous numbers from 0 to N-1 where N is the number of choices (3 in the example)....TBC... */
+
+class ValueFormatterForChoice : public ValueFormatter
+{
+
+public:
+
+  bool valueToText(double value, char *text, uint32_t size) override;
+
+  bool textToValue(const char *text, double *value) override;
+
+
+protected:
+
+  std::vector<std::string> choices;
+
+};
 
