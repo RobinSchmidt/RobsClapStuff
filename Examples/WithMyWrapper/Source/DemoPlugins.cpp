@@ -97,6 +97,7 @@ void ClapGain::parameterChanged(clap_id id, double newValue)
   ampR = 2.f * (amp * pan01);
 }
 
+/*
 bool ClapGain::paramsValueToText(clap_id id, double val, char *buf, uint32_t len) noexcept
 {
   switch(id)
@@ -106,6 +107,7 @@ bool ClapGain::paramsValueToText(clap_id id, double val, char *buf, uint32_t len
   }
   return Base::paramsValueToText(id, val, buf, len);
 }
+*/
 
 //=================================================================================================
 // WaveShaperDemo
@@ -137,15 +139,29 @@ ClapWaveShaper::ClapWaveShaper(const clap_plugin_descriptor *desc, const clap_ho
   clap_param_info_flags automatable = CLAP_PARAM_IS_AUTOMATABLE;
   clap_param_info_flags choice      = automatable | CLAP_PARAM_IS_STEPPED | CLAP_PARAM_IS_ENUM;
 
+  // OLD:
   //reserveParameters(numParams);
   addParameter(kShape, "Shape",   0.0, numShapes-1, 0.0, choice);        // Clip, Tanh, etc.
   shapeNames = { "Clip", "Tanh", "Atan", "Erf" };
-
   addParameter(kDrive, "Drive", -20.0, +60.0,       0.0, automatable);   // In dB
   addParameter(kDC,    "DC",    -10.0, +10.0,       0.0, automatable);   // As raw offset
   addParameter(kGain,  "Gain",  -60.0, +20.0,       0.0, automatable);   // In dB
-
   RobsClapHelpers::clapAssert(areParamsConsistent());
+ 
+
+  /*
+  // NEW - makes the unit tests fail!:
+  //reserveParameters(numParams);
+  addChoiceParameter(kShape, "Shape", 0, numShapes-1, 0, choice, { "Clip", "Tanh", "Atan", "Erf" });
+  addFloatParameter( kDrive, "Drive", -20.0, +60.0,       0.0, automatable, 2, " dB");
+  addFloatParameter( kDC,    "DC",    -10.0, +10.0,       0.0, automatable, 3, "");
+  addFloatParameter( kGain,  "Gain",  -60.0, +20.0,       0.0, automatable, 2, " dB");
+  RobsClapHelpers::clapAssert(areParamsConsistent());
+  */
+
+
+
+
 
   // Notes:
   //

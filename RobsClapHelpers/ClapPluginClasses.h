@@ -134,6 +134,8 @@ public:
   void addChoiceParameter(clap_id identifier, const std::string& name, double minValue, 
     double maxValue, double defaultValue, clap_param_info_flags flags, 
     const std::vector<std::string>& choices);
+    // We should perhaps infer the min/max value from the choices array as 0...choices.size()-1
+    // and pass the defaultValue as string or maybe as int.
 
 
   /** Sets all the parameters to their default values by calling setParameter for each. */

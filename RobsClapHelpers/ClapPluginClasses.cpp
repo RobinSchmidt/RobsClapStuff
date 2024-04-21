@@ -207,6 +207,12 @@ void ClapPluginWithParams::addChoiceParameter(clap_id id, const std::string& nam
 {
   addParameter(id, name, minVal, maxVal, defaultVal, flags, 
     new ValueFormatterForChoice(choices));
+
+
+  // ToDo:
+  //
+  // -We should perhaps automatically add the flas CLAP_PARAM_IS_STEPPED | CLAP_PARAM_IS_ENUM. For
+  //  choice parameters, these are always needed
 }
 
 void ClapPluginWithParams::setParameter(clap_id id, double newValue)

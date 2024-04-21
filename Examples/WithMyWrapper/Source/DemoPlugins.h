@@ -59,8 +59,8 @@ public:
 
   /** Converts a parameter value to text for display on the generic GUI that the host provides for
   GUI-less plugins. */
-  bool paramsValueToText(clap_id paramId, double value, char *display, 
-    uint32_t size) noexcept override;
+  //bool paramsValueToText(clap_id paramId, double value, char *display, 
+  //  uint32_t size) noexcept override;
 
   /** Overrides the sub-block processing function to do the actual signal processing. */
   void processBlockStereo(const float* inL, const float* inR, float* outL, float* outR, 
