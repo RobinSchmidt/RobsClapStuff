@@ -20,6 +20,10 @@ bool runAllClapTests(/*bool printResults*/)
   ok &= runChannelMixer2In3OutTest();
 
   return ok;
+
+  // ToDo:
+  //
+  // -Add memory leak checks
 }
 
 //-------------------------------------------------------------------------------------------------
