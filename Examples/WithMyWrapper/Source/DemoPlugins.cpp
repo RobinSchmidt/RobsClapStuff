@@ -50,10 +50,17 @@ ClapGain::ClapGain(const clap_plugin_descriptor *desc, const clap_host *host)
   // Flags for our parameters - they are automatable:
   clap_param_info_flags automatable = CLAP_PARAM_IS_AUTOMATABLE;
 
+  // OLD:
   // Add the parameters:
-  addParameter(kGain, "Gain", -40.0, +40.0, 0.0, automatable);  // in dB
-  addParameter(kPan,  "Pan",   -1.0,  +1.0, 0.0, automatable);  // -1: left, 0: center, +1: right
+  //addParameter(kGain, "Gain", -40.0, +40.0, 0.0, automatable);  // in dB
+  //addParameter(kPan,  "Pan",   -1.0,  +1.0, 0.0, automatable);  // -1: left, 0: center, +1: right
+  //RobsClapHelpers::clapAssert(areParamsConsistent());
+
+  // NEW:
+  addFloatParameter(kGain, "Gain", -40.0, +40.0, 0.0, automatable, 2, " dB");
+  addFloatParameter(kPan,  "Pan",   -1.0,  +1.0, 0.0, automatable, 3, "");
   RobsClapHelpers::clapAssert(areParamsConsistent());
+
 
   // Notes:
   //
