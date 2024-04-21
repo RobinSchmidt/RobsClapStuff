@@ -120,8 +120,12 @@ public:
   called in the constructor of your subclass to create and set up all the parameters that you want
   to expose to the host. */
   void addParameter(clap_id identifier, const std::string& name, double minValue, double maxValue, 
-    double defaultValue, clap_param_info_flags flags);
-  // ToDo: maybe include a path/module string (e.g. Osc2/WaveTable/Spectrum/ )
+    double defaultValue, clap_param_info_flags flags, ValueFormatter* formatter = nullptr);
+  // ToDo: 
+  // -Include a path/module string (e.g. Osc2/WaveTable/Spectrum/ )
+  // -Remove the default value for the formatter - eventually, we wnat to make sure that this is 
+  //  never a nullptr - but of course, we could also check, if it's a nullptr and if so, create
+  //  the object ourselves with new
 
   /** Sets all the parameters to their default values by calling setParameter for each. */
   void setAllParametersToDefault();

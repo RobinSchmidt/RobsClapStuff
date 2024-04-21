@@ -137,6 +137,11 @@ bool ValueFormatter::textToValue(const char* text, double* value)
 {
   *value = strtod(text, nullptr);
   return true;
+
+  // ToDo:
+  //
+  // -Figure out what happens in case of a parse-error. It would be nice to have a parser that 
+  //  returns a bool (true in case of success, false in case of failure).
 }
 
 

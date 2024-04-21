@@ -52,28 +52,40 @@ bool ClapPluginWithParams::paramsValue(clap_id id, double* value) const noexcept
 }
 
 bool ClapPluginWithParams::paramsValueToText(
-  clap_id paramId, double value, char* display, uint32_t size) noexcept
+  clap_id id, double value, char* display, uint32_t size) noexcept
 {
-  return toDisplay(value, display, size, 2);
+  if(formatters[id] != nullptr)
+    return formatters[id]->valueToText(value, display, size);
+  else
+    return toDisplay(value, display, size, 2);
 
   // ToDo: 
   //
-  // -Maybe let the ClapPluginParameter struct have a function pointer member that does the 
-  //  conversion to string (by default assigned to some generic double-to-string function that may
-  //  just call sprintf_s). Then use that function pointer here. It should be assigned in the 
-  //  constructor of ClapPluginParameter
+  // -Remove the "if...". The pointers should never be nullptr. We should *always* assign some 
+  //  valid object. Delete the toDisplay function. It's obsolete when we have the system with the 
+  //  formatter finished
+  // -Rename "display" to "text"
 }
 
 bool ClapPluginWithParams::paramsTextToValue(
-  clap_id paramId, const char *display, double *value) noexcept
+  clap_id id, const char *display, double *value) noexcept
 {
-  *value = strtod(display, nullptr);
-  return true;
+  //// Old:
+  //*value = strtod(display, nullptr);
+  //return true;
+
+  // New:
+  if(formatters[id] != nullptr)
+    return formatters[id]->textToValue(display, value);
+  else
+  {
+    *value = strtod(display, nullptr);
+    return true;
+  }
 
   // ToDo:
   //
-  // -Figure out what happens in case of a parse-error. It would be nice to have a parser that 
-  //  returns a bool (true in case of success, false in case of failure).
+  // -Like in ...ValueToText: remove "if..", rename "display"
 }
 
 void ClapPluginWithParams::paramsFlush(
@@ -138,7 +150,7 @@ bool ClapPluginWithParams::stateLoad(const clap_istream* stream) noexcept
 }
 
 void ClapPluginWithParams::addParameter(clap_id id, const std::string& name, double minValue, 
-  double maxValue, double defaultValue, clap_param_info_flags flags)
+  double maxValue, double defaultValue, clap_param_info_flags flags, ValueFormatter* formatter)
 {
   // Add a new clap_param_info to the end of our infos array:
   clap_param_info info;
@@ -160,7 +172,17 @@ void ClapPluginWithParams::addParameter(clap_id id, const std::string& name, dou
   values[id] = defaultValue;
 
   formatters.resize(newSize);
-  formatters[id] = nullptr;
+
+  // Old:
+  //formatters[id] = nullptr;
+
+  // New:
+  if(formatter != nullptr)
+    formatters[id] = formatter;
+  else
+    formatters[id] = new ValueFormatter;
+
+
 
   // ToDo: 
   //
