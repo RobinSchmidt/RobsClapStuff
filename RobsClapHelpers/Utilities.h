@@ -302,18 +302,33 @@ protected:
 
 /** Subclass of ValueFormatter for choice parameters, i.e. parameters that use an enum of choices
 for the value (such as "Lowpass", "Highpass", "Bandpass" for example). The enum entries must be 
-contiguous numbers from 0 to N-1 where N is the number of choices (3 in the example)....TBC... */
+contiguous numbers from 0 to N-1 where N is the number of choices (3 in the example).
+
+
+...TBC... */
 
 class ValueFormatterForChoice : public ValueFormatter
 {
 
 public:
 
+  /** Constructor. You need to pass in a vector of strings representing the choices. These strings 
+  will be used for displaying the parameter's value using the following convention: the value of 
+  the parameter is rounded and the result is used as index to the string-array. */
   ValueFormatterForChoice(const std::vector<std::string>& theChoices)
     : choices(theChoices) {}
 
+  /** Converts the given "value" to a display string. The convention to convert the value into a 
+  strings is as follows: the "value" will be rounded to an integer and the result is used as index
+  into the "strings" array. */
   bool valueToText(double value, char *text, uint32_t size) override;
 
+  /** Tries to find the "text" in the array of "choices". If it was found, the index where
+  it was found will be assigned to the "value" and "true" will be returned. If it was not found,
+  "value" will be assigned to zero and "false" will be returned. The CLAP-API requires that plugins 
+  can correctly convert back-and-forth between numeric values and their display strings. It's not 
+  enough to go one way, i.e. from value to string. The clap-validator app will also check 
+  roundtrips. For enum/choice parameters, that requires finding an index of a string. */
   bool textToValue(const char *text, double *value) override;
 
 

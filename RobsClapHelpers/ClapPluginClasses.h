@@ -131,6 +131,7 @@ public:
   void addFloatParameter(clap_id identifier, const std::string& name, double minValue, 
     double maxValue, double defaultValue, clap_param_info_flags flags, 
     int precision, const std::string& suffix);
+  // Needs documentation
 
   void addChoiceParameter(clap_id identifier, const std::string& name, double minValue, 
     double maxValue, double defaultValue, clap_param_info_flags flags, 
@@ -164,6 +165,11 @@ public:
   a bug if you don't. If you have one of those rare and atypical special cases where you don't need
   to respond to parameter changes, you can just override it with an empty implementation. */
   virtual void parameterChanged(clap_id id, double newValue) = 0;
+
+
+
+  // OBSOLETE NOW ..but some comments should be copied over and adapted to ValueFormatter or one
+  // of its subclasses
 
   /** Function to produce a string from a parameter value for display on the host-generated GUI. 
   You may pass a desired "precision", i.e. number of decimal digits after the dot and an optional
@@ -212,6 +218,10 @@ public:
   */
   // ToDo: Replace these value/text conversion functions with ValueFormatter. We should keep an
   // array of pointers to such formatters as member...
+
+  // END OF "OBSOLETE NOW"
+
+
 
   /** This is a self-check for internal consistency. It is recommended to verify this after all 
   your addParameter calls in some sort of assertion in debug builds to catch bugs in your parameter
