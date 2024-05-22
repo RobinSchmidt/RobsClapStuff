@@ -60,6 +60,13 @@ https://github.com/free-audio/interop-tracker/issues
 https://github.com/robbert-vdh/nih-plug
 -Audio plugin framework written in Rust, as well as a small collection of plugins
 
+
+
+https://github.com/angushewlett/plugnpain
+-Document by Angus Hewlett about design choices for audio plugin APIs (not specifically about CLAP)
+
+
+
 ----------------------------------------------------------------------------------------------------
 About using the C example:
 
