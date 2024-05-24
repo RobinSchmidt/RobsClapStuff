@@ -67,6 +67,14 @@ https://github.com/angushewlett/plugnpain
 
 
 
+
+KVR-Thread: CLAP: The New Audio Plug-in Standard (by U-he, Bitwig and others):
+https://www.kvraudio.com/forum/viewtopic.php?t=583140
+
+Discussion about the latency extension (starts around page 30 in the thread above):
+https://www.kvraudio.com/forum/viewtopic.php?p=8908843#p8908843  
+
+
 ----------------------------------------------------------------------------------------------------
 About using the C example:
 
