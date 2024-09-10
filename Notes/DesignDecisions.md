@@ -19,11 +19,12 @@ Parameter Identifiers
 
 The `clap_plugin_params` extension allows a plugin to announce its parameters to the host which the 
 host can use to control the settings of the plugin. This can be done either live turning by knobs or 
-sliders on a host generated GUI or by drawing in automation data. The API requires the plugin to 
-assign an identifier (short: id) to each of its parameters. This identifier is of type `clap_id` 
-which is just a typedef for `uint32_t`. The plugin is free to choose any id it wishes as long as it 
-is unique, i.e. allows unique identification of the parameter. The host will use this id to identify 
-the parameter whenever it wants to set or get its value, translate it to/from a string, etc. 
+sliders on a host generated GUI or by drawing in automation data in the DAW. The API requires the 
+plugin to assign an identifier (short: id) to each of its parameters. This identifier is of type 
+`clap_id` which is just a typedef for `uint32_t`. The plugin is free to choose any id it wishes as 
+long as it is unique, i.e. allows unique identification of the parameter. The host will use this id 
+to identify the parameter whenever it wants to set or get its value, translate it to/from a string, 
+etc. 
 
 Parameters also have an index which is just a running number from 0 to N-1 where N is the number of 
 parameters. When the host first wants to inquire what parameters a plugin has, it will request the 
@@ -66,7 +67,12 @@ integer numbers 0..N-1) and the set of the N identifiers (which are under the ho
 which we can freely choose as long as each element is unique (which is actually already implied 
 anyway when we talk about sets). When we want to implement a map between the integers 0..N-1 and N 
 other integers of our own choice, the most obvious and natural choice surely seems to be to use also
-0...N-1. That choice allows us to implement the map by a simple pair of arrays of length N.
+0...N-1. That choice allows us to implement the map by a simple pair of arrays of length N. In the 
+simplest case, it would be the identity map. In the case of VST, this was set in stone. There was 
+no concept of such a map at all. The id and the index were the same thing. CLAP's design gives more 
+flexibility for plugin implementors to assign ids to parameters. However, I think allowing arbitrary
+"random" numbers for ids is not really needed. Restricting ourselves to permutation maps between 
+index and id seems to be the sweet spot for me.
 
 ### Implementation
 
