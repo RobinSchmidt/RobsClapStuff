@@ -15,8 +15,8 @@ point, I recommend to load
 
 into Visual Studio and have a look around. Try to Build-and-Run the "Tests" project. If all goes 
 well, it should create a command-line application that runs some unit tests and reports success or 
-failure. The things that are being tested there are my C++ convenience classes around the CLAP C-API 
-and some demo plugins that have been created with those.
+failure (hopefully the former). The things that are being tested there are my C++ convenience 
+classes around the CLAP C-API and some demo plugins that have been created with those.
 
 
 Making Plugins
@@ -43,7 +43,7 @@ gain plugins are the audio-plugin equivalent to "Hello World" examples for progr
 The main features from Steinberg's "AGain" example that I wanted to replicate are:
 
   - The plugin should be a subclass of some baseclass provided by the SDK/framework.
-  - The host should be able to provide a resonable generic GUI where parameter names and nicely 
+  - The host should be able to provide a reasonable generic GUI where parameter names and nicely 
     formatted values are shown.
   - Automation and state-recall should "just work" without any further ado, i.e. without any code in
     the plugin class.
