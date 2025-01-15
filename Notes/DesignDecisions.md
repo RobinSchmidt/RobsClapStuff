@@ -18,7 +18,7 @@ Parameter Identifiers
 ### Background:
 
 The `clap_plugin_params` extension allows a plugin to announce its parameters to the host which the 
-host can use to control the settings of the plugin. This can be done either live turning by knobs or 
+host can use to control the settings of the plugin. This can be done either live by turning knobs or 
 sliders on a host generated GUI or by drawing in automation data in the DAW. The API requires the 
 plugin to assign an identifier (short: id) to each of its parameters. This identifier is of type 
 `clap_id` which is just a typedef for `uint32_t`. The plugin is free to choose any id it wishes as 
@@ -113,8 +113,8 @@ by id (like min/max values) in which case we can pull in the IndexIdentifierMap.
   https://github.com/surge-synthesizer/clap-saw-demo/blob/main/src/clap-saw-demo.h#L91  
   https://github.com/surge-synthesizer/clap-saw-demo/blob/main/src/clap-saw-demo.h#L355  
   That seems a bit like overkill to me. A std::unordered_map is already a (moderately) 
-  complex data structure. I don't really want to pull in that kind of complexity just to handle the 
-  humble parameter ids.
+  complex data structure (specifically, it's a hash table). I don't really want to pull in that kind 
+  of complexity just to handle the humble parameter ids.
 
 - Alternatively, one could just store the ids in a unordered array and use a linear search for each 
   parameter lookup by id. That would imply a O(N) lookup cost which is probably not acceptable 
@@ -163,7 +163,7 @@ separated by commas. The state also stores the identifier of the plugin and info
 version of the plugin with which the state was produced as well as some additional info. When 
 reading a state and it doesn't have a value stored for one of our parameters, then it means that the
 state was stored with a previous version of the plugin which had less parameters. Such additional 
-parameters for which the state has no values stored will be set to their respective deafault values 
+parameters for which the state has no values stored will be set to their respective default values 
 in the state recall. The rationale is that default values should be neutral values, i.e. values at
 which the respective parameter does not change the sound at all (like a gain of 0 dB, a detune of
 0 semitones, a percentage of 100, etc.) .
@@ -204,7 +204,9 @@ interleaving code in each and every plugin again and again produces a lot of boi
 
 The interleaving of audio and event processing is done once and for all in the baseclass. Subclasses 
 need to override certain virtual functions to process one event at a time for the event processing. 
-They also need to override an audio processing function that operates on event-free sub-blocks.
+In the event handler function, they should handle the event immediately by, for example, recomputing
+some coefficients for a DSP algorithm. The subclass also needs to override an audio processing 
+function that operates on event-free sub-blocks. 
 
 ### Consequences
 
@@ -218,10 +220,22 @@ never have to think about all this mess ever again.
 The calling of virtual functions for one event at a time may incur a runtime overhead - especially
 when there are a lot of densely packed events coming in. 
 
+Computing DSP coeffs immediately may result in redundant recomputations when several events are 
+received (one after another) at the same time instant. For example, a user may set the cutoff and 
+the resonance of a filter at the same time. By recomputing the filter coeffs immediately, we would 
+do that recomputation twice - once for each of the two events. A way to avoid this is to not 
+immediately recompute but instead just set a "dirty" flag. This flag should be checked in the block
+processing function and if its found to be true, the recomputation should be triggered there before 
+producing any samples. That would consolidate all the recomputations that would occur in response 
+to multiple events at the same time into just one recomputation. If that flag is atomic, it can even 
+serve double duty as a lightweight thread sync mechanism when the events can potentially be received 
+on another thread. This isn't the case here, but it's still worth mentioning because that's how it 
+works in VST. There, a setParameter() function may be called from a non-audio thread.
+
 ### Discussion
 
 I struck a trade-off here: I may have left some performance optimization on the table and bought 
-convenience in return. If you really care about sqeezing out every possible bit of performance, you 
+convenience in return. If you really care about squeezing out every possible bit of performance, you 
 *can* still override the lower level `process` function and (re)write the interleaving code there 
 yourself and thereby get rid of the overhead. But you don't have to do that just to get a correctly 
 working plugin. If events are sparse, which they usually are, the cost/benefit calculation seems to 

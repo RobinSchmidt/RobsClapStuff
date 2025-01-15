@@ -38,24 +38,24 @@ leaving out any fields that are not relevant for this analysis:
 
   struct AEffect
   {
-	AEffectDispatcherProc dispatcher;  
+    AEffectDispatcherProc dispatcher;  
     // Host to Plug-in dispatcher @see AudioEffect::dispatcher
-	
-	AEffectSetParameterProc setParameter;
-	// Set new value of automatable parameter @see AudioEffect::setParameter
 
-	AEffectGetParameterProc getParameter;
-	// Returns current value of automatable parameter @see AudioEffect::getParameter
+    AEffectSetParameterProc setParameter;
+    // Set new value of automatable parameter @see AudioEffect::setParameter
 
-	VstInt32 numParams;		           // Number of parameters
-	VstInt32 numInputs;		           // Number of audio inputs
-	VstInt32 numOutputs;	           // Number of audio outputs
+    AEffectGetParameterProc getParameter;
+    // Returns current value of automatable parameter @see AudioEffect::getParameter
 
-	void* object;			           // AudioEffect class pointer
-	void* user;				           // User-defined pointer
+    VstInt32 numParams;	               // Number of parameters
+    VstInt32 numInputs;	               // Number of audio inputs
+    VstInt32 numOutputs;               // Number of audio outputs
 
-	AEffectProcessProc processReplacing;
-	// Process audio samples in replacing mode @see AudioEffect::processReplacing 
+    void* object;                      // AudioEffect class pointer
+    void* user;                        // User-defined pointer
+
+    AEffectProcessProc processReplacing;
+    // Process audio samples in replacing mode @see AudioEffect::processReplacing 
   };
 
 
@@ -96,36 +96,36 @@ AudioEffect:
 
   public:
 
-	AudioEffect(audioMasterCallback audioMaster, VstInt32 numPrograms, VstInt32 numParams); 
+    AudioEffect(audioMasterCallback audioMaster, VstInt32 numPrograms, VstInt32 numParams); 
 
-	virtual ~AudioEffect();
+    virtual ~AudioEffect();
 
-	virtual VstIntPtr dispatcher(VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, 
-                                 float opt);	
+    virtual VstIntPtr dispatcher(VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, 
+                                 float opt);
 
-	virtual void processReplacing(float** inputs, float** outputs, VstInt32 sampleFrames) = 0; 
+    virtual void processReplacing(float** inputs, float** outputs, VstInt32 sampleFrames) = 0; 
     // Process 32 bit floats - must be overriden by your effect subclass.
 
-	virtual void setParameter(VstInt32 index, float value);   // Called when a parameter changed
+    virtual void setParameter(VstInt32 index, float value);   // Called when a parameter changed
 
-	virtual float getParameter(VstInt32 index);	              // Returns the value of a parameter
+    virtual float getParameter(VstInt32 index);	              // Returns the value of a parameter
 
-    virtual AEffect* getAeffect() { return &cEffect; }	      // Returns the AEffect structure
+    virtual AEffect* getAeffect() { return &cEffect; }        // Returns the AEffect structure
 
 
   protected:
 
-	audioMasterCallback audioMaster;	// Host callback
-	AEffect  cEffect;					// AEffect object
+    audioMasterCallback audioMaster;    // Host callback
+    AEffect  cEffect;                   // AEffect object
 
-	static VstIntPtr dispatchEffectClass(AEffect* e, VstInt32 opcode, VstInt32 index, 
+    static VstIntPtr dispatchEffectClass(AEffect* e, VstInt32 opcode, VstInt32 index, 
                                          VstIntPtr value, void* ptr, float opt);
 
-	static float getParameterClass(AEffect* e, VstInt32 index);
+    static float getParameterClass(AEffect* e, VstInt32 index);
 
-	static void  setParameterClass(AEffect* e, VstInt32 index, float value);
+    static void  setParameterClass(AEffect* e, VstInt32 index, float value);
 
-	static void processClassReplacing(AEffect* e, float** inputs, float** outputs, 
+    static void processClassReplacing(AEffect* e, float** inputs, float** outputs, 
                                       VstInt32 sampleFrames);
 
   };
@@ -141,7 +141,7 @@ As we can see, for each of the 4 callbacks defined in AEffect, namely:
 we see two corresponding functions in the C++ wrapper. Firstly, there are the virtual member 
 functions:
 
-  virtual VstIntPtr dispatcher(...);	
+  virtual VstIntPtr dispatcher(...);
   virtual void processReplacing(...); 
   virtual void setParameter(...);
   virtual float getParameter(...);
@@ -160,8 +160,8 @@ function:.
 
   void AudioEffect::processClassReplacing(AEffect* e, float** ins, float** outs, VstInt32 numFrames)
   {
-	AudioEffect* ae = (AudioEffect*)(e->object);
-	ae->processReplacing(ins, outs, numFrames);
+    AudioEffect* ae = (AudioEffect*)(e->object);
+    ae->processReplacing(ins, outs, numFrames);
   }
 
 
@@ -171,17 +171,17 @@ This is the glue code. To see how it works, we need to look at the constructor o
   AudioEffect::AudioEffect(..., VstInt32 numParams)
   {
     // Glue for the callback functions:
-	cEffect.dispatcher       = dispatchEffectClass;
-	cEffect.setParameter     = setParameterClass;
-	cEffect.getParameter     = getParameterClass;
-	cEffect.processReplacing = processClassReplacing;
+    cEffect.dispatcher       = dispatchEffectClass;
+    cEffect.setParameter     = setParameterClass;
+    cEffect.getParameter     = getParameterClass;
+    cEffect.processReplacing = processClassReplacing;
 
-	cEffect.numParams  = numParams;
-	cEffect.numInputs  = 1;		      // mono input
-	cEffect.numOutputs = 2;		      // stereo output
+    cEffect.numParams  = numParams;
+    cEffect.numInputs  = 1;           // mono input
+    cEffect.numOutputs = 2;           // stereo output
 
     // The embedded AEffect struct member stores a pointer to "this" AudioEffect object.
-	cEffect.object = this;
+    cEffect.object = this;
   }
 
 
