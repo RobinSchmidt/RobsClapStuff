@@ -46,12 +46,14 @@ public:
 
     numParams
   };
+  // ToDo: Explain what the "param_id" is. The current documentation just mentions it out of the 
+  // blue. Just some short "which is a CLAP-API concept for blablabla..." may be sufficient.
 
   /** Constructor. It populates our inherited array of parameters using calls to addParameter. */
   ClapGain(const clap_plugin_descriptor *desc, const clap_host *host);
 
   /** This is an overriden callback that gets called from inside the process method of our 
-  basclass. This baseclass method is responsible for interleaving the calls to setParameter and 
+  baseclass. This baseclass method is responsible for interleaving the calls to setParameter and 
   calls to processBlockStereo to achieve sample-accurate automation of parameters. The call to 
   setParameter will, among other things, trigger a call to parameterChanged which our subclass 
   needs to override to take appropriate actions like recalculating internal DSP coefficients. */

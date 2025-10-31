@@ -89,7 +89,7 @@ Future Plans
 I do have some ideas to further reduce the amount of boilerplate inside the plugin code. In 
 particular, I have some ideas how to get rid of the current necessity to override the value/text
 conversion functions by implementing a system for handling that in the baseclass. I'm not yet sure,
-if should really do that, though. On the pro side, it would reduce the boilerplate in the plugin 
+if I should really do that, though. On the pro side, it would reduce the boilerplate in the plugin 
 code. On the contra side, it would introduce a bit more of framework overhead and make the handling 
 of the conversions a little bit less flexible by imposing certain ways doing them which may not 
 always be most suitable. I tend to think that the reduction of boilerplate is more important, 
