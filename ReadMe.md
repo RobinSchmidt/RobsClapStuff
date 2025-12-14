@@ -59,12 +59,12 @@ I have used the term "framework" here and it sounds like rather big word for the
 is going on here. I tend to use the term framework whenever I deal with some re-usable library code 
 where the client code needs to implement functionality that the library code calls. In a "toolkit",
 on the other hand, the flow of control is usually the other way around: client code calls functions 
-or uses classes from the library. Frameworks invert this control flow. This is sometimes called the 
-"Hollywood principle" ("Don't call us - we will call you") and is, in my opinion, the hallmark of 
-frameworks. In object oriented frameworks, the way this works is usually that the client code 
-derives a subclass from some library-provided baseclass and overrides one or more of its virtual 
-functions. This is the case here - therefore, I guess one could call my set of wrapper classes a 
-"mini-framework". In particular, in the file:
+or instantiates classes from the library. Frameworks invert this control flow. This is sometimes 
+called the "Hollywood principle" ("Don't call us - we will call you") and is, in my opinion, the 
+hallmark of frameworks. In object oriented frameworks, the way this works is usually that the 
+client code derives a subclass from some library-provided baseclass and overrides one or more of 
+its virtual functions. This is the case here - therefore, I guess one could call my set of wrapper 
+classes a "mini-framework". In particular, in the file:
 
 > RobsClapHelpers/ClapPluginClasses.h
 
@@ -93,7 +93,9 @@ if I should really do that, though. On the pro side, it would reduce the boilerp
 code. On the contra side, it would introduce a bit more of framework overhead and make the handling 
 of the conversions a little bit less flexible by imposing certain ways doing them which may not 
 always be most suitable. I tend to think that the reduction of boilerplate is more important, 
-though - so we'll see...
+though. Also, on the counter-contra side, if the framework provided default ways of handling the 
+conversions is not suitable in a particular (hopefully rare) case, the behavior could still be 
+overriden on a lower level when needed - so we'll see...
 
 Some of the other things on the ToDo list are to move the build system to CMake, to implement a 
 baseclass for instrument plugins with convenient hooks for handling noteOn/Off events and to show 
