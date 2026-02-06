@@ -31,10 +31,10 @@ parameters. When the host first wants to inquire what parameters a plugin has, i
 plugin to fill out a clap_param_info struct. The id is just a field in this struct. Inquiring this 
 info-struct is the only time where the host will refer to the parameter by its index and it's done 
 once at instantiation time (Well, conceptually at least. Bitwig actually seems to call it twice at 
-instantiation time and then again once at destruction). All subsequent accesses will be done via the 
-id. For the plugin implementor, that means the plugin must be able to map quickly (i.e. in O(1) with 
-small constant factor) from the paramter id to the storage location of its value. The value of a 
-parameter is a `double`.
+instantiation time and then again once at destruction - I don't know why). All subsequent accesses 
+will be done via the id. For the plugin implementor, that means the plugin must be able to map 
+quickly (i.e. in O(1) with small constant factor) from the paramter id to the storage location of 
+its value. The value of a parameter is a `double`.
 
 
 ### Decision:
@@ -47,11 +47,13 @@ The list of ids should be a permutation of the list of indices.
 - We can cause the host to re-order the knobs on the generated GUI when we publish an update for a
   plugin. That includes inserting knobs at arbitrary positions. When using the naive identity 
   mapping `index == id` like we implicitly did in VST2 where an id was not a thing, that would be 
-  impossible.
+  impossible. That's why in VST2, we could add new parameters to a plugin only at the end in plugin
+  updates unless we were willing to accept breaking state- and automation compatibility with older 
+  versions which would be evil.
 
 - The back-and-forth mapping between index and id can simply be implemented by a pair of 
   `std::vector<clap_id>`, `std::vector<uint32_t>` of length N where N is the number of parameters. 
-  Using the permutation map, accessing parameters by id or index is simple and fast - O(1) in both 
+  Using the permutation map, accessing parameters by id or index is simple and fast: O(1) in both 
   directions. It's a simple array access in both directions. No need to pull in a hash table or 
   anything complicated like that.
 

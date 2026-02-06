@@ -242,6 +242,17 @@ Potential pitfalls:
 
 
 
+Compare the class IndexIdentifierMap in Utilities.h with the data structure described here:
 
+  https://www.youtube.com/watch?v=L4xOCvELWlU  The magic container
+  https://github.com/johnBuffer/StableIndexVector
+  
+I think, it's conceptually the same idea. The two arrays "Data Index" and "ID" from the video
+(appearing at around 12:25) correspond to the "indices" and "identifiers" members in the class, I 
+think. The actual "Data" array in the video has no corresponding class member because we assume that
+Data array to exist elsewhere as a sidecar. The class only handles the back-and forth mapping 
+between index and id but the actual data has to live elsewhere. At least, I think that this is the 
+way it is. It's a while ago that I implemented this. Maybe add a video link to the documentation. 
+The video is quite good.
 
 
